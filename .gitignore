@@ -25,6 +25,7 @@ dist/
 
 # JetBrains IDE
 .idea/
+.iml
 
 # Unit test reports
 TEST*.xml
@@ -48,3 +49,5 @@ Thumbs.db
 *.mov
 *.wmv
 
+/src/main/java/gnu
+/output/

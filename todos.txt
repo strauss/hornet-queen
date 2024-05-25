@@ -1,0 +1,24 @@
+Todos: Primitive Collection Library
+
++ Linked List
+	(- Internal add all functions)
+	+ Iterator
+	+ Adjust to size
+	+ Testcases & Debugging
++ BitSet-Sets (Byte, Short, (Int))
+- Hashtable
+	- manual shrink
+	+ Hash-Set
+	- Hash-Map
+- Binary/AVL-Tree
+	- Tree-Set
+	- Tree-Map
+	- Tree-Sort
+- Heap
+	- P-Queue
+	- Heap-Sort
+- Extend max Array size to Int.MAX_VALUE
+- give it a fancy name
+- extract to own project
+- give it an open source license
+- publish it
