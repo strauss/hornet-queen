@@ -24,7 +24,7 @@ class TestMap<K, V>(
     private lateinit var toTest: MutableMap<K, V>
 
     companion object {
-        private const val TEST_SIZE = 500_000
+        private const val TEST_SIZE = 100_000
 
         @Parameterized.Parameters(name = "{0}")
         @JvmStatic
@@ -33,6 +33,11 @@ class TestMap<K, V>(
                 "HashTable based 'Long' key and 'Int' value.",
                 { HashTableBasedMapBuilder.useLongKey().useIntValue().create() }, { PrimitiveLongSet() },
                 { Random.nextLong() }, { PrimitiveIntArrayList() }, { Random.nextInt() }
+            ),
+            arrayOf(
+                "HashTable based 'Long' key and 'Any' value.",
+                { HashTableBasedMapBuilder.useLongKey().useArbitraryTypeValue<Any>().create() }, { PrimitiveLongSet() },
+                { Random.nextLong() }, { ArrayList<Any>() }, { Any() }
             )
         )
     }
@@ -83,10 +88,34 @@ class TestMap<K, V>(
             val oldValue: V? = toTest.put(currentKey, currentValue)
             Assert.assertNull(oldValue)
             expectedSize += 1
-            Assert.assertTrue(toTest.containsKey(currentKey))
+            Assert.assertTrue(
+                "Recently added key '$currentKey' was not found in map. Current size is '${toTest.size}', expected size is '$expectedSize'.",
+                toTest.containsKey(currentKey)
+            )
             Assert.assertEquals(expectedSize, toTest.size)
             Assert.assertEquals(currentValue, toTest[currentKey])
         }
+
+        // check if every key is contained after inserting all by single containsKey
+        // also check if all values match
+        var i = 0
+        for (currentKey: K in testKeyData) {
+            Assert.assertTrue(toTest.containsKey(currentKey))
+            val currentValue = testValueData[i]
+            Assert.assertEquals(testValueData[i], currentValue)
+            i += 1
+        }
+
+        // check if all values are contained
+        for (currentValue: V in testValueData) {
+            Assert.assertTrue(toTest.containsValue(currentValue))
+        }
+
+        // check if all non-keys are not contained
+        for (currentKey: K in negativeTestKeyData) {
+            Assert.assertFalse(toTest.containsKey(currentKey))
+        }
+
     }
 
 

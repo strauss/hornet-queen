@@ -27,17 +27,17 @@ class TestSet<T>(
         fun data(): Iterable<Array<Any>> = arrayListOf(
             arrayOf("BitSet based 'Byte'", { PrimitiveByteSetB() }, { HashSet<Byte>() }, { Random.nextInt().toByte() }),
             arrayOf("BitSet based 'Short'", { PrimitiveShortSetB() }, { HashSet<Short>() },
-                    { Random.nextInt().toShort() }),
+                { Random.nextInt().toShort() }),
             arrayOf("BitSet based 'Int'", { PrimitiveIntSetB() }, { HashSet<Int>() }, { Random.nextInt() % TEST_SIZE }),
             arrayOf("HashTable based 'Byte'", { PrimitiveByteSet() }, { HashSet<Byte>() },
-                    { Random.nextInt().toByte() }),
+                { Random.nextInt().toByte() }),
             arrayOf("HashTable based 'Short'", { PrimitiveShortSet() }, { HashSet<Short>() },
-                    { Random.nextInt().toShort() }),
+                { Random.nextInt().toShort() }),
             arrayOf("HashTable based 'Int'", { PrimitiveIntSet() }, { HashSet<Int>() }, { Random.nextInt() }),
             arrayOf("HashTable based 'Long'", { PrimitiveLongSet() }, { HashSet<Long>() }, { Random.nextLong() }),
             arrayOf("HashTable based 'Float", { PrimitiveFloatSet() }, { HashSet<Float>() }, { Random.nextFloat() }),
             arrayOf("HashTable based 'Double", { PrimitiveDoubleSet() }, { HashSet<Double>() },
-                    { Random.nextDouble() }),
+                { Random.nextDouble() }),
             arrayOf("HashTable based 'UUID", { UUIDSet() }, { HashSet<UUID>() }, { UUID.randomUUID() })
         )
     }
@@ -176,7 +176,7 @@ class TestSet<T>(
     fun testRetainAll() {
         toTest.addAll(testData)
         val toRetain: Set<T> = extractSomeElements()
-        val referenceSet = HashSet<T>(testData) as MutableSet<T>
+        val referenceSet = HashSet(testData) as MutableSet<T>
         referenceSet.removeAll(toRetain)
 
         toTest.retainAll(toRetain)

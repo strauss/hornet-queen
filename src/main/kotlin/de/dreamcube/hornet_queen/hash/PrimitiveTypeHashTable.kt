@@ -1,9 +1,9 @@
 package de.dreamcube.hornet_queen.hash
 
-import de.dreamcube.hornet_queen.array.*
 import de.dreamcube.hornet_queen.DEFAULT_INITIAL_SIZE
 import de.dreamcube.hornet_queen.DEFAULT_LOAD_FACTOR
 import de.dreamcube.hornet_queen.DEFAULT_NATIVE
+import de.dreamcube.hornet_queen.array.*
 import java.util.*
 import kotlin.math.ceil
 import kotlin.math.min
@@ -127,15 +127,19 @@ abstract class PrimitiveTypeHashTable<K, V> protected constructor(
     /**
      * Inserts the given [key] into this hash table. Returns -1 if it is already contained.
      */
-    fun insertKey(key: K, postInsert: Boolean = true): Int {
+    fun insertKey(key: K): Int {
+        // Perform rehash if required
+        if (size >= maxSize || free == 0) {
+            val newCapacity = if (size > maxSize) PrimeProvider.getNextRelevantPrime(capacity shl 1) else capacity
+            rehash(newCapacity)
+//            free = capacity - size
+        }
         val hashValue = hash(key)
         val index = hashValue % capacity
 
         if (fillState.isFree(index)) {
             insertKeyAt(index, key)
-            if (postInsert) {
-                return postInsert(false, index)
-            }
+            postInsert(false)
             return index
         }
 
@@ -145,13 +149,14 @@ abstract class PrimitiveTypeHashTable<K, V> protected constructor(
         }
 
         // Collision (full or removed)
-        return insertKeyAfterCollision(key, index, hashValue, postInsert)
+        return insertKeyAfterCollision(key, index, hashValue)
     }
 
     /**
      * Internal insert function in case of collision.
      */
-    private fun insertKeyAfterCollision(value: K, startIndex: Int, hashValue: Int, postInsert: Boolean): Int {
+    @Suppress("kotlin:S3776") // We will ignore cognitive complexity for now ... let's pretend it happens for performance reasons :-)
+    private fun insertKeyAfterCollision(value: K, startIndex: Int, hashValue: Int): Int {
         val probe: Int = getProbe(hashValue)
         // if the found index is a "removed" index, we want to reuse it. We are only allowed to do so, if the next index is free
         var firstRemovedIndex: Int = if (fillState.isRemoved(startIndex)) startIndex else -1
@@ -167,9 +172,7 @@ abstract class PrimitiveTypeHashTable<K, V> protected constructor(
                 val reuseRemovedIndex: Boolean = firstRemovedIndex != -1
                 val targetIndex: Int = if (reuseRemovedIndex) firstRemovedIndex else currentIndex
                 insertKeyAt(targetIndex, value)
-                if (postInsert) {
-                    return postInsert(reuseRemovedIndex, targetIndex)
-                }
+                postInsert(reuseRemovedIndex)
                 return targetIndex
             }
 
@@ -191,9 +194,7 @@ abstract class PrimitiveTypeHashTable<K, V> protected constructor(
         // edge case: we have a first removed index but no more free indexes
         if (firstRemovedIndex == -1) {
             insertKeyAt(firstRemovedIndex, value)
-            if (postInsert) {
-                return postInsert(true, firstRemovedIndex)
-            }
+            postInsert(true)
             return firstRemovedIndex
         }
         throw IllegalStateException("No free or removed slots available. Hash table is full?!!")
@@ -208,21 +209,13 @@ abstract class PrimitiveTypeHashTable<K, V> protected constructor(
     }
 
     /**
-     * Manages the internal state after an insertion operation. Also triggers a resize/rehash operation if necessary
+     * Manages the internal state after an insertion operation.
      */
-    private fun postInsert(reuseRemovedIndex: Boolean, indexToMap: Int): Int {
+    private fun postInsert(reuseRemovedIndex: Boolean) {
         if (!reuseRemovedIndex) {
             free -= 1
         }
         size += 1
-
-        if (size > maxSize || free == 0) {
-            val newCapacity = if (size > maxSize) PrimeProvider.getNextRelevantPrime(capacity shl 1) else capacity
-            val mappedIndex = rehash(newCapacity, indexToMap)
-            free = capacity - size
-            return mappedIndex
-        }
-        return indexToMap
     }
 
     /**
@@ -265,30 +258,26 @@ abstract class PrimitiveTypeHashTable<K, V> protected constructor(
     /**
      * Resizes this hash table to the [newCapacity] and rehashes all values.
      */
-    private fun rehash(newCapacity: Int, indexToMap: Int): Int {
+    private fun rehash(newCapacity: Int) {
         val oldCapacity = capacity
         val oldHashTable = keys
         val oldValues = values
         val oldFillState = fillState
-        // size can remain
+        free = newCapacity
+        size = 0
 
         keys = keyArraySupplier(newCapacity)
         values = valuesSupplier?.invoke(newCapacity)
         fillState = FillState(newCapacity)
-        var mappedIndex: Int = -1
         for (i in 0..<oldCapacity) {
             if (oldFillState.isFull(i)) {
                 val key: K = oldHashTable[i]
-                val index: Int = insertKey(key, false)
+                val index: Int = insertKey(key)
                 if (oldValues != null) {
                     insertValue(index, oldValues[i])
                 }
-                if (i == indexToMap) {
-                    mappedIndex = index
-                }
             }
         }
-        return mappedIndex
     }
 
     fun clear() {
@@ -339,7 +328,7 @@ abstract class PrimitiveTypeHashTable<K, V> protected constructor(
     /**
      * Internal representation of fill states for indexes. Uses two [BitSet]s as internal data structure for saving memory space.
      */
-    protected class FillState(val capacity: Int) {
+    private class FillState(capacity: Int) {
         private var fullSet = BitSet(capacity)
         private var removedSet = BitSet(capacity)
 
@@ -426,7 +415,7 @@ class PrimitiveDoubleHashTable(
     loadFactor: Double = DEFAULT_LOAD_FACTOR,
     native: Boolean = DEFAULT_NATIVE
 ) : PrimitiveTypeHashTable<Double, Any>(initialCapacity, loadFactor,
-                                        { size: Int -> PrimitiveDoubleArray(size, native) })
+    { size: Int -> PrimitiveDoubleArray(size, native) })
 
 class UUIDHashTable(
     initialCapacity: Int = DEFAULT_INITIAL_SIZE,

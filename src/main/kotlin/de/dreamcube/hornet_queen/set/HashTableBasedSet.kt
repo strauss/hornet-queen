@@ -1,9 +1,9 @@
 package de.dreamcube.hornet_queen.set
 
-import de.dreamcube.hornet_queen.hash.*
 import de.dreamcube.hornet_queen.DEFAULT_INITIAL_SIZE
 import de.dreamcube.hornet_queen.DEFAULT_LOAD_FACTOR
 import de.dreamcube.hornet_queen.DEFAULT_NATIVE
+import de.dreamcube.hornet_queen.hash.*
 import java.util.*
 
 abstract class HashTableBasedSet<T>(private val hashTable: PrimitiveTypeHashTable<T, Any>) : PrimitiveMutableSet<T> {
@@ -17,6 +17,7 @@ abstract class HashTableBasedSet<T>(private val hashTable: PrimitiveTypeHashTabl
         hashTable.clear()
     }
 
+    @Suppress("kotlin:S6529") // we are literally implementing isEmpty() here ... following the rule would cause endless recursion
     override fun isEmpty(): Boolean = size == 0
 
     override fun iterator(): MutableIterator<T> = HashTableSetIterator(hashTable)
