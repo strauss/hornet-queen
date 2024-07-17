@@ -30,6 +30,7 @@ abstract class HashTableBasedMap<K, V>(val hashTable: PrimitiveTypeHashTable<K, 
         hashTable.clear()
     }
 
+    @Suppress("kotlin:S6529") // we are literally implementing isEmpty() here ... following the rule would cause endless recursion
     override fun isEmpty(): Boolean = size == 0
 
     override fun remove(key: K): V? {
