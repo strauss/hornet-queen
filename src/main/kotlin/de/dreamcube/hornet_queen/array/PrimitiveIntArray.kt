@@ -1,12 +1,12 @@
 package de.dreamcube.hornet_queen.array
 
-import de.dreamcube.hornet_queen.DEFAULT_NATIVE
+import de.dreamcube.hornet_queen.ConfigurableConstants
 import de.dreamcube.hornet_queen.INT_SIZE
 import java.nio.ByteBuffer
 
 class PrimitiveIntArray private constructor(size: Int, native: Boolean, internalBuffer: ByteBuffer?) :
     PrimitiveArray<Int>(size, INT_SIZE, native, MAX_SIZE, internalBuffer) {
-    constructor(size: Int, native: Boolean = DEFAULT_NATIVE) : this(size, native, null)
+    constructor(size: Int, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) : this(size, native, null)
 
     companion object {
         @JvmStatic

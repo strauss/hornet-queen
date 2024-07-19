@@ -1,5 +1,6 @@
 package de.dreamcube.hornet_queen.array
 
+import de.dreamcube.hornet_queen.ConfigurableConstants
 import de.dreamcube.hornet_queen.LONG_SIZE
 import de.dreamcube.hornet_queen.UUID_SHIFT
 import de.dreamcube.hornet_queen.UUID_SIZE
@@ -8,7 +9,7 @@ import java.util.*
 
 class UUIDArray private constructor(size: Int, native: Boolean, internalBuffer: ByteBuffer?) :
     PrimitiveArray<UUID>(size, UUID_SIZE, native, MAX_SIZE, internalBuffer) {
-    constructor(size: Int, native: Boolean = false) : this(size, native, null)
+    constructor(size: Int, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) : this(size, native, null)
 
     companion object {
         @JvmStatic

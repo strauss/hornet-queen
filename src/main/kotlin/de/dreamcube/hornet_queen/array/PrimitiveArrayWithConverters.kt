@@ -1,5 +1,6 @@
 package de.dreamcube.hornet_queen.array
 
+import de.dreamcube.hornet_queen.ConfigurableConstants
 import java.nio.ByteBuffer
 
 class PrimitiveArrayWithConverters<T> private constructor(
@@ -21,7 +22,7 @@ class PrimitiveArrayWithConverters<T> private constructor(
         elementSize: Int,
         outConverter: (ByteArray) -> T,
         inConverter: (T) -> ByteArray,
-        native: Boolean = false
+        native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
     ) : this(size, elementSize, native, outConverter, inConverter, null)
 
     override operator fun get(index: Int): T {

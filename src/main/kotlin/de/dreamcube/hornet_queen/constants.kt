@@ -16,6 +16,9 @@ const val LONG_SHIFT = 3
 const val FLOAT_SHIFT = 2
 const val DOUBLE_SHIFT = 3
 const val UUID_SHIFT = 4
-const val DEFAULT_INITIAL_SIZE = 11
-const val DEFAULT_LOAD_FACTOR: Double = 0.75
-const val DEFAULT_NATIVE: Boolean = true
+
+object ConfigurableConstants {
+    const val DEFAULT_INITIAL_SIZE = 11
+    const val DEFAULT_LOAD_FACTOR: Double = 0.75
+    const val DEFAULT_NATIVE: Boolean = true
+}
