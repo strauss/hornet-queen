@@ -1,7 +1,7 @@
 package de.dreamcube.hornet_queen.map
 
+import de.dreamcube.hornet_queen.ConfigurableConstants
 import de.dreamcube.hornet_queen.array.*
-import de.dreamcube.hornet_queen.DEFAULT_NATIVE
 import de.dreamcube.hornet_queen.hash.PrimitiveTypeHashTable
 import de.dreamcube.hornet_queen.list.InternalPrimitiveTypeList
 import de.dreamcube.hornet_queen.list.PrimitiveArrayList
@@ -33,26 +33,27 @@ abstract class PrimitiveTypeValueCollection<T>(
         return false
     }
 
+    @Suppress("kotlin:S6518") // using array[index] = value won't work here because the assignment does not return Unit
     override fun set(index: Int, value: T) = array.set(index, value)
 }
 
-class ByteValueCollection(size: Int, native: Boolean = DEFAULT_NATIVE) :
+class ByteValueCollection(size: Int, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveTypeValueCollection<Byte>(size, { arraySize: Int -> PrimitiveByteArray(arraySize, native) })
 
-class ShortValueCollection(size: Int, native: Boolean = DEFAULT_NATIVE) :
+class ShortValueCollection(size: Int, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveTypeValueCollection<Short>(size, { arraySize: Int -> PrimitiveShortArray(arraySize, native) })
 
-class IntValueCollection(size: Int, native: Boolean = DEFAULT_NATIVE) :
+class IntValueCollection(size: Int, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveTypeValueCollection<Int>(size, { arraySize: Int -> PrimitiveIntArray(arraySize, native) })
 
-class LongValueCollection(size: Int, native: Boolean = DEFAULT_NATIVE) :
+class LongValueCollection(size: Int, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveTypeValueCollection<Long>(size, { arraySize: Int -> PrimitiveLongArray(arraySize, native) })
 
-class FloatValueCollection(size: Int, native: Boolean = DEFAULT_NATIVE) :
+class FloatValueCollection(size: Int, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveTypeValueCollection<Float>(size, { arraySize: Int -> PrimitiveFloatArray(arraySize, native) })
 
-class DoubleValueCollection(size: Int, native: Boolean = DEFAULT_NATIVE) :
+class DoubleValueCollection(size: Int, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveTypeValueCollection<Double>(size, { arraySize: Int -> PrimitiveDoubleArray(arraySize, native) })
 
-class UUIDValueCollection(size: Int, native: Boolean = DEFAULT_NATIVE) :
+class UUIDValueCollection(size: Int, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveTypeValueCollection<UUID>(size, { arraySize: Int -> UUIDArray(arraySize, native) })

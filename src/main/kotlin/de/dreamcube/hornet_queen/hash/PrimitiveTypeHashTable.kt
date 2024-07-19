@@ -1,8 +1,6 @@
 package de.dreamcube.hornet_queen.hash
 
-import de.dreamcube.hornet_queen.DEFAULT_INITIAL_SIZE
-import de.dreamcube.hornet_queen.DEFAULT_LOAD_FACTOR
-import de.dreamcube.hornet_queen.DEFAULT_NATIVE
+import de.dreamcube.hornet_queen.ConfigurableConstants
 import de.dreamcube.hornet_queen.array.*
 import java.util.*
 import kotlin.math.ceil
@@ -12,8 +10,8 @@ import kotlin.math.min
  * Generic implementation of a primitive hash table based on [PrimitiveArray].
  */
 abstract class PrimitiveTypeHashTable<K, V> protected constructor(
-    initialCapacity: Int = DEFAULT_INITIAL_SIZE,
-    val loadFactor: Double = DEFAULT_LOAD_FACTOR,
+    initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    val loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
     private val keyArraySupplier: (Int) -> PrimitiveArray<K>,
     private val valuesSupplier: ((Int) -> MutableIndexedValueCollection<V>)? = null
 ) {
@@ -381,51 +379,51 @@ abstract class PrimitiveTypeHashTable<K, V> protected constructor(
 }
 
 class PrimitiveByteHashTable(
-    initialCapacity: Int = DEFAULT_INITIAL_SIZE,
-    loadFactor: Double = DEFAULT_LOAD_FACTOR,
-    native: Boolean = DEFAULT_NATIVE
+    initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
 ) : PrimitiveTypeHashTable<Byte, Any>(initialCapacity, loadFactor, { size: Int -> PrimitiveByteArray(size, native) })
 
 class PrimitiveShortHashTable(
-    initialCapacity: Int = DEFAULT_INITIAL_SIZE,
-    loadFactor: Double = DEFAULT_LOAD_FACTOR,
-    native: Boolean = DEFAULT_NATIVE
+    initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
 ) : PrimitiveTypeHashTable<Short, Any>(initialCapacity, loadFactor, { size: Int -> PrimitiveShortArray(size, native) })
 
 class PrimitiveIntHashTable(
-    initialCapacity: Int = DEFAULT_INITIAL_SIZE,
-    loadFactor: Double = DEFAULT_LOAD_FACTOR,
-    native: Boolean = DEFAULT_NATIVE
+    initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
 ) : PrimitiveTypeHashTable<Int, Any>(initialCapacity, loadFactor, { size: Int -> PrimitiveIntArray(size, native) })
 
 class PrimitiveLongHashTable(
-    initialCapacity: Int = DEFAULT_INITIAL_SIZE,
-    loadFactor: Double = DEFAULT_LOAD_FACTOR,
-    native: Boolean = DEFAULT_NATIVE
+    initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
 ) : PrimitiveTypeHashTable<Long, Any>(initialCapacity, loadFactor, { size: Int -> PrimitiveLongArray(size, native) })
 
 class PrimitiveFloatHashTable(
-    initialCapacity: Int = DEFAULT_INITIAL_SIZE,
-    loadFactor: Double = DEFAULT_LOAD_FACTOR,
-    native: Boolean = DEFAULT_NATIVE
+    initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
 ) : PrimitiveTypeHashTable<Float, Any>(initialCapacity, loadFactor, { size: Int -> PrimitiveFloatArray(size, native) })
 
 class PrimitiveDoubleHashTable(
-    initialCapacity: Int = DEFAULT_INITIAL_SIZE,
-    loadFactor: Double = DEFAULT_LOAD_FACTOR,
-    native: Boolean = DEFAULT_NATIVE
+    initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
 ) : PrimitiveTypeHashTable<Double, Any>(initialCapacity, loadFactor,
     { size: Int -> PrimitiveDoubleArray(size, native) })
 
 class UUIDHashTable(
-    initialCapacity: Int = DEFAULT_INITIAL_SIZE,
-    loadFactor: Double = DEFAULT_LOAD_FACTOR,
-    native: Boolean = DEFAULT_NATIVE
+    initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
 ) : PrimitiveTypeHashTable<UUID, Any>(initialCapacity, loadFactor, { size: Int -> UUIDArray(size, native) })
 
 internal class InternalPrimitiveTypeHashTable<K, V>(
-    initialCapacity: Int = DEFAULT_INITIAL_SIZE,
-    loadFactor: Double = DEFAULT_LOAD_FACTOR,
+    initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
     keyArraySupplier: (Int) -> PrimitiveArray<K>,
     valuesSupplier: ((Int) -> MutableIndexedValueCollection<V>)
 ) : PrimitiveTypeHashTable<K, V>(initialCapacity, loadFactor, keyArraySupplier, valuesSupplier)

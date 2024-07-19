@@ -1,9 +1,7 @@
 package de.dreamcube.hornet_queen.map
 
+import de.dreamcube.hornet_queen.ConfigurableConstants
 import de.dreamcube.hornet_queen.array.*
-import de.dreamcube.hornet_queen.DEFAULT_INITIAL_SIZE
-import de.dreamcube.hornet_queen.DEFAULT_LOAD_FACTOR
-import de.dreamcube.hornet_queen.DEFAULT_NATIVE
 import de.dreamcube.hornet_queen.hash.InternalPrimitiveTypeHashTable
 import de.dreamcube.hornet_queen.hash.PrimitiveTypeHashTable.MutableIndexedValueCollection
 import de.dreamcube.hornet_queen.map.HashTableBasedMapBuilder.HashTableBasedMapBuilderWithKey
@@ -21,43 +19,43 @@ object HashTableBasedMapBuilder {
     /**
      * Configures the resulting [HashTableBasedMap] to use [Byte] as key type.
      */
-    fun useByteKey(native: Boolean = DEFAULT_NATIVE): HashTableBasedMapBuilderWithKey<Byte> =
+    fun useByteKey(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKey<Byte> =
         HashTableBasedMapBuilderWithKey { size: Int -> PrimitiveByteArray(size, native) }
 
     /**
      * Configures the resulting [HashTableBasedMap] to use [Short] as key type.
      */
-    fun useShortKey(native: Boolean = DEFAULT_NATIVE): HashTableBasedMapBuilderWithKey<Short> =
+    fun useShortKey(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKey<Short> =
         HashTableBasedMapBuilderWithKey { size: Int -> PrimitiveShortArray(size, native) }
 
     /**
      * Configures the resulting [HashTableBasedMap] to use [Int] as key type.
      */
-    fun useIntKey(native: Boolean = DEFAULT_NATIVE): HashTableBasedMapBuilderWithKey<Int> =
+    fun useIntKey(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKey<Int> =
         HashTableBasedMapBuilderWithKey { size: Int -> PrimitiveIntArray(size, native) }
 
     /**
      * Configures the resulting [HashTableBasedMap] to use [Long] as key type.
      */
-    fun useLongKey(native: Boolean = DEFAULT_NATIVE): HashTableBasedMapBuilderWithKey<Long> =
+    fun useLongKey(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKey<Long> =
         HashTableBasedMapBuilderWithKey { size: Int -> PrimitiveLongArray(size, native) }
 
     /**
      * Configures the resulting [HashTableBasedMap] to use [Float] as key type.
      */
-    fun useFloatKey(native: Boolean = DEFAULT_NATIVE): HashTableBasedMapBuilderWithKey<Float> =
+    fun useFloatKey(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKey<Float> =
         HashTableBasedMapBuilderWithKey { size: Int -> PrimitiveFloatArray(size, native) }
 
     /**
      * Configures the resulting [HashTableBasedMap] to use [Double] as key type.
      */
-    fun useDoubleKey(native: Boolean = DEFAULT_NATIVE): HashTableBasedMapBuilderWithKey<Double> =
+    fun useDoubleKey(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKey<Double> =
         HashTableBasedMapBuilderWithKey { size: Int -> PrimitiveDoubleArray(size, native) }
 
     /**
      * Configures the resulting [HashTableBasedMap] to use [UUID] as key type.
      */
-    fun useUUIDKey(native: Boolean = DEFAULT_NATIVE): HashTableBasedMapBuilderWithKey<UUID> =
+    fun useUUIDKey(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKey<UUID> =
         HashTableBasedMapBuilderWithKey { size: Int -> UUIDArray(size, native) }
 
     /**
@@ -70,7 +68,7 @@ object HashTableBasedMapBuilder {
         /**
          * Configures the resulting [HashTableBasedMap] to use [Byte] as value type.
          */
-        fun useByteValue(native: Boolean = DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Byte> =
+        fun useByteValue(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Byte> =
             HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int ->
                 ByteValueCollection(size, native)
             }
@@ -78,7 +76,7 @@ object HashTableBasedMapBuilder {
         /**
          * Configures the resulting [HashTableBasedMap] to use [Short] as value type.
          */
-        fun useShortValue(native: Boolean = DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Short> =
+        fun useShortValue(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Short> =
             HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int ->
                 ShortValueCollection(size, native)
             }
@@ -86,7 +84,7 @@ object HashTableBasedMapBuilder {
         /**
          * Configures the resulting [HashTableBasedMap] to use [Int] as value type.
          */
-        fun useIntValue(native: Boolean = DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Int> =
+        fun useIntValue(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Int> =
             HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int ->
                 IntValueCollection(size, native)
             }
@@ -94,7 +92,7 @@ object HashTableBasedMapBuilder {
         /**
          * Configures the resulting [HashTableBasedMap] to use [Long] as value type.
          */
-        fun useLongValue(native: Boolean = DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Long> =
+        fun useLongValue(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Long> =
             HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int ->
                 LongValueCollection(size, native)
             }
@@ -102,7 +100,7 @@ object HashTableBasedMapBuilder {
         /**
          * Configures the resulting [HashTableBasedMap] to use [Float] as value type.
          */
-        fun useFloatValue(native: Boolean = DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Float> =
+        fun useFloatValue(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Float> =
             HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int ->
                 FloatValueCollection(size, native)
             }
@@ -110,7 +108,7 @@ object HashTableBasedMapBuilder {
         /**
          * Configures the resulting [HashTableBasedMap] to use [Double] as value type.
          */
-        fun useDoubleValue(native: Boolean = DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Double> =
+        fun useDoubleValue(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Double> =
             HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int ->
                 DoubleValueCollection(size, native)
             }
@@ -118,7 +116,7 @@ object HashTableBasedMapBuilder {
         /**
          * Configures the resulting [HashTableBasedMap] to use [UUID] as value type.
          */
-        fun useUUIDValue(native: Boolean = DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, UUID> =
+        fun useUUIDValue(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, UUID> =
             HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int ->
                 UUIDValueCollection(size, native)
             }
@@ -146,8 +144,8 @@ object HashTableBasedMapBuilder {
          * map's performance (space or time).
          */
         fun create(
-            initialCapacity: Int = DEFAULT_INITIAL_SIZE,
-            loadFactor: Double = DEFAULT_LOAD_FACTOR
+            initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+            loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR
         ): HashTableBasedMap<K, V> =
             InternalHashTableBasedMap(initialCapacity, loadFactor, keyArraySupplier, valuesSupplier)
     }

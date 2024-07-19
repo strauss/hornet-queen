@@ -14,7 +14,7 @@ import kotlin.math.min
 abstract class PrimitiveArray<T>(
     val size: Int,
     protected val elementSize: Int,
-    internal val native: Boolean = false,
+    internal val native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
     val maxSize: Int,
     internalBuffer: ByteBuffer? = null
 ) {

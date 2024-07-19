@@ -1,8 +1,7 @@
 package de.dreamcube.hornet_queen.list
 
+import de.dreamcube.hornet_queen.ConfigurableConstants
 import de.dreamcube.hornet_queen.array.*
-import de.dreamcube.hornet_queen.DEFAULT_INITIAL_SIZE
-import de.dreamcube.hornet_queen.DEFAULT_NATIVE
 import java.util.*
 
 /**
@@ -13,7 +12,7 @@ import java.util.*
  */
 abstract class PrimitiveArrayList<T> protected constructor(
     arraySupplier: (Int) -> PrimitiveArray<T>,
-    initialSize: Int = DEFAULT_INITIAL_SIZE
+    initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE
 ) : PrimitiveArrayBasedList<T>() {
 
     private var array: PrimitiveArray<T> = arraySupplier(initialSize)
@@ -25,7 +24,7 @@ abstract class PrimitiveArrayList<T> protected constructor(
     private fun grow() {
         val oldCapacity: Int = array.size
         val newCapacity: Int = if (oldCapacity == 0) {
-            DEFAULT_INITIAL_SIZE
+            ConfigurableConstants.DEFAULT_INITIAL_SIZE
         } else {
             calculateNewCapacity(oldCapacity)
         }
@@ -163,7 +162,7 @@ abstract class PrimitiveArrayList<T> protected constructor(
         AbstractArrayBasedListIterator<T>(startIndex, endIndex) {
 
         init {
-            if (!isEmpty()) {
+            if (isNotEmpty()) {
                 checkBounds(startIndex, endIndex, size)
             }
         }
@@ -202,7 +201,7 @@ abstract class PrimitiveArrayList<T> protected constructor(
                     removeAt(nextIndex)
                 }
 
-                else -> throw IllegalStateException("$callState")
+                else -> error("$callState")
             }
             callState = IteratorCallState.REM
         }
@@ -217,7 +216,7 @@ abstract class PrimitiveArrayList<T> protected constructor(
                     array[nextIndex] = element
                 }
 
-                else -> throw IllegalStateException("$callState")
+                else -> error("$callState")
             }
             callState = IteratorCallState.SET
         }
@@ -227,6 +226,7 @@ abstract class PrimitiveArrayList<T> protected constructor(
     override fun toString(): String {
         val result = StringBuilder()
         result.append('[')
+        @Suppress("kotlin:S6529") // here we compare size in both if statements. This is more readable.
         if (size > 0) {
             result.append(this[0])
         }
@@ -241,28 +241,31 @@ abstract class PrimitiveArrayList<T> protected constructor(
     }
 }
 
-class PrimitiveByteArrayList(initialSize: Int = DEFAULT_INITIAL_SIZE, native: Boolean = DEFAULT_NATIVE) :
+class PrimitiveByteArrayList(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveArrayList<Byte>({ size: Int -> PrimitiveByteArray(size, native) }, initialSize)
 
-class PrimitiveShortArrayList(initialSize: Int = DEFAULT_INITIAL_SIZE, native: Boolean = DEFAULT_NATIVE) :
+class PrimitiveShortArrayList(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveArrayList<Short>({ size: Int -> PrimitiveShortArray(size, native) }, initialSize)
 
-class PrimitiveIntArrayList(initialSize: Int = DEFAULT_INITIAL_SIZE, native: Boolean = DEFAULT_NATIVE) :
+class PrimitiveIntArrayList(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveArrayList<Int>({ size: Int -> PrimitiveIntArray(size, native) }, initialSize)
 
-class PrimitiveLongArrayList(initialSize: Int = DEFAULT_INITIAL_SIZE, native: Boolean = DEFAULT_NATIVE) :
+class PrimitiveLongArrayList(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveArrayList<Long>({ size: Int -> PrimitiveLongArray(size, native) }, initialSize)
 
-class PrimitiveFloatArrayList(initialSize: Int = DEFAULT_INITIAL_SIZE, native: Boolean = DEFAULT_NATIVE) :
+class PrimitiveFloatArrayList(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveArrayList<Float>({ size: Int -> PrimitiveFloatArray(size, native) }, initialSize)
 
-class PrimitiveDoubleArrayList(initialSize: Int = DEFAULT_INITIAL_SIZE, native: Boolean = DEFAULT_NATIVE) :
+class PrimitiveDoubleArrayList(
+    initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
+) :
     PrimitiveArrayList<Double>({ size: Int -> PrimitiveDoubleArray(size, native) }, initialSize)
 
-class UUIDArrayList(initialSize: Int = DEFAULT_INITIAL_SIZE, native: Boolean = DEFAULT_NATIVE) :
+class UUIDArrayList(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveArrayList<UUID>({ size: Int -> UUIDArray(size, native) }, initialSize)
 
 internal class InternalPrimitiveTypeList<T>(
     arraySupplier: (Int) -> PrimitiveArray<T>,
-    initialSize: Int = DEFAULT_INITIAL_SIZE
+    initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE
 ) : PrimitiveArrayList<T>(arraySupplier, initialSize)

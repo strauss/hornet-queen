@@ -1,8 +1,7 @@
 package de.dreamcube.hornet_queen.list
 
+import de.dreamcube.hornet_queen.ConfigurableConstants
 import de.dreamcube.hornet_queen.array.*
-import de.dreamcube.hornet_queen.DEFAULT_INITIAL_SIZE
-import de.dreamcube.hornet_queen.DEFAULT_NATIVE
 import java.util.*
 
 private const val NO_INDEX: Int = -1
@@ -23,7 +22,7 @@ private const val NO_INDEX: Int = -1
  */
 abstract class PrimitiveLinkedList<T> protected constructor(
     arraySupplier: (Int) -> PrimitiveArray<T>,
-    initialSize: Int = DEFAULT_INITIAL_SIZE
+    initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE
 ) : PrimitiveArrayBasedList<T>() {
     private var array: PrimitiveArray<T> = arraySupplier(initialSize)
     private var forwardLinks = PrimitiveIntArray(initialSize, array.native)
@@ -64,7 +63,7 @@ abstract class PrimitiveLinkedList<T> protected constructor(
     private fun grow() {
         val oldCapacity: Int = array.size
         val newCapacity: Int = if (oldCapacity == 0) {
-            DEFAULT_INITIAL_SIZE
+            ConfigurableConstants.DEFAULT_INITIAL_SIZE
         } else {
             calculateNewCapacity(oldCapacity)
         }
@@ -178,7 +177,7 @@ abstract class PrimitiveLinkedList<T> protected constructor(
     private fun internalAdd(internalIndex: Int, element: T) {
         // We assume adding "in between", so we do not care about the list of empty space.
         // That one is handled in the internal append and internal prepend functions.
-        assert(!isEmpty())
+        assert(isNotEmpty())
         assert(backwardLinks[internalIndex] != NO_INDEX)
         assert(internalIndex >= 0)
         assert(internalIndex < array.size)
@@ -239,7 +238,7 @@ abstract class PrimitiveLinkedList<T> protected constructor(
     }
 
     private fun internalRemoveAt(internalIndex: Int): T {
-        assert(!isEmpty())
+        assert(isNotEmpty())
         assert(backwardLinks[internalIndex] != NO_INDEX)
         assert(forwardLinks[internalIndex] != NO_INDEX)
 
@@ -263,25 +262,21 @@ abstract class PrimitiveLinkedList<T> protected constructor(
         if (index < 0 || index >= size) {
             throw IndexOutOfBoundsException(index)
         }
-        if (index <= size / 2) {
+        return if (index <= size / 2) {
             var currentIndex = firstElementIndex
             for (seekIndex in 0..<index) {
                 currentIndex = forwardLinks[currentIndex]
-                if (currentIndex == NO_INDEX) {
-                    throw IllegalStateException("Error while determining the internal index of $index")
-                }
+                check(currentIndex != NO_INDEX) { "Error while determining the internal index of $index" }
             }
-            return currentIndex
+            currentIndex
         } else {
             var currentIndex = lastElementIndex
             val limit = size - 1 - index
             for (seekIndex in 0..<limit) {
                 currentIndex = backwardLinks[currentIndex]
-                if (currentIndex == NO_INDEX) {
-                    throw IllegalStateException("Error while determining the internal index of $index")
-                }
+                check(currentIndex != NO_INDEX) { "Error while determining the internal index of $index" }
             }
-            return currentIndex
+            currentIndex
         }
     }
 
@@ -379,7 +374,7 @@ abstract class PrimitiveLinkedList<T> protected constructor(
         private var lastInternalNextCallIndex: Int = NO_INDEX
 
         init {
-            if (!isEmpty()) {
+            if (isNotEmpty()) {
                 nextInternalIndex = seekInternalIndex(nextIndex)
                 checkBounds(startIndex, endIndex, size)
             }
@@ -435,7 +430,7 @@ abstract class PrimitiveLinkedList<T> protected constructor(
                     internalRemove(removeAt)
                 }
 
-                else -> throw IllegalStateException("$callState")
+                else -> error("$callState")
             }
             callState = IteratorCallState.REM
         }
@@ -459,7 +454,7 @@ abstract class PrimitiveLinkedList<T> protected constructor(
                     array[nextInternalIndex] = element
                 }
 
-                else -> throw IllegalStateException("$callState")
+                else -> error("$callState")
             }
             callState = IteratorCallState.SET
         }
@@ -481,23 +476,32 @@ abstract class PrimitiveLinkedList<T> protected constructor(
 
 }
 
-class PrimitiveByteLinkedList(initialSize: Int = DEFAULT_INITIAL_SIZE, native: Boolean = DEFAULT_NATIVE) :
+class PrimitiveByteLinkedList(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveLinkedList<Byte>({ size: Int -> PrimitiveByteArray(size, native) }, initialSize)
 
-class PrimitiveShortLinkedList(initialSize: Int = DEFAULT_INITIAL_SIZE, native: Boolean = DEFAULT_NATIVE) :
+class PrimitiveShortLinkedList(
+    initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
+) :
     PrimitiveLinkedList<Short>({ size: Int -> PrimitiveShortArray(size, native) }, initialSize)
 
-class PrimitiveIntLinkedList(initialSize: Int = DEFAULT_INITIAL_SIZE, native: Boolean = DEFAULT_NATIVE) :
+class PrimitiveIntLinkedList(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveLinkedList<Int>({ size: Int -> PrimitiveIntArray(size, native) }, initialSize)
 
-class PrimitiveLongLinkedList(initialSize: Int = DEFAULT_INITIAL_SIZE, native: Boolean = DEFAULT_NATIVE) :
+class PrimitiveLongLinkedList(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveLinkedList<Long>({ size: Int -> PrimitiveLongArray(size, native) }, initialSize)
 
-class PrimitiveFloatLinkedList(initialSize: Int = DEFAULT_INITIAL_SIZE, native: Boolean = DEFAULT_NATIVE) :
+class PrimitiveFloatLinkedList(
+    initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
+) :
     PrimitiveLinkedList<Float>({ size: Int -> PrimitiveFloatArray(size, native) }, initialSize)
 
-class PrimitiveDoubleLinkedList(initialSize: Int = DEFAULT_INITIAL_SIZE, native: Boolean = DEFAULT_NATIVE) :
+class PrimitiveDoubleLinkedList(
+    initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
+) :
     PrimitiveLinkedList<Double>({ size: Int -> PrimitiveDoubleArray(size, native) }, initialSize)
 
-class UUIDLinkedList(initialSize: Int = DEFAULT_INITIAL_SIZE, native: Boolean = DEFAULT_NATIVE) :
+class UUIDLinkedList(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveLinkedList<UUID>({ size: Int -> UUIDArray(size, native) }, initialSize)
