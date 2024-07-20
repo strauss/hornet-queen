@@ -9,6 +9,7 @@ import java.util.*
 
 abstract class PrimitiveTypeValueCollection<T>(
     final override val size: Int,
+    override val fillState: PrimitiveTypeHashTable.FillState,
     private val arraySupplier: (Int) -> PrimitiveArray<T>
 ) :
     PrimitiveTypeHashTable.MutableIndexedValueCollection<T> {
@@ -18,8 +19,11 @@ abstract class PrimitiveTypeValueCollection<T>(
 
     override fun asCollection(): MutableCollection<T> {
         val list: PrimitiveArrayList<T> = InternalPrimitiveTypeList(arraySupplier)
-        for (value in array) {
-            list.add(value)
+        for (i: Int in 0 until array.size) {
+            // we only add elements that are filled
+            if (fillState.isFull(i)) {
+                list.add(array[i])
+            }
         }
         return list
     }
@@ -37,23 +41,23 @@ abstract class PrimitiveTypeValueCollection<T>(
     override fun set(index: Int, value: T) = array.set(index, value)
 }
 
-class ByteValueCollection(size: Int, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
-    PrimitiveTypeValueCollection<Byte>(size, { arraySize: Int -> PrimitiveByteArray(arraySize, native) })
+class ByteValueCollection(size: Int, fillState: PrimitiveTypeHashTable.FillState, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+    PrimitiveTypeValueCollection<Byte>(size, fillState, { arraySize: Int -> PrimitiveByteArray(arraySize, native) })
 
-class ShortValueCollection(size: Int, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
-    PrimitiveTypeValueCollection<Short>(size, { arraySize: Int -> PrimitiveShortArray(arraySize, native) })
+class ShortValueCollection(size: Int, fillState: PrimitiveTypeHashTable.FillState, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+    PrimitiveTypeValueCollection<Short>(size, fillState, { arraySize: Int -> PrimitiveShortArray(arraySize, native) })
 
-class IntValueCollection(size: Int, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
-    PrimitiveTypeValueCollection<Int>(size, { arraySize: Int -> PrimitiveIntArray(arraySize, native) })
+class IntValueCollection(size: Int, fillState: PrimitiveTypeHashTable.FillState, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+    PrimitiveTypeValueCollection<Int>(size, fillState, { arraySize: Int -> PrimitiveIntArray(arraySize, native) })
 
-class LongValueCollection(size: Int, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
-    PrimitiveTypeValueCollection<Long>(size, { arraySize: Int -> PrimitiveLongArray(arraySize, native) })
+class LongValueCollection(size: Int, fillState: PrimitiveTypeHashTable.FillState, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+    PrimitiveTypeValueCollection<Long>(size, fillState, { arraySize: Int -> PrimitiveLongArray(arraySize, native) })
 
-class FloatValueCollection(size: Int, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
-    PrimitiveTypeValueCollection<Float>(size, { arraySize: Int -> PrimitiveFloatArray(arraySize, native) })
+class FloatValueCollection(size: Int, fillState: PrimitiveTypeHashTable.FillState, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+    PrimitiveTypeValueCollection<Float>(size, fillState, { arraySize: Int -> PrimitiveFloatArray(arraySize, native) })
 
-class DoubleValueCollection(size: Int, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
-    PrimitiveTypeValueCollection<Double>(size, { arraySize: Int -> PrimitiveDoubleArray(arraySize, native) })
+class DoubleValueCollection(size: Int, fillState: PrimitiveTypeHashTable.FillState, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+    PrimitiveTypeValueCollection<Double>(size, fillState, { arraySize: Int -> PrimitiveDoubleArray(arraySize, native) })
 
-class UUIDValueCollection(size: Int, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
-    PrimitiveTypeValueCollection<UUID>(size, { arraySize: Int -> UUIDArray(arraySize, native) })
+class UUIDValueCollection(size: Int, fillState: PrimitiveTypeHashTable.FillState, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+    PrimitiveTypeValueCollection<UUID>(size, fillState, { arraySize: Int -> UUIDArray(arraySize, native) })

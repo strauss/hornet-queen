@@ -2,7 +2,10 @@ package de.dreamcube.hornet_queen.map
 
 import de.dreamcube.hornet_queen.hash.PrimitiveTypeHashTable
 
-class ObjectTypeValueCollection<T>(override val size: Int) : PrimitiveTypeHashTable.MutableIndexedValueCollection<T> {
+internal class ObjectTypeValueCollection<T>(
+    override val size: Int,
+    override val fillState: PrimitiveTypeHashTable.FillState
+) : PrimitiveTypeHashTable.MutableIndexedValueCollection<T> {
     val array: Array<Any?> = Array(size) { null }
 
     override fun get(index: Int): T? {
@@ -12,9 +15,12 @@ class ObjectTypeValueCollection<T>(override val size: Int) : PrimitiveTypeHashTa
 
     override fun asCollection(): MutableCollection<T> {
         val result: MutableList<T> = mutableListOf()
-        for (element: Any? in array) {
-            @Suppress("UNCHECKED_CAST")
-            result.add(element as T)
+        for (i: Int in array.indices) {
+            // we only add elements that are filled
+            if (fillState.isFull(i)) {
+                @Suppress("UNCHECKED_CAST")
+                result.add(array[i] as T)
+            }
         }
         return result
     }
