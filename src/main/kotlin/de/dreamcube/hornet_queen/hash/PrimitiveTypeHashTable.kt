@@ -13,7 +13,7 @@ abstract class PrimitiveTypeHashTable<K, V> protected constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     val loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
     private val keyArraySupplier: (Int) -> PrimitiveArray<K>,
-    private val valuesSupplier: ((Int) -> MutableIndexedValueCollection<V>)? = null
+    private val valuesSupplier: ((Int, FillState) -> MutableIndexedValueCollection<V>)? = null
 ) {
     private var keys: PrimitiveArray<K>
     private var values: MutableIndexedValueCollection<V>?
@@ -30,8 +30,8 @@ abstract class PrimitiveTypeHashTable<K, V> protected constructor(
         val desiredCapacityWithLoadFactor: Int = ceil(initialCapacity.toDouble() / loadFactor).toInt()
         val actualInitialCapacity = PrimeProvider.getNextRelevantPrime(desiredCapacityWithLoadFactor)
         keys = keyArraySupplier(actualInitialCapacity)
-        values = valuesSupplier?.invoke(actualInitialCapacity)
         fillState = FillState(actualInitialCapacity)
+        values = valuesSupplier?.invoke(actualInitialCapacity, fillState)
         free = capacity
     }
 
@@ -265,8 +265,8 @@ abstract class PrimitiveTypeHashTable<K, V> protected constructor(
         size = 0
 
         keys = keyArraySupplier(newCapacity)
-        values = valuesSupplier?.invoke(newCapacity)
         fillState = FillState(newCapacity)
+        values = valuesSupplier?.invoke(newCapacity, fillState)
         for (i in 0..<oldCapacity) {
             if (oldFillState.isFull(i)) {
                 val key: K = oldHashTable[i]
@@ -326,7 +326,7 @@ abstract class PrimitiveTypeHashTable<K, V> protected constructor(
     /**
      * Internal representation of fill states for indexes. Uses two [BitSet]s as internal data structure for saving memory space.
      */
-    private class FillState(capacity: Int) {
+    class FillState(capacity: Int) {
         private var fullSet = BitSet(capacity)
         private var removedSet = BitSet(capacity)
 
@@ -366,6 +366,7 @@ abstract class PrimitiveTypeHashTable<K, V> protected constructor(
      */
     interface MutableIndexedValueCollection<V> {
         val size: Int
+        val fillState: FillState
         operator fun get(index: Int): V?
         operator fun set(index: Int, value: V)
         fun contains(value: V): Boolean
@@ -425,5 +426,5 @@ internal class InternalPrimitiveTypeHashTable<K, V>(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
     keyArraySupplier: (Int) -> PrimitiveArray<K>,
-    valuesSupplier: ((Int) -> MutableIndexedValueCollection<V>)
+    valuesSupplier: ((Int, FillState) -> MutableIndexedValueCollection<V>)
 ) : PrimitiveTypeHashTable<K, V>(initialCapacity, loadFactor, keyArraySupplier, valuesSupplier)
