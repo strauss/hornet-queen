@@ -73,6 +73,17 @@ abstract class HashTableBasedMap<K, V>(val hashTable: PrimitiveTypeHashTable<K, 
 
     override fun containsKey(key: K): Boolean = hashTable.containsKey(key)
 
+    /**
+     * This function can be called if too many cells have been marked as deleted. It frees cells without increasing the memory consumption.
+     */
+    fun manualRehash() = hashTable.rehash()
+
+    /**
+     * This function can be called if free space is required and this structure should be shrunk to the actual required space. The best situation for
+     * calling this function is when you know that you will not add any new elements.
+     */
+    fun shrinkToLoadFactor() = hashTable.shrinkToLoadFactor()
+
     class KeySet<K>(private val hashTable: PrimitiveTypeHashTable<K, *>) : PrimitiveMutableSet<K> {
         override fun add(element: K): Boolean =
             throw UnsupportedOperationException("This call does not make any sense. Use the put function of the map.")

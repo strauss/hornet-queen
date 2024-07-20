@@ -24,6 +24,16 @@ abstract class HashTableBasedSet<T>(private val hashTable: PrimitiveTypeHashTabl
 
     override fun contains(element: T): Boolean = hashTable.containsKey(element)
 
+    /**
+     * This function can be called if too many cells have been marked as deleted. It frees cells without increasing the memory requirements.
+     */
+    fun manualRehash() = hashTable.rehash()
+
+    /**
+     * This function can be called if free space is required and this structure should be shrunk to the actual required space. The best situation for
+     * calling this function is when you know that you will not add any new elements.
+     */
+    fun shrinkToLoadFactor() = hashTable.shrinkToLoadFactor()
 }
 
 class PrimitiveByteSet(

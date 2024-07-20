@@ -316,4 +316,32 @@ class TestMap<K, V>(
         // check if the iterator actually ran
         Assert.assertEquals(testValueData.size, i)
     }
+
+    @Test
+    fun testManualRehash() {
+        val localToTest: MutableMap<K, V> = toTest
+        if (localToTest is HashTableBasedMap<K, V>) {
+            fillWithTestData(localToTest)
+            localToTest.manualRehash()
+
+            // Test if all elements are still there after the manual rehash
+            Assert.assertTrue(localToTest.keys.containsAll(testKeyData))
+            Assert.assertTrue(localToTest.values.containsAll(testValueData))
+            Assert.assertEquals(testKeyData.size, localToTest.size)
+        }
+    }
+
+    @Test
+    fun testShrinkToLoadFactor() {
+        val localToTest: MutableMap<K, V> = toTest
+        if (localToTest is HashTableBasedMap<K, V>) {
+            fillWithTestData(localToTest)
+            localToTest.shrinkToLoadFactor()
+
+            // Test if all elements are still there after the shrink operation
+            Assert.assertTrue(localToTest.keys.containsAll(testKeyData))
+            Assert.assertTrue(localToTest.values.containsAll(testValueData))
+            Assert.assertEquals(testKeyData.size, localToTest.size)
+        }
+    }
 }

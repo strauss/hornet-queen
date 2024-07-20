@@ -5,6 +5,7 @@ import de.dreamcube.hornet_queen.array.*
 import java.util.*
 import kotlin.math.ceil
 import kotlin.math.min
+import kotlin.math.round
 
 /**
  * Generic implementation of a primitive hash table based on [PrimitiveArray].
@@ -130,7 +131,6 @@ abstract class PrimitiveTypeHashTable<K, V> protected constructor(
         if (size >= maxSize || free == 0) {
             val newCapacity = if (size > maxSize) PrimeProvider.getNextRelevantPrime(capacity shl 1) else capacity
             rehash(newCapacity)
-//            free = capacity - size
         }
         val hashValue = hash(key)
         val index = hashValue % capacity
@@ -254,9 +254,10 @@ abstract class PrimitiveTypeHashTable<K, V> protected constructor(
     internal fun valuesAsCollection(): MutableCollection<V>? = values?.asCollection()
 
     /**
-     * Resizes this hash table to the [newCapacity] and rehashes all values.
+     * Resizes this hash table to the [newCapacity] and rehashes all values. The default value for capacity is the current capacity. This results
+     * in a rehash without a resize. Deleted cells are freed and new space appears.
      */
-    private fun rehash(newCapacity: Int) {
+    internal fun rehash(newCapacity: Int = capacity) {
         val oldCapacity = capacity
         val oldHashTable = keys
         val oldValues = values
@@ -276,6 +277,16 @@ abstract class PrimitiveTypeHashTable<K, V> protected constructor(
                 }
             }
         }
+    }
+
+    /**
+     * Determines the maximum required capacity and shrinks the structure according to the configured fill state. The resulting capacity is in general
+     * a bit larger because the "allowed" capacities are limited to certain prime numbers (see [PrimeProvider]).
+     */
+    internal fun shrinkToLoadFactor() {
+        val requiredCapacity = round(size / loadFactor).toInt()
+        val newCapacity = PrimeProvider.getNextRelevantPrime(requiredCapacity)
+        rehash(newCapacity)
     }
 
     fun clear() {

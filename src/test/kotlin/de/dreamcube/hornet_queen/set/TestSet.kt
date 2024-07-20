@@ -209,4 +209,30 @@ class TestSet<T>(
         Assert.assertEquals(testData.size, i)
     }
 
+    @Test
+    fun testManualRehash() {
+        val localToTest: MutableSet<T> = toTest
+        if (localToTest is HashTableBasedSet<T>) {
+            localToTest.addAll(testData)
+            localToTest.manualRehash()
+
+            // Test if all elements are still there after the manual rehash
+            Assert.assertTrue(localToTest.containsAll(testData))
+            Assert.assertEquals(testData.size, localToTest.size)
+        }
+    }
+
+    @Test
+    fun testShrinkToLoadFactor() {
+        val localToTest: MutableSet<T> = toTest
+        if (localToTest is HashTableBasedSet<T>) {
+            localToTest.addAll(testData)
+            localToTest.shrinkToLoadFactor()
+
+            // Test if all elements are still there after the shrink operation
+            Assert.assertTrue(localToTest.containsAll(testData))
+            Assert.assertEquals(testData.size, localToTest.size)
+        }
+    }
+
 }
