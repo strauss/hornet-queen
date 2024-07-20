@@ -12,6 +12,7 @@ import kotlin.random.Random
 
 @RunWith(Parameterized::class)
 class TestMap<K, V>(
+    @Suppress("unused") // the test uses it for display
     private val testName: String,
     private val toTestMapConstructor: () -> MutableMap<K, V>,
     private val testKeySetConstructor: () -> MutableSet<K>,

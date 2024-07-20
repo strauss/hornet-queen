@@ -10,6 +10,7 @@ import kotlin.random.Random
 
 @RunWith(Parameterized::class)
 class TestSet<T>(
+    @Suppress("unused") // the test uses it for display
     private val testName: String,
     private val toTestSetConstructor: () -> MutableSet<T>,
     private val testValueSetConstructor: () -> MutableSet<T>,
