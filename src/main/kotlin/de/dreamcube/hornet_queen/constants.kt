@@ -16,6 +16,7 @@ const val LONG_SHIFT = 3
 const val FLOAT_SHIFT = 2
 const val DOUBLE_SHIFT = 3
 const val UUID_SHIFT = 4
+const val NO_INDEX: Int = -1
 
 object ConfigurableConstants {
     const val DEFAULT_INITIAL_SIZE = 11
