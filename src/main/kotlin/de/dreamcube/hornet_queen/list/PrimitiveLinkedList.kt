@@ -1,10 +1,9 @@
 package de.dreamcube.hornet_queen.list
 
 import de.dreamcube.hornet_queen.ConfigurableConstants
+import de.dreamcube.hornet_queen.NO_INDEX
 import de.dreamcube.hornet_queen.array.*
 import java.util.*
-
-private const val NO_INDEX: Int = -1
 
 /**
  * Primitive list with a primitive array as underlying data structure. This variant resembles a usual linked list but

@@ -1,11 +1,9 @@
-package de.dreamcube.hornet_queen.map
-
-import de.dreamcube.hornet_queen.hash.PrimitiveTypeHashTable
+package de.dreamcube.hornet_queen.shared
 
 internal class ObjectTypeValueCollection<T>(
     override val size: Int,
-    override val fillState: PrimitiveTypeHashTable.FillState
-) : PrimitiveTypeHashTable.MutableIndexedValueCollection<T> {
+    override val fillState: FillState
+) : MutableIndexedValueCollection<T> {
     val array: Array<Any?> = Array(size) { null }
 
     override fun get(index: Int): T? {

@@ -2,6 +2,8 @@ package de.dreamcube.hornet_queen.hash
 
 import de.dreamcube.hornet_queen.ConfigurableConstants
 import de.dreamcube.hornet_queen.array.*
+import de.dreamcube.hornet_queen.shared.FillState
+import de.dreamcube.hornet_queen.shared.MutableIndexedValueCollection
 import java.util.*
 import kotlin.math.ceil
 import kotlin.math.min
@@ -334,60 +336,6 @@ abstract class PrimitiveTypeHashTable<K, V> protected constructor(
 
     }
 
-    /**
-     * Internal representation of fill states for indexes. Uses two [BitSet]s as internal data structure for saving memory space.
-     */
-    class FillState(capacity: Int) {
-        private var fullSet = BitSet(capacity)
-        private var removedSet = BitSet(capacity)
-
-        fun isFree(index: Int): Boolean {
-            return !fullSet[index] && !removedSet[index]
-        }
-
-        fun isFull(index: Int): Boolean {
-            return fullSet[index] && !removedSet[index]
-        }
-
-        fun isRemoved(index: Int): Boolean {
-            return !fullSet[index] && removedSet[index]
-        }
-
-        fun setFree(index: Int) {
-            fullSet.clear(index)
-            removedSet.clear(index)
-        }
-
-        fun setFull(index: Int) {
-            fullSet.set(index)
-            removedSet.clear(index)
-        }
-
-        fun setRemoved(index: Int) {
-            fullSet.clear(index)
-            removedSet.set(index)
-        }
-    }
-
-    /**
-     * This interface is meant to wrap an array-like structure for values if this [PrimitiveTypeHashTable] is used as
-     * foundation for a map implementation. This generic approach allows for primitive values in [PrimitiveArray]s and
-     * also for object type values in regular Object arrays. The functions [get], [set], and [contains] are as you would
-     * expect them to be in a regular array or collection.
-     */
-    interface MutableIndexedValueCollection<V> {
-        val size: Int
-        val fillState: FillState
-        operator fun get(index: Int): V?
-        operator fun set(index: Int, value: V)
-        fun contains(value: V): Boolean
-
-        /**
-         * Copies all values into a [MutableCollection]. Changes to this collection will not affect this
-         * [PrimitiveTypeHashTable].
-         */
-        fun asCollection(): MutableCollection<V>
-    }
 }
 
 class PrimitiveByteHashTable(

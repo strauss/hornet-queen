@@ -3,9 +3,8 @@ package de.dreamcube.hornet_queen.map
 import de.dreamcube.hornet_queen.ConfigurableConstants
 import de.dreamcube.hornet_queen.array.*
 import de.dreamcube.hornet_queen.hash.InternalPrimitiveTypeHashTable
-import de.dreamcube.hornet_queen.hash.PrimitiveTypeHashTable
-import de.dreamcube.hornet_queen.hash.PrimitiveTypeHashTable.MutableIndexedValueCollection
 import de.dreamcube.hornet_queen.map.HashTableBasedMapBuilder.HashTableBasedMapBuilderWithKey
+import de.dreamcube.hornet_queen.shared.*
 import java.util.*
 
 /**
@@ -70,7 +69,7 @@ object HashTableBasedMapBuilder {
          * Configures the resulting [HashTableBasedMap] to use [Byte] as value type.
          */
         fun useByteValue(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Byte> =
-            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: PrimitiveTypeHashTable.FillState ->
+            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: FillState ->
                 ByteValueCollection(size, fillState, native)
             }
 
@@ -78,7 +77,7 @@ object HashTableBasedMapBuilder {
          * Configures the resulting [HashTableBasedMap] to use [Short] as value type.
          */
         fun useShortValue(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Short> =
-            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: PrimitiveTypeHashTable.FillState ->
+            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: FillState ->
                 ShortValueCollection(size, fillState, native)
             }
 
@@ -86,7 +85,7 @@ object HashTableBasedMapBuilder {
          * Configures the resulting [HashTableBasedMap] to use [Int] as value type.
          */
         fun useIntValue(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Int> =
-            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: PrimitiveTypeHashTable.FillState ->
+            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: FillState ->
                 IntValueCollection(size, fillState, native)
             }
 
@@ -94,7 +93,7 @@ object HashTableBasedMapBuilder {
          * Configures the resulting [HashTableBasedMap] to use [Long] as value type.
          */
         fun useLongValue(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Long> =
-            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: PrimitiveTypeHashTable.FillState ->
+            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: FillState ->
                 LongValueCollection(size, fillState, native)
             }
 
@@ -102,7 +101,7 @@ object HashTableBasedMapBuilder {
          * Configures the resulting [HashTableBasedMap] to use [Float] as value type.
          */
         fun useFloatValue(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Float> =
-            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: PrimitiveTypeHashTable.FillState ->
+            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: FillState ->
                 FloatValueCollection(size, fillState, native)
             }
 
@@ -110,7 +109,7 @@ object HashTableBasedMapBuilder {
          * Configures the resulting [HashTableBasedMap] to use [Double] as value type.
          */
         fun useDoubleValue(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Double> =
-            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: PrimitiveTypeHashTable.FillState ->
+            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: FillState ->
                 DoubleValueCollection(size, fillState, native)
             }
 
@@ -118,7 +117,7 @@ object HashTableBasedMapBuilder {
          * Configures the resulting [HashTableBasedMap] to use [UUID] as value type.
          */
         fun useUUIDValue(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, UUID> =
-            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: PrimitiveTypeHashTable.FillState ->
+            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: FillState ->
                 UUIDValueCollection(size, fillState, native)
             }
 
@@ -127,7 +126,7 @@ object HashTableBasedMapBuilder {
          * normal object array.
          */
         fun <V> useArbitraryTypeValue(): HashTableBasedMapBuilderWithKeyAndValue<K, V> =
-            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: PrimitiveTypeHashTable.FillState ->
+            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: FillState ->
                 ObjectTypeValueCollection(size, fillState)
             }
     }
@@ -137,7 +136,7 @@ object HashTableBasedMapBuilder {
      */
     class HashTableBasedMapBuilderWithKeyAndValue<K, V>(
         private val keyArraySupplier: (Int) -> PrimitiveArray<K>,
-        private val valuesSupplier: (Int, PrimitiveTypeHashTable.FillState) -> MutableIndexedValueCollection<V>
+        private val valuesSupplier: (Int, FillState) -> MutableIndexedValueCollection<V>
     ) {
 
         /**
@@ -159,7 +158,7 @@ object HashTableBasedMapBuilder {
         initialCapacity: Int,
         loadFactor: Double,
         keyArraySupplier: (Int) -> PrimitiveArray<K>,
-        valuesSupplier: (Int, PrimitiveTypeHashTable.FillState) -> MutableIndexedValueCollection<V>
+        valuesSupplier: (Int, FillState) -> MutableIndexedValueCollection<V>
     ) : HashTableBasedMap<K, V>(
         InternalPrimitiveTypeHashTable(initialCapacity, loadFactor, keyArraySupplier, valuesSupplier)
     )
