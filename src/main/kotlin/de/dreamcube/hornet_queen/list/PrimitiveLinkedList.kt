@@ -483,6 +483,10 @@ class PrimitiveShortLinkedList
 @JvmOverloads constructor(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveLinkedList<Short>({ size: Int -> PrimitiveShortArray(size, native) }, initialSize)
 
+class PrimitiveCharLinkedList
+@JvmOverloads constructor(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+    PrimitiveLinkedList<Char>({ size: Int -> PrimitiveCharArray(size, native) }, initialSize)
+
 class PrimitiveIntLinkedList
 @JvmOverloads constructor(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveLinkedList<Int>({ size: Int -> PrimitiveIntArray(size, native) }, initialSize)

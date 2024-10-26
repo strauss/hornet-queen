@@ -134,6 +134,69 @@ class TestPrimitiveArray {
     }
 
     @Test
+    fun testPrimitiveCharArray() {
+        val size = PrimitiveCharArray.MAX_SIZE
+        val testArray = PrimitiveCharArray(size, false)
+        val nativeTestArray = PrimitiveCharArray(size, true)
+        val referenceArray = CharArray(size)
+
+        // Test size
+        assertEquals(referenceArray.size, testArray.size)
+        assertEquals(referenceArray.size, nativeTestArray.size)
+
+        // Fill array
+        for (i in 0..<size) {
+            val nextValue: Char = Random.nextInt().toChar()
+            testArray[i] = nextValue
+            nativeTestArray[i] = nextValue
+            referenceArray[i] = nextValue
+        }
+
+        // Test content
+        for (i in 0..<size) {
+            assertEquals(referenceArray[i], testArray[i])
+            assertEquals(referenceArray[i], nativeTestArray[i])
+        }
+
+        // Test reduction
+        val reducedSize = size / 2
+        val reducedTestArray = testArray.getResizedCopy(-(size - reducedSize))
+        val reducedNativeTestArray = nativeTestArray.getResizedCopy(-(size - reducedSize))
+
+        // Test size
+        assertEquals(reducedSize, reducedTestArray.size)
+        assertEquals(reducedSize, reducedNativeTestArray.size)
+
+        // Test content
+        for (i in 0..<reducedSize) {
+            assertEquals(referenceArray[i], reducedTestArray[i])
+            assertEquals(referenceArray[i], reducedNativeTestArray[i])
+        }
+
+        // Test expansion
+        val expandBy = 12_111
+        val expandedTestArray = reducedTestArray.getResizedCopy(expandBy)
+        val expandedNativeTestArray = reducedNativeTestArray.getResizedCopy(expandBy)
+        val expandedSize = reducedSize + expandBy
+
+        // Test size
+        assertEquals(expandedSize, expandedTestArray.size)
+        assertEquals(expandedSize, expandedNativeTestArray.size)
+
+        // fill expanded content with previously generated data
+        for (i in reducedSize..<expandedSize) {
+            expandedTestArray[i] = referenceArray[i]
+            expandedNativeTestArray[i] = referenceArray[i]
+        }
+
+        // Test content
+        for (i in 0..<expandedSize) {
+            assertEquals(referenceArray[i], expandedTestArray[i])
+            assertEquals(referenceArray[i], expandedNativeTestArray[i])
+        }
+    }
+
+    @Test
     fun testPrimitiveIntArray() {
         val size = PrimitiveIntArray.MAX_SIZE
         val testArray = PrimitiveIntArray(size, false)

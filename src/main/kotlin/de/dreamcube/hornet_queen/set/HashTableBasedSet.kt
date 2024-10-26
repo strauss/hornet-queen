@@ -50,6 +50,13 @@ class PrimitiveShortSet
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
 ) : HashTableBasedSet<Short>(PrimitiveShortHashTable(initialCapacity, loadFactor, native))
 
+class PrimitiveCharSet
+@JvmOverloads constructor(
+    initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
+) : HashTableBasedSet<Char>(PrimitiveCharHashTable(initialCapacity, loadFactor, native))
+
 class PrimitiveIntSet
 @JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
@@ -84,4 +91,3 @@ class UUIDSet
     loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
 ) : HashTableBasedSet<UUID>(UUIDHashTable(initialCapacity, loadFactor, native))
-

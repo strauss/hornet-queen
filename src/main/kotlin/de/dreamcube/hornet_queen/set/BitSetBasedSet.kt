@@ -86,6 +86,7 @@ abstract class BitSetBasedSet<T>(private val toInt: T.() -> Int, private val fro
 
 class PrimitiveByteSetB : BitSetBasedSet<Byte>(Byte::unsignedToInt, Int::toByte)
 class PrimitiveShortSetB : BitSetBasedSet<Short>(Short::unsignedToInt, Int::toShort)
+class PrimitiveCharSetB : BitSetBasedSet<Char>(Char::unsignedToInt, Int::toChar)
 private class PrimitivePositiveIntSetB : BitSetBasedSet<Int>(Int::identity, Int::identity)
 private class PrimitiveNegativeIntSetB : BitSetBasedSet<Int>(Int::toPositive, Int::toNegative)
 class PrimitiveIntSetB : PrimitiveMutableSet<Int> {
@@ -169,6 +170,7 @@ class CombinedIterator<T>(firstIterator: MutableIterator<T>, secondIterator: Mut
 
 private fun Byte.unsignedToInt(): Int = this.toInt() and 0xFF
 private fun Short.unsignedToInt(): Int = this.toInt() and 0xFFFF
+private fun Char.unsignedToInt(): Int = this.code and 0xFFFF
 private fun Int.identity(): Int = this
 
 /**
