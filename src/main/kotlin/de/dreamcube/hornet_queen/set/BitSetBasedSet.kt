@@ -88,7 +88,7 @@ class PrimitiveByteSetB : BitSetBasedSet<Byte>(Byte::unsignedToInt, Int::toByte)
 class PrimitiveShortSetB : BitSetBasedSet<Short>(Short::unsignedToInt, Int::toShort)
 private class PrimitivePositiveIntSetB : BitSetBasedSet<Int>(Int::identity, Int::identity)
 private class PrimitiveNegativeIntSetB : BitSetBasedSet<Int>(Int::toPositive, Int::toNegative)
-class PrimitiveIntSetB() : PrimitiveMutableSet<Int> {
+class PrimitiveIntSetB : PrimitiveMutableSet<Int> {
 
     private val positiveSet = PrimitivePositiveIntSetB()
     private val negativeSet = PrimitiveNegativeIntSetB()

@@ -6,11 +6,12 @@ import java.nio.ByteBuffer
 
 class PrimitiveLongArray private constructor(size: Int, native: Boolean, internalBuffer: ByteBuffer?) :
     PrimitiveArray<Long>(size, LONG_SIZE, native, MAX_SIZE, internalBuffer) {
+    @JvmOverloads
     constructor(size: Int, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) : this(size, native, null)
 
     companion object {
         @JvmStatic
-        val MAX_SIZE: Int = Int.MAX_VALUE / LONG_SIZE
+        val MAX_SIZE: Int = PrimitiveByteArray.MAX_SIZE / LONG_SIZE
     }
 
     override operator fun get(index: Int): Long = internalGetLong(index)

@@ -6,11 +6,12 @@ import java.nio.ByteBuffer
 
 class PrimitiveDoubleArray private constructor(size: Int, native: Boolean, internalBuffer: ByteBuffer?) :
     PrimitiveArray<Double>(size, DOUBLE_SIZE, native, MAX_SIZE, internalBuffer) {
+    @JvmOverloads
     constructor(size: Int, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) : this(size, native, null)
 
     companion object {
         @JvmStatic
-        val MAX_SIZE: Int = Int.MAX_VALUE / DOUBLE_SIZE
+        val MAX_SIZE: Int = PrimitiveByteArray.MAX_SIZE / DOUBLE_SIZE
     }
 
     override fun get(index: Int): Double = internalGetDouble(index)

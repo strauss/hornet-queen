@@ -14,7 +14,7 @@ import kotlin.math.round
  */
 abstract class PrimitiveTypeHashTable<K, V> protected constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
-    val loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
+    private val loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
     private val keyArraySupplier: (Int) -> PrimitiveArray<K>,
     private val valuesSupplier: ((Int, FillState) -> MutableIndexedValueCollection<V>)? = null
 ) {
@@ -338,44 +338,44 @@ abstract class PrimitiveTypeHashTable<K, V> protected constructor(
 
 }
 
-class PrimitiveByteHashTable(
+class PrimitiveByteHashTable @JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
 ) : PrimitiveTypeHashTable<Byte, Any>(initialCapacity, loadFactor, { size: Int -> PrimitiveByteArray(size, native) })
 
-class PrimitiveShortHashTable(
+class PrimitiveShortHashTable @JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
 ) : PrimitiveTypeHashTable<Short, Any>(initialCapacity, loadFactor, { size: Int -> PrimitiveShortArray(size, native) })
 
-class PrimitiveIntHashTable(
+class PrimitiveIntHashTable @JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
 ) : PrimitiveTypeHashTable<Int, Any>(initialCapacity, loadFactor, { size: Int -> PrimitiveIntArray(size, native) })
 
-class PrimitiveLongHashTable(
+class PrimitiveLongHashTable @JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
 ) : PrimitiveTypeHashTable<Long, Any>(initialCapacity, loadFactor, { size: Int -> PrimitiveLongArray(size, native) })
 
-class PrimitiveFloatHashTable(
+class PrimitiveFloatHashTable @JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
 ) : PrimitiveTypeHashTable<Float, Any>(initialCapacity, loadFactor, { size: Int -> PrimitiveFloatArray(size, native) })
 
-class PrimitiveDoubleHashTable(
+class PrimitiveDoubleHashTable @JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
 ) : PrimitiveTypeHashTable<Double, Any>(initialCapacity, loadFactor,
     { size: Int -> PrimitiveDoubleArray(size, native) })
 
-class UUIDHashTable(
+class UUIDHashTable @JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE

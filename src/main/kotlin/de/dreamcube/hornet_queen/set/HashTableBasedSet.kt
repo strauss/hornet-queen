@@ -36,43 +36,50 @@ abstract class HashTableBasedSet<T>(private val hashTable: PrimitiveTypeHashTabl
     fun shrinkToLoadFactor() = hashTable.shrinkToLoadFactor()
 }
 
-class PrimitiveByteSet(
+class PrimitiveByteSet
+@JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
 ) : HashTableBasedSet<Byte>(PrimitiveByteHashTable(initialCapacity, loadFactor, native))
 
-class PrimitiveShortSet(
+class PrimitiveShortSet
+@JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
 ) : HashTableBasedSet<Short>(PrimitiveShortHashTable(initialCapacity, loadFactor, native))
 
-class PrimitiveIntSet(
+class PrimitiveIntSet
+@JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
 ) : HashTableBasedSet<Int>(PrimitiveIntHashTable(initialCapacity, loadFactor, native))
 
-class PrimitiveLongSet(
+class PrimitiveLongSet
+@JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
 ) : HashTableBasedSet<Long>(PrimitiveLongHashTable(initialCapacity, loadFactor, native))
 
-class PrimitiveFloatSet(
+class PrimitiveFloatSet
+@JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
 ) : HashTableBasedSet<Float>(PrimitiveFloatHashTable(initialCapacity, loadFactor, native))
 
-class PrimitiveDoubleSet(
+class PrimitiveDoubleSet
+@JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
 ) : HashTableBasedSet<Double>(PrimitiveDoubleHashTable(initialCapacity, loadFactor, native))
 
-class UUIDSet(
+class UUIDSet
+@JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE

@@ -1,5 +1,8 @@
 package de.dreamcube.hornet_queen.shared
 
+import de.dreamcube.hornet_queen.array.PrimitiveArray
+import de.dreamcube.hornet_queen.hash.PrimitiveTypeHashTable
+
 /**
  * This interface is meant to wrap an array-like structure for values if this [PrimitiveTypeHashTable] is used as
  * foundation for a map implementation. This generic approach allows for primitive values in [PrimitiveArray]s and
