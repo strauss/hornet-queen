@@ -6,6 +6,7 @@ import java.nio.ByteBuffer
 
 class PrimitiveByteArray private constructor(size: Int, native: Boolean, internalBuffer: ByteBuffer?) :
     PrimitiveArray<Byte>(size, BYTE_SIZE, native, MAX_SIZE, internalBuffer) {
+    @JvmOverloads
     constructor(size: Int, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) : this(size, native, null)
 
     companion object {

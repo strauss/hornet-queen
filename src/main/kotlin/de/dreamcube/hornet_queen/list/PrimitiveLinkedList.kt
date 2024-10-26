@@ -475,32 +475,30 @@ abstract class PrimitiveLinkedList<T> protected constructor(
 
 }
 
-class PrimitiveByteLinkedList(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+class PrimitiveByteLinkedList
+@JvmOverloads constructor(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveLinkedList<Byte>({ size: Int -> PrimitiveByteArray(size, native) }, initialSize)
 
-class PrimitiveShortLinkedList(
-    initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
-    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
-) :
+class PrimitiveShortLinkedList
+@JvmOverloads constructor(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveLinkedList<Short>({ size: Int -> PrimitiveShortArray(size, native) }, initialSize)
 
-class PrimitiveIntLinkedList(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+class PrimitiveIntLinkedList
+@JvmOverloads constructor(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveLinkedList<Int>({ size: Int -> PrimitiveIntArray(size, native) }, initialSize)
 
-class PrimitiveLongLinkedList(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+class PrimitiveLongLinkedList
+@JvmOverloads constructor(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveLinkedList<Long>({ size: Int -> PrimitiveLongArray(size, native) }, initialSize)
 
-class PrimitiveFloatLinkedList(
-    initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
-    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
-) :
+class PrimitiveFloatLinkedList
+@JvmOverloads constructor(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveLinkedList<Float>({ size: Int -> PrimitiveFloatArray(size, native) }, initialSize)
 
-class PrimitiveDoubleLinkedList(
-    initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
-    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
-) :
+class PrimitiveDoubleLinkedList
+@JvmOverloads constructor(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveLinkedList<Double>({ size: Int -> PrimitiveDoubleArray(size, native) }, initialSize)
 
-class UUIDLinkedList(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+class UUIDLinkedList
+@JvmOverloads constructor(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveLinkedList<UUID>({ size: Int -> UUIDArray(size, native) }, initialSize)

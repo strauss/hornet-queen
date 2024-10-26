@@ -241,28 +241,32 @@ abstract class PrimitiveArrayList<T> protected constructor(
     }
 }
 
-class PrimitiveByteArrayList(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+class PrimitiveByteArrayList
+@JvmOverloads constructor(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveArrayList<Byte>({ size: Int -> PrimitiveByteArray(size, native) }, initialSize)
 
-class PrimitiveShortArrayList(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+class PrimitiveShortArrayList
+@JvmOverloads constructor(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveArrayList<Short>({ size: Int -> PrimitiveShortArray(size, native) }, initialSize)
 
-class PrimitiveIntArrayList(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+class PrimitiveIntArrayList
+@JvmOverloads constructor(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveArrayList<Int>({ size: Int -> PrimitiveIntArray(size, native) }, initialSize)
 
-class PrimitiveLongArrayList(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+class PrimitiveLongArrayList
+@JvmOverloads constructor(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveArrayList<Long>({ size: Int -> PrimitiveLongArray(size, native) }, initialSize)
 
-class PrimitiveFloatArrayList(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+class PrimitiveFloatArrayList
+@JvmOverloads constructor(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveArrayList<Float>({ size: Int -> PrimitiveFloatArray(size, native) }, initialSize)
 
-class PrimitiveDoubleArrayList(
-    initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
-    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
-) :
+class PrimitiveDoubleArrayList
+@JvmOverloads constructor(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveArrayList<Double>({ size: Int -> PrimitiveDoubleArray(size, native) }, initialSize)
 
-class UUIDArrayList(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+class UUIDArrayList
+@JvmOverloads constructor(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveArrayList<UUID>({ size: Int -> UUIDArray(size, native) }, initialSize)
 
 internal class InternalPrimitiveTypeList<T>(

@@ -6,11 +6,12 @@ import java.nio.ByteBuffer
 
 class PrimitiveFloatArray private constructor(size: Int, native: Boolean, internalBuffer: ByteBuffer?) :
     PrimitiveArray<Float>(size, FLOAT_SIZE, native, MAX_SIZE, internalBuffer) {
+    @JvmOverloads
     constructor(size: Int, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) : this(size, native, null)
 
     companion object {
         @JvmStatic
-        val MAX_SIZE: Int = Int.MAX_VALUE / FLOAT_SIZE
+        val MAX_SIZE: Int = PrimitiveByteArray.MAX_SIZE / FLOAT_SIZE
     }
 
     override fun get(index: Int): Float = internalGetFloat(index)

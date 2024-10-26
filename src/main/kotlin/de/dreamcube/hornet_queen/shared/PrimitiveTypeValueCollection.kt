@@ -40,23 +40,30 @@ abstract class PrimitiveTypeValueCollection<T>(
     override fun set(index: Int, value: T) = array.set(index, value)
 }
 
-class ByteValueCollection(size: Int, fillState: FillState, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+class ByteValueCollection
+@JvmOverloads constructor(size: Int, fillState: FillState, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveTypeValueCollection<Byte>(size, fillState, { arraySize: Int -> PrimitiveByteArray(arraySize, native) })
 
-class ShortValueCollection(size: Int, fillState: FillState, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+class ShortValueCollection
+@JvmOverloads constructor(size: Int, fillState: FillState, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveTypeValueCollection<Short>(size, fillState, { arraySize: Int -> PrimitiveShortArray(arraySize, native) })
 
-class IntValueCollection(size: Int, fillState: FillState, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+class IntValueCollection
+@JvmOverloads constructor(size: Int, fillState: FillState, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveTypeValueCollection<Int>(size, fillState, { arraySize: Int -> PrimitiveIntArray(arraySize, native) })
 
-class LongValueCollection(size: Int, fillState: FillState, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+class LongValueCollection
+@JvmOverloads constructor(size: Int, fillState: FillState, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveTypeValueCollection<Long>(size, fillState, { arraySize: Int -> PrimitiveLongArray(arraySize, native) })
 
-class FloatValueCollection(size: Int, fillState: FillState, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+class FloatValueCollection
+@JvmOverloads constructor(size: Int, fillState: FillState, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveTypeValueCollection<Float>(size, fillState, { arraySize: Int -> PrimitiveFloatArray(arraySize, native) })
 
-class DoubleValueCollection(size: Int, fillState: FillState, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+class DoubleValueCollection
+@JvmOverloads constructor(size: Int, fillState: FillState, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveTypeValueCollection<Double>(size, fillState, { arraySize: Int -> PrimitiveDoubleArray(arraySize, native) })
 
-class UUIDValueCollection(size: Int, fillState: FillState, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+class UUIDValueCollection
+@JvmOverloads constructor(size: Int, fillState: FillState, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveTypeValueCollection<UUID>(size, fillState, { arraySize: Int -> UUIDArray(arraySize, native) })

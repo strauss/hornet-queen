@@ -28,7 +28,6 @@ internal fun selectPrimes(): List<Int> {
     val alreadyIncludedPrimes = BitSet(Int.MAX_VALUE)
     alreadyIncludedPrimes.set(Int.MAX_VALUE) // largest prime is always included
 
-
     val startPrimes: List<Int> = listOf(3, 5, 31, 43, 311, 379, 433, 599, 953, 1039)
 
     for (currentValue: Int in startPrimes) {
