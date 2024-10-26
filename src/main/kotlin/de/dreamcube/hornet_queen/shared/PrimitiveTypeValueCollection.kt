@@ -48,6 +48,10 @@ class ShortValueCollection
 @JvmOverloads constructor(size: Int, fillState: FillState, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveTypeValueCollection<Short>(size, fillState, { arraySize: Int -> PrimitiveShortArray(arraySize, native) })
 
+class CharValueCollection
+@JvmOverloads constructor(size: Int, fillState: FillState, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+    PrimitiveTypeValueCollection<Char>(size, fillState, { arraySize: Int -> PrimitiveCharArray(arraySize, native) })
+
 class IntValueCollection
 @JvmOverloads constructor(size: Int, fillState: FillState, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveTypeValueCollection<Int>(size, fillState, { arraySize: Int -> PrimitiveIntArray(arraySize, native) })

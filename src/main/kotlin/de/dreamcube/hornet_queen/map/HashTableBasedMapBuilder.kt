@@ -33,6 +33,14 @@ object HashTableBasedMapBuilder {
         HashTableBasedMapBuilderWithKey { size: Int -> PrimitiveShortArray(size, native) }
 
     /**
+     * Configurs the resulting [HashTableBasedMap] to use [Char] as key type.
+     */
+    @JvmOverloads
+    @JvmStatic
+    fun useCharKey(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKey<Char> =
+        HashTableBasedMapBuilderWithKey { size: Int -> PrimitiveCharArray(size, native) }
+
+    /**
      * Configures the resulting [HashTableBasedMap] to use [Int] as key type.
      */
     @JvmOverloads
@@ -95,6 +103,15 @@ object HashTableBasedMapBuilder {
         fun useShortValue(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Short> =
             HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: FillState ->
                 ShortValueCollection(size, fillState, native)
+            }
+
+        /**
+         * Configures the resulting [HashTableBasedMap] to use [Char] as value type.
+         */
+        @JvmOverloads
+        fun useCharValue(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Char> =
+            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: FillState ->
+                CharValueCollection(size, fillState, native)
             }
 
         /**

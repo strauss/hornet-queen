@@ -350,6 +350,12 @@ class PrimitiveShortHashTable @JvmOverloads constructor(
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
 ) : PrimitiveTypeHashTable<Short, Any>(initialCapacity, loadFactor, { size: Int -> PrimitiveShortArray(size, native) })
 
+class PrimitiveCharHashTable @JvmOverloads constructor(
+    initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
+) : PrimitiveTypeHashTable<Char, Any>(initialCapacity, loadFactor, { size: Int -> PrimitiveCharArray(size, native) })
+
 class PrimitiveIntHashTable @JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,

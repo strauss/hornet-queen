@@ -249,6 +249,10 @@ class PrimitiveShortArrayList
 @JvmOverloads constructor(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveArrayList<Short>({ size: Int -> PrimitiveShortArray(size, native) }, initialSize)
 
+class PrimitiveCharArrayList
+@JvmOverloads constructor(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
+    PrimitiveArrayList<Char>({ size: Int -> PrimitiveCharArray(size, native) }, initialSize)
+
 class PrimitiveIntArrayList
 @JvmOverloads constructor(initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE, native: Boolean = ConfigurableConstants.DEFAULT_NATIVE) :
     PrimitiveArrayList<Int>({ size: Int -> PrimitiveIntArray(size, native) }, initialSize)

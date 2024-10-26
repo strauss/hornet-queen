@@ -18,6 +18,9 @@ abstract class PrimitiveArray<T>(
     val maxSize: Int,
     internalBuffer: ByteBuffer? = null
 ) {
+    val indices
+        get() = 0..<size
+
     /**
      * The internal data structure.
      */
@@ -120,8 +123,16 @@ abstract class PrimitiveArray<T>(
         return buffer.getShort(index shl SHORT_SHIFT)
     }
 
+    protected fun internalGetChar(index: Int): Char {
+        return buffer.getChar(index shl CHAR_SHIFT)
+    }
+
     protected fun internalSetShort(index: Int, element: Short) {
         buffer.putShort(index shl SHORT_SHIFT, element)
+    }
+
+    protected fun internalSetChar(index: Int, element: Char) {
+        buffer.putChar(index shl CHAR_SHIFT, element)
     }
 
     protected fun internalGetInt(index: Int): Int {

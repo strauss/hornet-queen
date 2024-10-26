@@ -42,6 +42,11 @@ class TestMap<K, V>(
                 { Random.nextLong() }, { PrimitiveShortArrayList() }, { Random.nextInt().toShort() }
             ),
             arrayOf(
+                "HashTable based 'Long' key and 'Char' value.",
+                { HashTableBasedMapBuilder.useLongKey().useCharValue().create() }, { PrimitiveLongSet() },
+                { Random.nextLong() }, { PrimitiveCharArrayList() }, { Random.nextInt().toChar() }
+            ),
+            arrayOf(
                 "HashTable based 'Long' key and 'Int' value.",
                 { HashTableBasedMapBuilder.useLongKey().useIntValue().create() }, { PrimitiveLongSet() },
                 { Random.nextLong() }, { PrimitiveIntArrayList() }, { Random.nextInt() }
@@ -80,6 +85,11 @@ class TestMap<K, V>(
                 "HashTable based 'Short' key and 'Int' value.",
                 { HashTableBasedMapBuilder.useShortKey().useIntValue().create() }, { PrimitiveShortSetB() },
                 { Random.nextInt().toShort() }, { PrimitiveIntArrayList() }, { Random.nextInt() }
+            ),
+            arrayOf(
+                "HashTable based 'Char' key and 'Int' value.",
+                { HashTableBasedMapBuilder.useCharKey().useIntValue().create() }, { PrimitiveCharSetB() },
+                { Random.nextInt().toChar() }, { PrimitiveIntArrayList() }, { Random.nextInt() }
             ),
             arrayOf(
                 "HashTable based 'Int' key and 'Int' value.",
