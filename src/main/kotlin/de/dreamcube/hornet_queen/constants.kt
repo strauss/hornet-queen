@@ -35,6 +35,9 @@ const val DOUBLE_SHIFT = 3
 const val UUID_SHIFT = 4
 const val NO_INDEX: Int = -1
 
+/**
+ * These constants are not configurable yet, but certainly will be in the future.
+ */
 object ConfigurableConstants {
     const val DEFAULT_INITIAL_SIZE = 11
     const val DEFAULT_LOAD_FACTOR: Double = 0.75
