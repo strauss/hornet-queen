@@ -197,7 +197,7 @@ private fun Int.identity(): Int = this
 private fun Int.toPositive(): Int = -(this + 1)
 
 /**
- * Converts a positive [Int] to a negative [Int] but it is not -i. The positive [Int] is negated and then shiftet to the
+ * Converts a positive [Int] to a negative [Int] but it is not -i. The positive [Int] is negated and then shifted to the
  * left (-1). This maps [Int.MAX_VALUE] to [Int.MIN_VALUE], avoiding overflows. it also maps 0 to -1.
  */
 private fun Int.toNegative(): Int = -this - 1
