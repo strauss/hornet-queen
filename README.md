@@ -5,6 +5,7 @@ It aims at preserving runtime memory while still sustaining performance in compa
 The library is written in Kotlin and perfectly usable in any Kotlin or Java project.
 The Kotlin code is written in a "Java friendly" way for allowing a seamless integration in Java projects.
 The target VM version is 17.
+The used Kotlin version is 2.0.10-RC (the latest and greatest).
 
 Hornet Queen was inspired by GNU Trove4J, which is unfortunately discontinued.
 I was impressed by its implementation of hash tables and I actually adapted this implementation for Hornet Queen.
@@ -95,8 +96,8 @@ dependencies {
     - Comparable libraries, such as GNU Trove4J, use code templates and code generation based on these templates for creating copies of the
       implementing classes.
     - Hornet Queen tries to implement everything as generically as possible for avoiding any form of code generation or code duplication.
-    - In most of the cases, only the constructors for each concrete class is implemented (One implementation class per primitive type).
-- All collection classes implement the matching interfaces of the usual collection framework. Examples:
+    - In most of the cases, only the constructors for each concrete class is implemented (one implementation class per primitive type).
+- All collection classes implement the matching interfaces of the standard collection framework. Examples:
     - `PrimitiveIntArrayList` implements the Kotlin interface `MutableList<Int>` and therefore also the Java interface `List<Integer>`.
     - `PrimitiveByteSetB` (BitSet based set for `Byte`) implements the Kotlin interface `MutableSet<Byte>` and therefore also the Java
       interface `Set<Byte>`.
@@ -123,7 +124,7 @@ When using it from within Java it might happen.
 However, this process is unnoticeably fast.
 The exception is the `UUID` type.
 This one is always explicitly (un-)boxed.
-When comparing Hornet Queen's `UUIDSet` with a java `HashSet<UUID>` the former performs faster in most scenarios.
+When comparing Hornet Queen's `UUIDSet` with a Java `HashSet<UUID>` the former performs faster in most scenarios.
 
 ### The Array implementation
 
@@ -138,7 +139,7 @@ It works, but it is slower than a standard primitive array.
 I left it in the library for fun, but it shouldn't be used.
 
 The more successful attempt was adapting the Java class `java.nio.ByteBuffer`.
-As the name suggests, the `ByteBuffer` is usually used as buffer structure for file operations in the java native input output classes.
+As the name suggests, the `ByteBuffer` is usually used as buffer structure for file operations in the Java native input output classes.
 It also allows for directly accessing data within the structure by index.
 The best part are its convenience methods for reading primitive types from the given index.
 This aspect, in combination with Kotlins ability to define the operator functions `get` and `set`, enable my implementation to be used exactly as a
@@ -156,10 +157,10 @@ The native `ByteBuffer` is the main reason why Hornet Queen performs very well i
 
 - The generic array implementation does not support `System.arrayCopy` directly.
     - The function `getResizedCopy` indirectly uses it when in non-native mode.
-    - In native mode this operation is, ironically, not supported at all. Here a manual copy operation is used. However, up to a certain length of the
+    - Ironically, in native mode this operation is not supported at all. Here a manual copy operation is used. However, up to a certain length of the
       underlying buffer, it is still faster than `System.arraycopy` on a regular array.
-- The underlying structure of `ByteBuffer` is always a byte array with a maximum size of about 2GB. Therefore, the index space is limited, based on
-  the primitive data type. It always starts at 0 and ends at:
+- The underlying structure of `ByteBuffer` is always a byte array with a maximum size of about 2GB (2^31 bytes). Therefore, the index space is
+  limited, based on the primitive data type. It always starts at 0 and ends at:
     - `Byte`:  2,147,483,647 (`Int.MAX_VALUE` - 8)
     - `Short` and `Char`: 1,073,741,823
     - `Int` and `Float`: 536,870,911
@@ -212,7 +213,7 @@ For `Byte` and `Short` the values are interpreted as unsigned values.
 For `Int`, two bit sets are used and the negative values are mapped to the positive range (shifted by 1 for avoiding overflows ...
 see `BitSetBasedSet.kt` for details).
 
-Here are the maximum sizes of `BitSetBaseSet`
+Here are the maximum sizes of `BitSetBasedSet`
 
 - `PrimitiveByteSetB`: 32 bytes
 - `PrimitiveShortSetB` and `PrimitiveCharSetB`: 8 KB
@@ -246,12 +247,12 @@ If you remove a value, it is only marked as being deleted and the space cannot b
 The `HashTableBasedSet` provides the functions `manualRehash()` and `shrinkToLoadFactor()`.
 The function `manualRehash()` effectively frees all the deleted cells without changing the size of the underlying structure.
 It is useful if you plan on adding more elements to the set.
-The function `shrinkToLoadFactor()` does the same but also shrinks the structure to match the load factor.
+The function `shrinkToLoadFactor()` does the same, but also shrinks the structure to match the load factor.
 This is useful if you know that you are done with creating the set and don't expect more elements to be added.
 
 Trove4J has an automatic shrinking mechanism if the hash table is below a certain load factor.
 I decided that I don't want to adapt this aspect.
-I wanted to give the user of the library the freedom (but also the responsibility) to decide when to shrink/rehash the hash table.
+I wanted to give the users of Hornet Queen the freedom (but also the responsibility) to decide when to shrink/rehash the hash table.
 
 ### Map implementation(s)
 
@@ -260,10 +261,10 @@ The underlying data structure is the very same hash table as for the sets.
 Everything that applies to hash table based sets also applies to hash table based maps.
 This is especially noticeable for the functions `manualRehash()` and `shrinkToLoadFactor()`.
 
-The hash table based maps in HornetQueen are special in that they support both primitive and non-primitive value types.
+The hash table based maps in Hornet Queen are special in that they support both primitive and non-primitive value types.
 The keys are always primitive types (including `UUID`).
 All structures, covered so far, have their dedicated classes that can be used: e.g., `PrimitiveIntSet` or `UUIDArrayList`.
-For maps this would require a lot of different classes (81 ... 90 if you want to allow for object types).
+For maps this would require a lot of different classes (81 ... 90 if you want to allow for object value types).
 This approach did not seem reasonable for me so came up with a different solution.
 
 #### Instantiating primitive maps
@@ -300,7 +301,7 @@ final Map<Integer, Integer> integerIntegerMap = HashTableBasedMapBuilder
    .useIntValue()
    .create();
 
-// complex example, parameter names cannot be given because Java :-) look at Kotlin example
+// complex example, parameter names cannot be given because Java :-) Look at the Kotlin example!
 final Map<UUID, String> uuidStringMap = HashTableBasedMapBuilder
    .useUUIDKey(false)
    .<String>useArbitraryTypeValue()
@@ -313,8 +314,9 @@ Please note that `useIntValue()` and all other corresponding functions also have
 
 - In some cases the implicit maximum array size can be a problem when resizing a hash table.
     - This will be addressed in future releases, maybe by somehow™ getting rid of the size limit.
-- The generic arrays are no classical arrays and all Array convenience methods are not applicable.
-    - For now, this seems to be an unsolvable problem.
+- The generic arrays are no classical arrays and all array convenience functions in Kotlin and convenience methods from the class `Arrays` are not
+  applicable.
+    - For now, this seems to be an unsolvable problem. Maybe I will provide some of these functions/methods in the future.
 - Copying a native generic array is slower for greater array sizes.
     - This might be solvable by using the `ByteBuffer` as intended.
 
@@ -338,13 +340,22 @@ Since this is the first release, there have not been any questions yet ... there
     - Actually, a Trove4J based implementation of their HashTable for UUID keys was the core inspiration for Hornet Queen.
       I had to copy a lot of their code to make it work and I realized that this approach was not feasible at all.
       This experience also lead to my desire to avoid code generation at all costs.
+- What are you hiding in the `hash` package besides the test cases?
+    - Just go and see for yourself :-)
 
 ## Planned features for the future
 
+- Faster copying of native generic arrays
 - Tree based sets and maps
     - Trading more time for less space ... if done correctly
 - Heap based priority queues
     - Because ... why not?
+- Overcome the size limitation of generic arrays and raise it to `Int.MAX_VALUE` for all types or even beyond (index space `Long` would be fun). The
+  sky is the limit :-)
+- Convenience functions for generic arrays.
+- Multidimensional generic arrays
+    - I might also include my implementation of multidimensional regular arrays that is slumbering in one of my private toy projects.
 - (Truly) immutable collections
     - Those are especially useful for functional programming
-- Whatever else comes into my mind and fits here :-)
+- Bit set based boolean lists ... if anyone needs them.
+- Whatever else comes into my mind and fits into Hornet Queen :-)
