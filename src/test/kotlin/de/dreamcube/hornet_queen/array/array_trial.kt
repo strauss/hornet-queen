@@ -20,8 +20,8 @@ package de.dreamcube.hornet_queen.array
 import kotlin.random.Random
 
 fun main() {
-    val ia = PrimitiveIntArray(PrimitiveIntArray.MAX_SIZE / 2)
-    val nia = PrimitiveIntArray(PrimitiveIntArray.MAX_SIZE / 2)
+    val ia = PrimitiveIntArray(PrimitiveIntArray.MAX_SIZE / 2, native = false)
+    val nia = PrimitiveIntArray(PrimitiveIntArray.MAX_SIZE / 2, native = true)
     for (i in 0..<ia.size) {
         val nextElement = Random.nextInt()
         ia[i] = nextElement
@@ -29,12 +29,12 @@ fun main() {
     }
 
     // Time measurements
-    val expandBy = 250_000_000
+    val expandBy = PrimitiveIntArray.MAX_SIZE / 2
 
     var start = System.currentTimeMillis()
     val iac = ia.getResizedCopy(expandBy)
     var stop = System.currentTimeMillis()
-    println("Duration not native but arraycopy: ${stop - start} ms.")
+    println("Duration not native: ${stop - start} ms.")
     System.gc()
 
     Thread.sleep(1000L)
@@ -42,6 +42,6 @@ fun main() {
     start = System.currentTimeMillis()
     val niac = nia.getResizedCopy(expandBy)
     stop = System.currentTimeMillis()
-    println("Duration native but not arraycopy: ${stop - start} ms.")
+    println("Duration native: ${stop - start} ms.")
 
 }
