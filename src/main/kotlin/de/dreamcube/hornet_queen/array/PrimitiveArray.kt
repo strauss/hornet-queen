@@ -34,7 +34,7 @@ abstract class PrimitiveArray<T>(
     internal val native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
     val maxSize: Int,
     internalBuffer: ByteBuffer? = null
-) {
+) : Iterable<T> {
     val indices
         get() = 0..<size
 
@@ -70,7 +70,7 @@ abstract class PrimitiveArray<T>(
     /**
      * Creates an iterator for this [PrimitiveArray].
      */
-    operator fun iterator() = object : Iterator<T> {
+    override operator fun iterator() = object : Iterator<T> {
         var currentIndex = 0
 
         override fun hasNext(): Boolean = currentIndex in 0..<size
@@ -112,19 +112,15 @@ abstract class PrimitiveArray<T>(
         val newBufferSize = newSize * elementSize
         // copy limit depends on expanding or reducing
         val copyLimit = min(oldBufferSize, newBufferSize)
-        val newBuffer: ByteBuffer
-        if (buffer.isDirect) {
-            newBuffer = ByteBuffer.allocateDirect(newBufferSize).order(ByteOrder.nativeOrder())
-            val arrayView = buffer.duplicate().rewind()
-            while (arrayView.position() < copyLimit) {
-                newBuffer.put(arrayView.get())
-            }
-        } else {
-            val internalArray: ByteArray = buffer.array()
-            val newArray = ByteArray(newBufferSize)
-            System.arraycopy(internalArray, 0, newArray, 0, copyLimit)
-            newBuffer = ByteBuffer.wrap(newArray).order(ByteOrder.nativeOrder())
+        val newBuffer: ByteBuffer = when {
+            buffer.isDirect -> ByteBuffer.allocateDirect(newBufferSize).order(ByteOrder.nativeOrder())
+            else -> ByteBuffer.allocate(newBufferSize).order(ByteOrder.nativeOrder())
         }
+        val arrayView: ByteBuffer = buffer.duplicate().rewind()
+        newBuffer.limit(copyLimit)
+        arrayView.limit(copyLimit)
+        newBuffer.put(arrayView)
+        newBuffer.clear()
         return newBuffer
     }
 

@@ -15,16 +15,18 @@ I was impressed by its implementation of hash tables and I actually adapted this
 The library is not complete yet. It currently includes the following:
 
 - Array
-    - `PrimitiveArray` (oh yes, I implemented my own arrays, the reason is explained further down the document)
+    - [`PrimitiveArray`](src/main/kotlin/de/dreamcube/hornet_queen/array/PrimitiveArray.kt) (oh yes, I implemented my own arrays, the reason is
+      explained further down the document)
 - Lists
-    - `PrimitiveArrayBasedList`
-        - `PrimitiveArrayList`
-        - `PrimitiveLinkedList` (yes, it is array based, and yes, it makes sense)
+    - [`PrimitiveArrayBasedList`](src/main/kotlin/de/dreamcube/hornet_queen/list/PrimitiveArrayBasedList.kt)
+        - [`PrimitiveArrayList`](src/main/kotlin/de/dreamcube/hornet_queen/list/PrimitiveArrayList.kt)
+        - [`PrimitiveLinkedList`](src/main/kotlin/de/dreamcube/hornet_queen/list/PrimitiveLinkedList.kt) (yes, it is array based, and yes, it makes
+          sense)
 - Sets
-    - `HashTableBasedSet`
-    - `BitSetBasedSet` (for `Byte`, `Short`, `Char`, and `Int`)
+    - [`HashTableBasedSet`](src/main/kotlin/de/dreamcube/hornet_queen/set/HashTableBasedSet.kt)
+    - [`BitSetBasedSet`](src/main/kotlin/de/dreamcube/hornet_queen/set/BitSetBasedSet.kt) (for `Byte`, `Short`, `Char`, and `Int`)
 - Map
-    - `HashTableBasedMap`
+    - [`HashTableBasedMap`](src/main/kotlin/de/dreamcube/hornet_queen/map/HashTableBasedMap.kt)
 
 The hash set and the hash map implementation are based on the same hash table implementation.
 The supported primitive types are (in Kotlin's notation) `Byte`, `Short`, `Char`, `Int`, `Float`, `Long`, `Double` and finally `UUID`, although it is
@@ -55,7 +57,7 @@ You need to add Jitpack as repository and include the dependency on this project
         <dependency>
             <groupId>de.dreamcube</groupId>
             <artifactId>hornet-queen</artifactId>
-            <version>0.1.0</version>
+            <version>0.2.0</version>
         </dependency>
     </dependencies>
 </project>
@@ -71,7 +73,7 @@ repositories {
 }
 
 dependencies {
-    implementation("de.dreamcube:hornet-queen:0.1.0")
+    implementation("de.dreamcube:hornet-queen:0.2.0")
 }
 ```
 
@@ -85,7 +87,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'de.dreamcube:hornet-queen:0.1.0'
+    implementation 'de.dreamcube:hornet-queen:0.2.0'
 }
 ```
 
@@ -124,7 +126,9 @@ When using it from within Java it might happen.
 However, this process is unnoticeably fast.
 The exception is the `UUID` type.
 This one is always explicitly (un-)boxed.
-When comparing Hornet Queen's `UUIDSet` with a Java `HashSet<UUID>` the former performs faster in most scenarios.
+When comparing Hornet Queen's `UUIDSet` with a Java `HashSet<UUID>` the former can compete in most scenarios while saving memory.
+For performance comparison have a look at the
+[`SetPerformanceComparison.kt`](src/test/kotlin/de/dreamcube/hornet_queen/set/set_performance_comparison.kt) file among the test cases.
 
 ### The Array implementation
 
@@ -133,10 +137,12 @@ Since one of the goals is achieving a very high level of generality, the arrays 
 Primitive arrays are well known for not being generic at all.
 
 The solution was implementing my own array class.
-The first attempt was the class `PrimitiveArrayWithConverters`, which uses a `ByteArray` as underlying data structure and (dis-)assembles the data
-when writing to or reading from it.
+The first attempt was the class [`PrimitiveArrayWithConverters`](src/main/kotlin/de/dreamcube/hornet_queen/array/PrimitiveArrayWithConverters.kt),
+which uses a `ByteArray` as underlying data structure and (dis-)assembles the data when writing to or reading from it.
 It works, but it is slower than a standard primitive array.
 I left it in the library for fun, but it shouldn't be used.
+If you want to see how slow it is, have a look at [`arrayComparison.kt`](src/test/kotlin/de/dreamcube/hornet_queen/array/array_comparison.kt) among
+the test cases.
 
 The more successful attempt was adapting the Java class `java.nio.ByteBuffer`.
 As the name suggests, the `ByteBuffer` is usually used as buffer structure for file operations in the Java native input output classes.
@@ -155,10 +161,11 @@ The native `ByteBuffer` is the main reason why Hornet Queen performs very well i
 
 #### Disadvantages
 
-- The generic array implementation does not support `System.arrayCopy` directly.
-    - The function `getResizedCopy` indirectly uses it when in non-native mode.
-    - Ironically, in native mode this operation is not supported at all. Here a manual copy operation is used. However, up to a certain length of the
-      underlying buffer, it is still faster than `System.arraycopy` on a regular array.
+- ~~The generic array implementation does not support `System.arrayCopy` directly, when in native mode.~~
+    - ~~The function `getResizedCopy` indirectly uses it when in non-native mode.~~
+    - ~~Ironically, in native mode this operation is not supported at all. Here, a manual copy operation is used. However, up to a certain length of
+      the
+      underlying buffer, it is still faster than `System.arraycopy` on a regular array.~~
 - The underlying structure of `ByteBuffer` is always a byte array with a maximum size of about 2GB (2^31 bytes). Therefore, the index space is
   limited, based on the primitive data type. It always starts at 0 and ends at:
     - `Byte`:  2,147,483,647 (`Int.MAX_VALUE` - 8)
@@ -167,7 +174,10 @@ The native `ByteBuffer` is the main reason why Hornet Queen performs very well i
     - `Long` and `Double`: 268,435,455
     - `UUID`: 134,217,727
 
-I have plans to overcome both disadvantages, but they are currently not at the top of the priority list.
+I got rid of the first disadvantage.
+Both implementations now use the mechanics the `ByteBuffer` is actually meant to be used for copying the content.
+
+I have plans to overcome the size limitation, this is currently not at the top of the priority list (see last section).
 
 ### List implementations
 
@@ -178,7 +188,8 @@ Its main advantage is the avoidance of wrapper classes and, if using the native 
 The linked list implementation is a bit odd.
 One would argue that a linked list's main advantage is the avoidance of unused array space.
 This advantage is, naturally, lost in this approach.
-However, instead of node objects, my linked list implementation uses two `PrimitiveIntArray`s for storing the forward and backward links.
+However, instead of node objects, my linked list implementation uses two
+[`PrimitiveIntArray`](src/main/kotlin/de/dreamcube/hornet_queen/array/PrimitiveIntArray.kt)s for storing the forward and backward links.
 Node objects are fully blown objects with an overhead of 8 to 16 bytes each (depending on the JVM implementation).
 Each node objects uses two references to the successor and predecessor respectively.
 A reference takes 4 to 8 bytes of space, also depending on the JVM implementation.
@@ -187,8 +198,9 @@ And I didn't consider the usage of wrapper classes in this discussion.
 That means, even if there is a bit of "dead memory" in form of unused array space, it is very likely that a java `LinkedList` of a primitive type
 would still take up more space than the array based linked list.
 
-In most cases the `PrimitiveArrayList` should be used.
-There are some niche applications where a `PrimitiveLinkedList` is preferable.
+In most cases the [`PrimitiveArrayList`](src/main/kotlin/de/dreamcube/hornet_queen/list/PrimitiveArrayList.kt) should be used.
+There are some niche applications where a [`PrimitiveLinkedList`](src/main/kotlin/de/dreamcube/hornet_queen/list/PrimitiveLinkedList.kt) is
+preferable.
 It depends on how you use the list.
 E.g., if you are planning on filtering out elements in-place, using the iterator, a linked list is the better option because it does not require
 expensive shift operations that would occur if doing it with an array list instead.
@@ -211,9 +223,9 @@ The bit set adaptations, used in Hornet Queen, also allow for negative values.
 For `Byte` and `Short` the values are interpreted as unsigned values.
 `Char` is by itself an unsigned value and does not allow for negative values in the first place.
 For `Int`, two bit sets are used and the negative values are mapped to the positive range (shifted by 1 for avoiding overflows ...
-see `BitSetBasedSet.kt` for details).
+see [`BitSetBasedSet.kt`](src/main/kotlin/de/dreamcube/hornet_queen/set/BitSetBasedSet.kt) for details).
 
-Here are the maximum sizes of `BitSetBasedSet`
+Here are the maximum sizes of [`BitSetBasedSet`](src/main/kotlin/de/dreamcube/hornet_queen/set/BitSetBasedSet.kt)
 
 - `PrimitiveByteSetB`: 32 bytes
 - `PrimitiveShortSetB` and `PrimitiveCharSetB`: 8 KB
@@ -223,6 +235,11 @@ For byte sets choosing the bit set variant is almost always the better option.
 For short sets the same reasoning is true.
 For char sets it is even more true because most common chars are in the lower range of possible values.
 For integer sets it highly depends on the expected number range.
+
+Depending on the operation, the `BitSet` based sets perform faster.
+The iterator performs slower because it is required to also iterate over the numbers that are not part of the set.
+This is actually the only disadvantage of `BitSet`s.
+Execute [`SetPerformanceComparison.kt`](src/test/kotlin/de/dreamcube/hornet_queen/set/set_performance_comparison.kt) to see for yourself.
 
 #### Hash table based
 
@@ -244,7 +261,8 @@ If you have to remove elements frequently, it is possible that the structure gro
 The reason is the nature of collision handling.
 If you remove a value, it is only marked as being deleted and the space cannot be freed right away (that would be a costly operation).
 
-The `HashTableBasedSet` provides the functions `manualRehash()` and `shrinkToLoadFactor()`.
+The [`HashTableBasedSet`](src/main/kotlin/de/dreamcube/hornet_queen/set/HashTableBasedSet.kt) provides the functions `manualRehash()`
+and `shrinkToLoadFactor()`.
 The function `manualRehash()` effectively frees all the deleted cells without changing the size of the underlying structure.
 It is useful if you plan on adding more elements to the set.
 The function `shrinkToLoadFactor()` does the same, but also shrinks the structure to match the load factor.
@@ -273,7 +291,8 @@ Usually I don't like the builder pattern.
 In most cases it lacks benefits and adds unnecessary complexity.
 Here, however, I saw potential in utilizing the builder pattern for creating arbitrary primitive maps.
 
-The class `HashTableBasedMapBuilder` contains everything that is required for creating a map with primitive key types and arbitrary value types.
+The class [`HashTableBasedMapBuilder`](src/main/kotlin/de/dreamcube/hornet_queen/map/HashTableBasedMapBuilder.kt) contains everything that is required
+for creating a map with primitive key types and arbitrary value types.
 I will explain its usage with examples.
 
 ##### Kotlin
@@ -340,12 +359,12 @@ Since this is the first release, there have not been any questions yet ... there
     - Actually, a Trove4J based implementation of their HashTable for UUID keys was the core inspiration for Hornet Queen.
       I had to copy a lot of their code to make it work and I realized that this approach was not feasible at all.
       This experience also lead to my desire to avoid code generation at all costs.
-- What are you hiding in the `hash` package besides the test cases?
+- What are you hiding in the `hash` package among the test cases?
     - Just go and see for yourself :-)
 
 ## Planned features for the future
 
-- Faster copying of native generic arrays
+- ~~Faster copying of native generic arrays~~
 - Tree based sets and maps
     - Trading more time for less space ... if done correctly
 - Heap based priority queues
