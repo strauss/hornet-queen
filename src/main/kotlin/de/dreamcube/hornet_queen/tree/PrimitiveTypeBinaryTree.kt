@@ -33,7 +33,7 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
     /**
      * Contains the actual keys.
      */
-    private var keys: PrimitiveArray<K> = keyArraySupplier(initialSize)
+    internal var keys: PrimitiveArray<K> = keyArraySupplier(initialSize)
 
     /**
      * Contains the left child of every node.
@@ -129,6 +129,10 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
             }
         }
         size -= 1
+        if (index == rootIndex) {
+            rootIndex = NO_INDEX
+            return
+        }
         if (left[parent[index]] == index) {
             left[parent[index]] = NO_INDEX
         }
@@ -148,9 +152,11 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
         if (size == rootIndex) {
             rootIndex = index
         } else {
+            // If the moved key is its parent's left element, adjust the left reference of the parent
             if (left[parent[size]] == size) {
                 left[parent[size]] = index
             }
+            // If the moved key is its parent's right element, adjust the right reference of the parent
             if (right[parent[size]] == size) {
                 right[parent[size]] = index
             }
@@ -158,6 +164,13 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
         left[index] = left[size]
         right[index] = right[size]
         parent[index] = parent[size]
+        // Fix parent reference for left and right
+        if (left[index] != NO_INDEX) {
+            parent[left[index]] = index
+        }
+        if (right[index] != NO_INDEX) {
+            parent[right[index]] = index
+        }
         left[size] = NO_INDEX
         right[size] = NO_INDEX
         parent[size] = NO_INDEX
@@ -282,6 +295,8 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
         }
     }
 
+    internal fun indexIterator(): MutableIterator<Int> = BinaryTreeInorderIndexIterator()
+
     /**
      * Inserts the given [key] to this binary tree. Returns [NO_INDEX] if duplicates are forbidden and it is already contained.
      */
@@ -360,7 +375,7 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
         parent = parent.getResizedCopy(difference)
     }
 
-    internal inner class BinaryTreeInorderIndexIterator : Iterator<Int> {
+    internal inner class BinaryTreeInorderIndexIterator : MutableIterator<Int> {
         private var currentPosition: Int = rootIndex
         private val iteratorChangeCount = changeCount
 
@@ -385,7 +400,7 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
             if (right[currentPosition] != NO_INDEX) {
                 currentPosition = right[currentPosition]
                 dropLeft()
-            } else {
+            } else if (parent[currentPosition] != NO_INDEX) {
                 if (currentPosition == right[parent[currentPosition]]) {
 
                     // If we have finished a right branch, we need to raise one layer up until the finished branch becomes a left one.
@@ -395,7 +410,9 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
                 }
                 // If we just finished a left branch, we only need to go up one layer. That element will be the next one.
                 currentPosition = parent[currentPosition]
-
+            } else {
+                // Special case: Root node is last element, therefore no parent and no right branch
+                currentPosition = NO_INDEX
             }
         }
 
@@ -407,6 +424,10 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
             returnedElements += 1
             seekRight()
             return result
+        }
+
+        override fun remove() {
+            TODO("Not yet implemented")
         }
 
     }

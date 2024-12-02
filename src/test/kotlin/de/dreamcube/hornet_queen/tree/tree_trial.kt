@@ -20,6 +20,9 @@ package de.dreamcube.hornet_queen.tree
 fun main() {
     val tree: PrimitiveTypeBinaryTree<Int> = PrimitiveIntBinaryTree()
     tree.insertAndPrint(100)
+
+    tree.inorderElements()
+
     tree.insertAndPrint(50)
     tree.insertAndPrint(150)
     tree.insertAndPrint(25)

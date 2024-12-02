@@ -336,8 +336,8 @@ Please note that `useIntValue()` and all other corresponding functions also have
 - The generic arrays are no classical arrays and all array convenience functions in Kotlin and convenience methods from the class `Arrays` are not
   applicable.
     - For now, this seems to be an unsolvable problem. Maybe I will provide some of these functions/methods in the future.
-- Copying a native generic array is slower for greater array sizes.
-    - This might be solvable by using the `ByteBuffer` as intended.
+- Array based lists cannot be reversed with `Collections.reverse()` at least not always.
+  There seems to be a boundary issue with my idea of a list iterator.
 
 ## (E)FAQs
 
