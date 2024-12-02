@@ -30,7 +30,7 @@ import java.util.*
 abstract class PrimitiveArrayList<T> protected constructor(
     arraySupplier: (Int) -> PrimitiveArray<T>,
     initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE
-) : PrimitiveArrayBasedList<T>() {
+) : PrimitiveArrayBasedList<T>(), RandomAccess {
 
     private var array: PrimitiveArray<T> = arraySupplier(initialSize)
     private var nextFreeIndex = 0
