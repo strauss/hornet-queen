@@ -51,6 +51,8 @@ abstract class HashTableBasedSet<T>(private val hashTable: PrimitiveTypeHashTabl
      * calling this function is when you know that you will not add any new elements.
      */
     fun shrinkToLoadFactor() = hashTable.shrinkToLoadFactor()
+
+    override fun toString() = asString()
 }
 
 class PrimitiveByteSet
