@@ -161,11 +161,6 @@ The native `ByteBuffer` is the main reason why Hornet Queen performs very well i
 
 #### Disadvantages
 
-- ~~The generic array implementation does not support `System.arrayCopy` directly, when in native mode.~~
-    - ~~The function `getResizedCopy` indirectly uses it when in non-native mode.~~
-    - ~~Ironically, in native mode this operation is not supported at all. Here, a manual copy operation is used. However, up to a certain length of
-      the
-      underlying buffer, it is still faster than `System.arraycopy` on a regular array.~~
 - The underlying structure of `ByteBuffer` is always a byte array with a maximum size of about 2GB (2^31 bytes). Therefore, the index space is
   limited, based on the primitive data type. It always starts at 0 and ends at:
     - `Byte`:  2,147,483,647 (`Int.MAX_VALUE` - 8)
@@ -336,8 +331,6 @@ Please note that `useIntValue()` and all other corresponding functions also have
 - The generic arrays are no classical arrays and all array convenience functions in Kotlin and convenience methods from the class `Arrays` are not
   applicable.
     - For now, this seems to be an unsolvable problem. Maybe I will provide some of these functions/methods in the future.
-- Copying a native generic array is slower for greater array sizes.
-    - This might be solvable by using the `ByteBuffer` as intended.
 
 ## (E)FAQs
 
@@ -364,7 +357,6 @@ Since this is the first release, there have not been any questions yet ... there
 
 ## Planned features for the future
 
-- ~~Faster copying of native generic arrays~~
 - Tree based sets and maps
     - Trading more time for less space ... if done correctly
 - Heap based priority queues

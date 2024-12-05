@@ -333,7 +333,7 @@ abstract class PrimitiveLinkedList<T> protected constructor(
 
     override fun listIterator(): MutableListIterator<T> = PrimitiveLinkedListIterator()
 
-    override fun listIterator(index: Int): MutableListIterator<T> = PrimitiveLinkedListIterator(index)
+    override fun listIterator(index: Int): MutableListIterator<T> = PrimitiveLinkedListIterator(initIndex = index)
 
     override fun rangedListIterator(startIndex: Int, endIndex: Int): MutableListIterator<T> =
         PrimitiveLinkedListIterator(startIndex, endIndex)
@@ -383,16 +383,18 @@ abstract class PrimitiveLinkedList<T> protected constructor(
      * [MutableListIterator] for [PrimitiveLinkedList] for iterating from [startIndex] (inclusive) to [endIndex]
      * (exclusive).
      */
-    inner class PrimitiveLinkedListIterator(startIndex: Int = 0, endIndex: Int = size) :
-        AbstractArrayBasedListIterator<T>(startIndex, endIndex) {
+    inner class PrimitiveLinkedListIterator(startIndex: Int = 0, endIndex: Int = size, initIndex: Int = startIndex) :
+        AbstractArrayBasedListIterator<T>(startIndex, endIndex, initIndex) {
 
         private var nextInternalIndex: Int = NO_INDEX
         private var lastInternalNextCallIndex: Int = NO_INDEX
 
         init {
             if (isNotEmpty()) {
-                nextInternalIndex = seekInternalIndex(nextIndex)
-                checkBounds(startIndex, endIndex, size)
+                checkBounds(startIndex, endIndex, size, nextIndex)
+                if (initIndex < size) {
+                    nextInternalIndex = seekInternalIndex(nextIndex)
+                }
             }
         }
 
