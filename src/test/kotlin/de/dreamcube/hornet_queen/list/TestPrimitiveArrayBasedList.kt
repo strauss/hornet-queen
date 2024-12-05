@@ -424,6 +424,15 @@ class TestPrimitiveArrayBasedList<T>(
         testIterator.remove()
         assertIteratorBackToBeginning(referenceIterator, testIterator)
         assertIteratorUntilEnd(referenceIterator, testIterator)
+
+        // Bounds checks
+        Assert.assertThrows(IndexOutOfBoundsException::class.java) { testList.listIterator(-1) }
+        Assert.assertThrows(IndexOutOfBoundsException::class.java) { testList.listIterator(testList.size + 1) }
+
+        // Test pure backwards iterator
+        referenceIterator = referenceList.listIterator(referenceList.size)
+        testIterator = testList.listIterator(testList.size)
+        assertIteratorBackToBeginning(referenceIterator, testIterator)
     }
 
     @Test
