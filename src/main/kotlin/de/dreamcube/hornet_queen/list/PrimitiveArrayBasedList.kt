@@ -106,6 +106,14 @@ abstract class PrimitiveArrayBasedList<T> : MutableList<T> {
         return removed
     }
 
+    override fun toString(): String {
+        val result = StringBuilder()
+        result.append('[')
+        result.append(asSequence().joinToString(", "))
+        result.append(']')
+        return result.toString()
+    }
+
     abstract class AbstractArrayBasedListIterator<T>(protected val startIndex: Int = 0, protected var endIndex: Int) :
         MutableListIterator<T> {
 

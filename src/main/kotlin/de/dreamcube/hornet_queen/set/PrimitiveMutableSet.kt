@@ -57,4 +57,12 @@ interface PrimitiveMutableSet<T> : MutableSet<T> {
         return result
     }
 
+    fun asString(): String {
+        val result = StringBuilder()
+        result.append('{')
+        result.append(asSequence().joinToString(", "))
+        result.append('}')
+        return result.toString()
+    }
+
 }

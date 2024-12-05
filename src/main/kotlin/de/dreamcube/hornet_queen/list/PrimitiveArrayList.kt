@@ -30,7 +30,7 @@ import java.util.*
 abstract class PrimitiveArrayList<T> protected constructor(
     arraySupplier: (Int) -> PrimitiveArray<T>,
     initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE
-) : PrimitiveArrayBasedList<T>() {
+) : PrimitiveArrayBasedList<T>(), RandomAccess {
 
     private var array: PrimitiveArray<T> = arraySupplier(initialSize)
     private var nextFreeIndex = 0
@@ -240,22 +240,22 @@ abstract class PrimitiveArrayList<T> protected constructor(
 
     }
 
-    override fun toString(): String {
-        val result = StringBuilder()
-        result.append('[')
-        @Suppress("kotlin:S6529") // here we compare size in both if statements. This is more readable.
-        if (size > 0) {
-            result.append(this[0])
-        }
-        if (size > 1) {
-            for (i in 1..<size) {
-                result.append(',')
-                result.append(this[i])
-            }
-        }
-        result.append(']')
-        return result.toString()
-    }
+//    override fun toString(): String {
+//        val result = StringBuilder()
+//        result.append('[')
+//        @Suppress("kotlin:S6529") // here we compare size in both if statements. This is more readable.
+//        if (size > 0) {
+//            result.append(this[0])
+//        }
+//        if (size > 1) {
+//            for (i in 1..<size) {
+//                result.append(',')
+//                result.append(this[i])
+//            }
+//        }
+//        result.append(']')
+//        return result.toString()
+//    }
 }
 
 class PrimitiveByteArrayList
