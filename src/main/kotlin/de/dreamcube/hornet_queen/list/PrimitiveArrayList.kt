@@ -128,7 +128,7 @@ abstract class PrimitiveArrayList<T> protected constructor(
 
     override fun listIterator(): MutableListIterator<T> = PrimitiveArrayListIterator()
 
-    override fun listIterator(index: Int): MutableListIterator<T> = PrimitiveArrayListIterator(index)
+    override fun listIterator(index: Int): MutableListIterator<T> = PrimitiveArrayListIterator(initIndex = index)
 
     override fun rangedListIterator(startIndex: Int, endIndex: Int): MutableListIterator<T> =
         PrimitiveArrayListIterator(startIndex, endIndex)
@@ -171,12 +171,12 @@ abstract class PrimitiveArrayList<T> protected constructor(
      * [MutableListIterator] for [PrimitiveArrayList] for iterating from [startIndex] (inclusive) to [endIndex]
      * (exclusive).
      */
-    inner class PrimitiveArrayListIterator(startIndex: Int = 0, endIndex: Int = size) :
-        AbstractArrayBasedListIterator<T>(startIndex, endIndex) {
+    inner class PrimitiveArrayListIterator(startIndex: Int = 0, endIndex: Int = size, initIndex: Int = startIndex) :
+        AbstractArrayBasedListIterator<T>(startIndex, endIndex, initIndex) {
 
         init {
             if (isNotEmpty()) {
-                checkBounds(startIndex, endIndex, size)
+                checkBounds(startIndex, endIndex, size, nextIndex)
             }
         }
 
@@ -234,23 +234,6 @@ abstract class PrimitiveArrayList<T> protected constructor(
             callState = IteratorCallState.SET
         }
 
-    }
-
-    override fun toString(): String {
-        val result = StringBuilder()
-        result.append('[')
-        @Suppress("kotlin:S6529") // here we compare size in both if statements. This is more readable.
-        if (size > 0) {
-            result.append(this[0])
-        }
-        if (size > 1) {
-            for (i in 1..<size) {
-                result.append(',')
-                result.append(this[i])
-            }
-        }
-        result.append(']')
-        return result.toString()
     }
 }
 

@@ -56,6 +56,8 @@ abstract class BitSetBasedSet<T>(private val toInt: T.() -> Int, private val fro
         return contained
     }
 
+    override fun toString() = asString()
+
     inner class BitSetIterator : MutableIterator<T> {
 
         private var nextProbePosition = 0
@@ -154,6 +156,8 @@ class PrimitiveIntSetB : PrimitiveMutableSet<Int> {
         }
         return positiveSet.contains(element)
     }
+
+    override fun toString() = asString()
 
 }
 
