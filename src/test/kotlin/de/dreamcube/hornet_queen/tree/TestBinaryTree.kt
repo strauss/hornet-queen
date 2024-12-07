@@ -18,6 +18,7 @@
 package de.dreamcube.hornet_queen.tree
 
 import de.dreamcube.hornet_queen.list.PrimitiveIntArrayList
+import de.dreamcube.hornet_queen.set.PrimitiveIntSetB
 import org.junit.Before
 import org.junit.Test
 import java.util.*
@@ -61,6 +62,35 @@ class TestBinaryTree {
             includedElements.remove(it)
             testTree.removeKey(it)
             assertInvariants(includedElements)
+        }
+    }
+
+    @Test
+    fun testIteratorRemove() {
+        val includedElements: MutableList<Int> = PrimitiveIntArrayList()
+        testData.forEach {
+            includedElements.add(it)
+            testTree.insertKey(it)
+        }
+        val testDataCopy = PrimitiveIntArrayList()
+        testDataCopy.addAll(testData)
+        Collections.sort(testDataCopy)
+        val removeElements: MutableSet<Int> = PrimitiveIntSetB()
+        removeElements.add(testDataCopy[0])
+        removeElements.add(testDataCopy[testDataCopy.size / 2 - 1])
+        removeElements.add(testDataCopy[testDataCopy.size / 2 + 1])
+        removeElements.add(testDataCopy[testDataCopy.size / 2])
+        removeElements.add(testDataCopy[testDataCopy.size - 1])
+
+        val indexIterator = testTree.indexIterator()
+        while (indexIterator.hasNext()) {
+            val nextIndex = indexIterator.next()
+            val nextElement = testTree.keys[nextIndex]
+            if (removeElements.contains(nextElement)) {
+                indexIterator.remove()
+                includedElements.remove(nextElement)
+                assertInvariants(includedElements)
+            }
         }
     }
 

@@ -376,13 +376,28 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
     }
 
     internal inner class BinaryTreeInorderIndexIterator : MutableIterator<Int> {
-        private var currentPosition: Int = rootIndex
-        private val iteratorChangeCount = changeCount
-
-        private var returnedElements = 0
+        private var currentPosition: Int
+        private var iteratorChangeCount: Int
+        private var lastDeliveredIndex: Int
+        private var returnedElements: Int
 
         init {
+            currentPosition = rootIndex
+            iteratorChangeCount = changeCount
+            lastDeliveredIndex = NO_INDEX
+            returnedElements = 0
             dropLeft()
+        }
+
+        private fun reset(position: Int) {
+            currentPosition = rootIndex
+            iteratorChangeCount = changeCount
+            returnedElements = 0
+            dropLeft()
+            while (hasNext() && currentPosition != position) {
+                next()
+            }
+            lastDeliveredIndex = NO_INDEX
         }
 
         override fun hasNext(): Boolean = returnedElements < size
@@ -420,14 +435,24 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
             if (changeCount != iteratorChangeCount) {
                 throw ConcurrentModificationException()
             }
-            val result: Int = currentPosition
+            lastDeliveredIndex = currentPosition
             returnedElements += 1
             seekRight()
-            return result
+            return lastDeliveredIndex
         }
 
         override fun remove() {
-            TODO("Not yet implemented")
+            if (changeCount != iteratorChangeCount) {
+                throw ConcurrentModificationException()
+            }
+            if (lastDeliveredIndex == NO_INDEX) {
+                throw IllegalStateException()
+            }
+            this@PrimitiveTypeBinaryTree.removeKeyAt(lastDeliveredIndex)
+            returnedElements -= 1
+            if (hasNext()) {
+                reset(currentPosition)
+            }
         }
 
     }
