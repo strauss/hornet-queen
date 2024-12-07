@@ -52,6 +52,22 @@ fun main() {
 
     printTree(tree)
 
+    val indexIterator = tree.indexIterator()
+    var sustained = 0
+    while (indexIterator.hasNext()) {
+        val current: Int = indexIterator.next()
+        val element = tree.keys[current]
+        if (element % 2 == 1) {
+            println("Removing   $element")
+            indexIterator.remove()
+        } else {
+            println("Sustaining $element")
+            sustained += 1
+        }
+    }
+    println("Sustained: $sustained")
+    printTree(tree)
+
     println("Fini.")
 }
 
