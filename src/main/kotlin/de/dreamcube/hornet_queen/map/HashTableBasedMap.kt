@@ -101,6 +101,8 @@ abstract class HashTableBasedMap<K, V>(val hashTable: PrimitiveTypeHashTable<K, 
      */
     fun shrinkToLoadFactor() = hashTable.shrinkToLoadFactor()
 
+    override fun toString() = entries.toString()
+
     class KeySet<K>(private val hashTable: PrimitiveTypeHashTable<K, *>) : PrimitiveMutableSet<K> {
         override fun add(element: K): Boolean =
             throw UnsupportedOperationException("This call does not make any sense. Use the put function of the map.")
@@ -117,6 +119,8 @@ abstract class HashTableBasedMap<K, V>(val hashTable: PrimitiveTypeHashTable<K, 
         override fun remove(element: K): Boolean = hashTable.removeKey(element) >= 0
 
         override fun contains(element: K): Boolean = hashTable.containsKey(element)
+
+        override fun toString() = asString()
     }
 
     inner class EntrySet : PrimitiveMutableSet<MutableMap.MutableEntry<K, V>> {
@@ -146,6 +150,8 @@ abstract class HashTableBasedMap<K, V>(val hashTable: PrimitiveTypeHashTable<K, 
 
         override fun remove(element: MutableMap.MutableEntry<K, V>): Boolean =
             this@HashTableBasedMap.remove(element.key) != null
+
+        override fun toString() = asString()
 
         inner class EntrySetIterator : MutableIterator<MutableMap.MutableEntry<K, V>> {
             private val actualIterator: HashTableSetIterator<K> = HashTableSetIterator(hashTable)
@@ -192,6 +198,8 @@ abstract class HashTableBasedMap<K, V>(val hashTable: PrimitiveTypeHashTable<K, 
             result = 31 * result + (value?.hashCode() ?: 0)
             return result
         }
+
+        override fun toString(): String = "($key => $value)"
 
     }
 

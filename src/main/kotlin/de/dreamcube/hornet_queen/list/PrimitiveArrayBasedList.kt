@@ -99,10 +99,19 @@ abstract class PrimitiveArrayBasedList<T> : MutableList<T> {
         return removed
     }
 
-    abstract class AbstractArrayBasedListIterator<T>(protected val startIndex: Int = 0, protected var endIndex: Int) :
+    override fun toString(): String {
+        val result = StringBuilder()
+        result.append('[')
+        result.append(asSequence().joinToString(", "))
+        result.append(']')
+        return result.toString()
+    }
+
+    abstract class AbstractArrayBasedListIterator<T>(
+        protected val startIndex: Int = 0, protected var endIndex: Int, protected var nextIndex: Int = startIndex
+    ) :
         MutableListIterator<T> {
 
-        protected var nextIndex = startIndex
         protected var callState: IteratorCallState = IteratorCallState.INIT
 
         enum class IteratorCallState {
@@ -131,7 +140,7 @@ abstract class PrimitiveArrayBasedList<T> : MutableList<T> {
  * @throws IndexOutOfBoundsException if any given index is out of bounds
  * @throws IllegalStateException if the [startIndex] is bigger than (or equal to) [endIndex]
  */
-internal fun checkBounds(startIndex: Int, endIndex: Int, size: Int) {
+internal fun checkBounds(startIndex: Int, endIndex: Int, size: Int, initIndex: Int = startIndex) {
     if (startIndex !in 0..<size) {
         throw IndexOutOfBoundsException(startIndex)
     }
@@ -140,5 +149,8 @@ internal fun checkBounds(startIndex: Int, endIndex: Int, size: Int) {
     }
     if (startIndex > endIndex) {
         throw IllegalArgumentException("Lower $startIndex index is bigger than upper index $endIndex.")
+    }
+    if (initIndex !in startIndex..endIndex) {
+        throw IndexOutOfBoundsException(initIndex)
     }
 }
