@@ -17,10 +17,11 @@
 
 package de.dreamcube.hornet_queen.tree
 
-import de.dreamcube.hornet_queen.ConfigurableConstants
-import de.dreamcube.hornet_queen.NO_INDEX
-import de.dreamcube.hornet_queen.array.PrimitiveArray
-import de.dreamcube.hornet_queen.array.PrimitiveIntArray
+import de.dreamcube.hornet_queen.*
+import de.dreamcube.hornet_queen.array.*
+import de.dreamcube.hornet_queen.list.PrimitiveIntArrayList
+import de.dreamcube.hornet_queen.set.PrimitiveIntSetB
+import java.util.*
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -74,7 +75,7 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
         markAsEmpty()
     }
 
-    private fun markAsEmpty() {
+    internal fun markAsEmpty() {
         size = 0
         rootIndex = NO_INDEX
     }
@@ -122,7 +123,7 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
     private fun removeKeyAt(index: Int) {
         // for removal, we rotate until the element is a leaf
         while (!isLeaf(index)) {
-            if (height(left[index]) < height(right[index])) {
+            if (heightR(left[index]) < heightR(right[index])) {
                 rotateLeft(index)
             } else {
                 rotateRight(index)
@@ -215,21 +216,25 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
         return indexOther
     }
 
-    fun isBalanced() = isBalanced(rootIndex)
+    // TODO: actually implement it correctly, this is just for dev purposes
+    fun isBalanced() = true // isBalanced(rootIndex)
 
     internal fun isBalanced(index: Int): Boolean {
         if (index == NO_INDEX) {
             return true
         }
 
-        if (abs(height(left[index]) - height(right[index])) > 1) {
+        if (abs(heightR(left[index]) - heightR(right[index])) > 1) {
             return false
         }
 
         return isBalanced(left[index]) && isBalanced(right[index])
     }
 
-    internal fun balance() = balance(rootIndex)
+    internal fun balance() {
+        // TODO: this is highly inefficient in this implementation
+        //balance(rootIndex)
+    }
 
     private fun balance(index: Int) {
         if (isBalanced(index)) {
@@ -244,11 +249,11 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
             balance(rightIndex)
         }
         // if both are balanced, the height difference is significant, and we need to adjust for that
-        if (height(leftIndex) > height(rightIndex)) {
+        if (heightR(leftIndex) > heightR(rightIndex)) {
             // left subtree is higher than the right one --> rotate the whole tree to the right and balance again
             val rightOfLeftIndex = right[leftIndex]
             val leftOfLeftIndex = left[leftIndex]
-            if (height(rightOfLeftIndex) > height(leftOfLeftIndex)) {
+            if (heightR(rightOfLeftIndex) > heightR(leftOfLeftIndex)) {
                 // the bigger subtree needs to be kept "outside"
                 rotateLeft(leftIndex)
             }
@@ -258,7 +263,7 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
             // right subtree is higher than the left one --> rotate the whole tree to the left and balance again
             val leftOfRightIndex = left[rightIndex]
             val rightOfRightIndex = right[rightIndex]
-            if (height(leftOfRightIndex) > height(rightOfRightIndex)) {
+            if (heightR(leftOfRightIndex) > heightR(rightOfRightIndex)) {
                 // the bigger subtree needs to be kept "outside"
                 rotateRight(rightIndex)
             }
@@ -274,17 +279,122 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
     internal fun <N> fold(neutralElement: N, index: Int, f: (N, Int, N) -> N): N = if (index == NO_INDEX) neutralElement else
         f(fold(neutralElement, left[index], f), index, fold(neutralElement, right[index], f))
 
-    fun height(): Int = height(rootIndex)
+    fun height(): Int = heightI(rootIndex)
 
-    internal fun height(index: Int) = fold(-1, index) { leftHeight: Int, _, rightHeight: Int ->
+    internal fun heightR(index: Int) = fold(-1, index) { leftHeight: Int, _, rightHeight: Int ->
         1 + max(leftHeight, rightHeight)
     }
 
-    override fun toString(): String = fold("", rootIndex) { leftString: String, index: Int, rightString: String ->
+    fun toStringR(): String = fold("", rootIndex) { leftString: String, index: Int, rightString: String ->
         if (index == rootIndex)
             "($leftString [${keys[index]}] $rightString)"
         else
             "($leftString ${keys[index]} $rightString)"
+    }
+
+    internal fun traverseTree(index: Int, visitor: TreeVisitor<K>) {
+        if (index == NO_INDEX) {
+            return
+        }
+
+        val stack = PrimitiveIntArrayList()
+        val visitedLeft = PrimitiveIntSetB()
+        val visitedRight = PrimitiveIntSetB()
+        val nodeProcessed = PrimitiveIntSetB()
+
+        stack.add(index)
+        while (stack.isNotEmpty()) {
+            val currentIndex = stack[stack.lastIndex]
+            val currentElement = keys[currentIndex]
+
+            if (!visitedLeft.contains(currentIndex) && !visitedRight.contains(currentIndex)) {
+                visitor.enterNode(currentElement, stack.size, currentIndex == index)
+            }
+
+            if (!visitedLeft.contains(currentIndex)) {
+                visitedLeft.add(currentIndex)
+                if (left[currentIndex] != NO_INDEX) {
+                    stack.add(left[currentIndex])
+                    continue
+                }
+            }
+
+            if (!nodeProcessed.contains(currentIndex)) {
+                visitor.visitNode(currentElement, stack.size, currentIndex == index)
+                nodeProcessed.add(currentIndex)
+            }
+
+            if (!visitedRight.contains(currentIndex)) {
+                visitedRight.add(currentIndex)
+                if (right[currentIndex] != NO_INDEX) {
+                    stack.add(right[currentIndex])
+                    continue
+                }
+            }
+
+            visitor.leaveNode(currentElement, stack.size, currentIndex == index)
+            stack.removeLast()
+        }
+    }
+
+    internal fun heightI(index: Int): Int {
+        val visitor = HeightVisitor<K>()
+        traverseTree(index, visitor)
+        return visitor.height - 1
+    }
+
+
+    override fun toString(): String {
+        val toStringVisitor = ToStringVisitor<K>()
+        traverseTree(rootIndex, toStringVisitor)
+        return toStringVisitor.result
+    }
+
+    interface TreeVisitor<K> {
+
+        fun enterNode(node: K, depth: Int, root: Boolean) {
+            // nothing by default
+        }
+
+        fun visitNode(node: K, depth: Int, root: Boolean) {
+            // nothing by default
+        }
+
+        fun leaveNode(node: K, depth: Int, root: Boolean) {
+            // nothing by default
+        }
+
+    }
+
+    private class HeightVisitor<K> : TreeVisitor<K> {
+        var height: Int = 0
+            private set
+
+        override fun enterNode(node: K, depth: Int, root: Boolean) {
+            height = max(height, depth)
+        }
+    }
+
+    private class ToStringVisitor<K> : TreeVisitor<K> {
+        private val builder = StringBuilder()
+        val result
+            get() = builder.toString()
+
+        override fun enterNode(node: K, depth: Int, root: Boolean) {
+            builder.append("(")
+        }
+
+        override fun visitNode(node: K, depth: Int, root: Boolean) {
+            if (root) {
+                builder.append(" [$node] ")
+            } else {
+                builder.append(" $node ")
+            }
+        }
+
+        override fun leaveNode(node: K, depth: Int, root: Boolean) {
+            builder.append(")")
+        }
     }
 
     internal fun inorderElements() {
@@ -295,7 +405,9 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
         }
     }
 
-    internal fun indexIterator(): MutableIterator<Int> = BinaryTreeInorderIndexIterator()
+    internal fun inorderIndexIterator(): MutableIterator<Int> = BinaryTreeInorderIndexIterator()
+
+    internal fun unorderedIndexIterator(): MutableIterator<Int> = BinaryTreeUnorderedIndexIterator()
 
     /**
      * Inserts the given [key] to this binary tree. Returns [NO_INDEX] if duplicates are forbidden and it is already contained.
@@ -375,6 +487,110 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
         parent = parent.getResizedCopy(difference)
     }
 
+    internal inner class BinaryTreeDFSIndexIterator() :
+        MutableIterator<Int> {
+        /**
+         * The top of the [stack] is the last index of the array list. We push by calling [MutableList.add] and we pop by calling
+         * [MutableList.removeLast]. We also abuse the fact, that the [stack] is a list by removing indexes, if we have to remove something.
+         */
+        private val stack = PrimitiveIntArrayList()
+        private val visitedLeft = PrimitiveIntSetB()
+        private val visitedRight = PrimitiveIntSetB()
+        private val nodeProcessed = PrimitiveIntSetB()
+        private var iteratorChangeCount = changeCount
+        private var lastDeliveredIndex = NO_INDEX
+        private val currentPosition
+            get() = if (stack.isEmpty()) NO_INDEX else stack[stack.lastIndex]
+
+        init {
+            if (rootIndex != NO_INDEX) {
+                stack.add(rootIndex)
+            }
+            move()
+        }
+
+        private fun reset(position: Int) {
+            stack.clear()
+            visitedLeft.clear()
+            visitedRight.clear()
+            nodeProcessed.clear()
+            iteratorChangeCount = changeCount
+            if (rootIndex != NO_INDEX) {
+                stack.add(rootIndex)
+            }
+            move()
+            while (hasNext() && currentPosition != position) {
+                next()
+            }
+            lastDeliveredIndex = NO_INDEX
+        }
+
+        private fun move() {
+            // if we start with NO_INDEX, the stack will be empty and move won't do anything
+            while (stack.isNotEmpty()) {
+                if (!visitedLeft.contains(currentPosition)) {
+                    visitedLeft.add(currentPosition)
+                    if (left[currentPosition] != NO_INDEX) {
+                        stack.add(left[currentPosition])
+                        continue
+                    }
+                }
+
+                if (!nodeProcessed.contains(currentPosition)) {
+                    nodeProcessed.add(currentPosition)
+                    // we have literally reached the next node for the iteration
+                    // calling "move" again will resume after this if-Block,
+                    // because the current node is still on top of the stack
+                    return
+                }
+
+                if (!visitedRight.contains(currentPosition)) {
+                    visitedRight.add(currentPosition)
+                    if (right[currentPosition] != NO_INDEX) {
+                        stack.add(right[currentPosition])
+                        continue
+                    }
+                }
+
+                // At this point, both the left and the right subtree have been processed, and we can finally remove the current node from the stack
+                stack.removeLast()
+            }
+        }
+
+        override fun hasNext(): Boolean = stack.isNotEmpty()
+
+        override fun next(): Int {
+            if (changeCount != iteratorChangeCount) {
+                throw ConcurrentModificationException()
+            }
+            if (!hasNext()) {
+                throw NoSuchElementException()
+            }
+            lastDeliveredIndex = stack[stack.lastIndex]
+            move()
+            return lastDeliveredIndex
+        }
+
+        override fun remove() {
+            if (changeCount != iteratorChangeCount) {
+                throw ConcurrentModificationException()
+            }
+            if (lastDeliveredIndex == NO_INDEX) {
+                throw IllegalStateException()
+            }
+            this@PrimitiveTypeBinaryTree.removeKeyAt(lastDeliveredIndex)
+
+            if (hasNext()) {
+                if (currentPosition == size) {
+                    // This case happens if the current Position was used to fill the gap after deletion
+                    reset(lastDeliveredIndex)
+                } else {
+                    reset(currentPosition)
+                }
+            }
+        }
+    }
+
     internal inner class BinaryTreeInorderIndexIterator : MutableIterator<Int> {
         private var currentPosition: Int
         private var iteratorChangeCount: Int
@@ -435,6 +651,9 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
             if (changeCount != iteratorChangeCount) {
                 throw ConcurrentModificationException()
             }
+            if (!hasNext()) {
+                throw NoSuchElementException()
+            }
             lastDeliveredIndex = currentPosition
             returnedElements += 1
             seekRight()
@@ -449,6 +668,10 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
                 throw IllegalStateException()
             }
             this@PrimitiveTypeBinaryTree.removeKeyAt(lastDeliveredIndex)
+            // This case happens if the current Position was used to fill the gap after deletion
+            if (currentPosition == size) {
+                currentPosition = lastDeliveredIndex
+            }
             returnedElements -= 1
             if (hasNext()) {
                 reset(currentPosition)
@@ -457,12 +680,105 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
 
     }
 
+    internal inner class BinaryTreeUnorderedIndexIterator : MutableIterator<Int> {
+        private var iteratorChangeCount: Int = changeCount
+        private var currentPosition = 0
+        private var lastDeliveredIndex: Int = NO_INDEX
+
+        override fun hasNext(): Boolean = currentPosition < size
+        override fun next(): Int {
+            if (changeCount != iteratorChangeCount) {
+                throw ConcurrentModificationException()
+            }
+            if (!hasNext()) {
+                throw NoSuchElementException()
+            }
+            lastDeliveredIndex = currentPosition
+            currentPosition += 1
+            return lastDeliveredIndex
+        }
+
+        override fun remove() {
+            if (changeCount != iteratorChangeCount) {
+                throw ConcurrentModificationException()
+            }
+            if (lastDeliveredIndex == NO_INDEX) {
+                throw IllegalStateException()
+            }
+            this@PrimitiveTypeBinaryTree.removeKeyAt(lastDeliveredIndex)
+            // This case happens if the current Position was used to fill the gap after deletion
+            if (currentPosition == size) {
+                currentPosition = lastDeliveredIndex
+            }
+            currentPosition -= 1
+            if (hasNext()) {
+                iteratorChangeCount = changeCount
+            }
+        }
+    }
+
 }
 
-
-class PrimitiveIntBinaryTree @JvmOverloads constructor(
+class PrimitiveByteBinaryTree
+@JvmOverloads constructor(
     initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     allowDuplicates: Boolean = false,
-    comparator: Comparator<Int> = Comparator { a: Int, b: Int -> a.compareTo(b) },
+    comparator: Comparator<Byte> = DEFAULT_BYTE_COMPARATOR,
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
+) : PrimitiveTypeBinaryTree<Byte>(initialSize, allowDuplicates, { size: Int -> PrimitiveByteArray(size, native) }, comparator)
+
+class PrimitiveShortBinaryTree
+@JvmOverloads constructor(
+    initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    allowDuplicates: Boolean = false,
+    comparator: Comparator<Short> = DEFAULT_SHORT_COMPARATOR,
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
+) : PrimitiveTypeBinaryTree<Short>(initialSize, allowDuplicates, { size: Int -> PrimitiveShortArray(size, native) }, comparator)
+
+class PrimitiveCharBinaryTree
+@JvmOverloads constructor(
+    initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    allowDuplicates: Boolean = false,
+    comparator: Comparator<Char> = DEFAULT_CHAR_COMPARATOR,
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
+) : PrimitiveTypeBinaryTree<Char>(initialSize, allowDuplicates, { size: Int -> PrimitiveCharArray(size, native) }, comparator)
+
+class PrimitiveIntBinaryTree
+@JvmOverloads constructor(
+    initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    allowDuplicates: Boolean = false,
+    comparator: Comparator<Int> = DEFAULT_INT_COMPARATOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
 ) : PrimitiveTypeBinaryTree<Int>(initialSize, allowDuplicates, { size: Int -> PrimitiveIntArray(size, native) }, comparator)
+
+class PrimitiveLongBinaryTree
+@JvmOverloads constructor(
+    initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    allowDuplicates: Boolean = false,
+    comparator: Comparator<Long> = DEFAULT_LONG_COMPARATOR,
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
+) : PrimitiveTypeBinaryTree<Long>(initialSize, allowDuplicates, { size: Int -> PrimitiveLongArray(size, native) }, comparator)
+
+class PrimitiveFloatBinaryTree
+@JvmOverloads constructor(
+    initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    allowDuplicates: Boolean = false,
+    comparator: Comparator<Float> = DEFAULT_FLOAT_COMPARATOR,
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
+) : PrimitiveTypeBinaryTree<Float>(initialSize, allowDuplicates, { size: Int -> PrimitiveFloatArray(size, native) }, comparator)
+
+class PrimitiveDoubleBinaryTree
+@JvmOverloads constructor(
+    initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    allowDuplicates: Boolean = false,
+    comparator: Comparator<Double> = DEFAULT_DOUBLE_COMPARATOR,
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
+) : PrimitiveTypeBinaryTree<Double>(initialSize, allowDuplicates, { size: Int -> PrimitiveDoubleArray(size, native) }, comparator)
+
+class UUIDBinaryTree
+@JvmOverloads constructor(
+    initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    allowDuplicates: Boolean = false,
+    comparator: Comparator<UUID> = DEFAULT_UUID_COMPARATOR,
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
+) : PrimitiveTypeBinaryTree<UUID>(initialSize, allowDuplicates, { size: Int -> UUIDArray(size, native) }, comparator)

@@ -41,6 +41,13 @@ fun main() {
     tree.insertAndPrint(-32)
     tree.insertAndPrint(-16)
 
+    var indexIterator = tree.unorderedIndexIterator()
+    println()
+    println("Iterator")
+    while (indexIterator.hasNext()) {
+        println(tree.keys[indexIterator.next()])
+    }
+
     for (i in 5000..5010) {
         tree.insertAndPrint(i)
     }
@@ -51,17 +58,14 @@ fun main() {
     tree.trimToSize()
 
     printTree(tree)
-
-    val indexIterator = tree.indexIterator()
     var sustained = 0
+    indexIterator = tree.inorderIndexIterator()
     while (indexIterator.hasNext()) {
         val current: Int = indexIterator.next()
         val element = tree.keys[current]
         if (element % 2 == 1) {
-            println("Removing   $element")
             indexIterator.remove()
         } else {
-            println("Sustaining $element")
             sustained += 1
         }
     }
@@ -73,6 +77,7 @@ fun main() {
 
 private fun printTree(tree: PrimitiveTypeBinaryTree<Int>) {
     println(tree)
+    println(tree.toStringR())
     println("Height: ${tree.height()}")
     println("Balanced: ${tree.isBalanced()}")
     println("Size: ${tree.size}")

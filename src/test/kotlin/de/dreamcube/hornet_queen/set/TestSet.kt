@@ -17,6 +17,7 @@
 
 package de.dreamcube.hornet_queen.set
 
+import de.dreamcube.hornet_queen.tree.PrimitiveIntTreeSet
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -59,7 +60,8 @@ class TestSet<T>(
             arrayOf("HashTable based 'Float", { PrimitiveFloatSet() }, { HashSet<Float>() }, { Random.nextFloat() }),
             arrayOf("HashTable based 'Double", { PrimitiveDoubleSet() }, { HashSet<Double>() },
                 { Random.nextDouble() }),
-            arrayOf("HashTable based 'UUID", { UUIDSet() }, { HashSet<UUID>() }, { UUID.randomUUID() })
+            arrayOf("HashTable based 'UUID", { UUIDSet() }, { HashSet<UUID>() }, { UUID.randomUUID() }),
+            arrayOf("BinaryTree based Int", { PrimitiveIntTreeSet() }, { HashSet<Int>() }, { Random.nextInt() })
         )
     }
 
