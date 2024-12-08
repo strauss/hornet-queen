@@ -74,7 +74,7 @@ class TestBinaryTree {
         }
         val testDataCopy = PrimitiveIntArrayList()
         testDataCopy.addAll(testData)
-        Collections.sort(testDataCopy)
+        testDataCopy.sort()
         val removeElements: MutableSet<Int> = PrimitiveIntSetB()
         removeElements.add(testDataCopy[0])
         removeElements.add(testDataCopy[testDataCopy.size / 2 - 1])
@@ -82,7 +82,7 @@ class TestBinaryTree {
         removeElements.add(testDataCopy[testDataCopy.size / 2])
         removeElements.add(testDataCopy[testDataCopy.size - 1])
 
-        val indexIterator = testTree.indexIterator()
+        val indexIterator = testTree.unorderedIndexIterator()
         while (indexIterator.hasNext()) {
             val nextIndex = indexIterator.next()
             val nextElement = testTree.keys[nextIndex]
@@ -91,6 +91,28 @@ class TestBinaryTree {
                 includedElements.remove(nextElement)
                 assertInvariants(includedElements)
             }
+        }
+    }
+
+    @Test
+    fun testIteratorRemoveAll() {
+        val includedElements: MutableList<Int> = PrimitiveIntArrayList()
+        testData.forEach {
+            includedElements.add(it)
+            testTree.insertKey(it)
+        }
+        includedElements.sort()
+        val referenceIterator = includedElements.iterator()
+        val indexIterator = testTree.inorderIndexIterator()
+        while (referenceIterator.hasNext()) {
+            assertTrue(indexIterator.hasNext())
+            val reference = referenceIterator.next()
+            val nextIndex = indexIterator.next()
+            val nextElement = testTree.keys[nextIndex]
+            assertEquals(reference, nextElement)
+            referenceIterator.remove()
+            indexIterator.remove()
+            assertInvariants(includedElements)
         }
     }
 
@@ -107,14 +129,27 @@ class TestBinaryTree {
 
         // Check if the tree preserves the order after each add
         val referenceIterator = includedCopy.iterator()
-        val testIterator = testTree.indexIterator()
+        val testIterator = testTree.inorderIndexIterator()
+        var i: Int = 0
         while (referenceIterator.hasNext()) {
             assertTrue(testIterator.hasNext())
             val referenceValue = referenceIterator.next()
             val index = testIterator.next()
             val value = testTree.keys[index]
             assertEquals(referenceValue, value)
+            i += 1
         }
+        assertEquals(includedElements.size, i)
+
+        i = 0
+        val unorderedTestIterator = testTree.unorderedIndexIterator()
+        while (unorderedTestIterator.hasNext()) {
+            val nextIndex = unorderedTestIterator.next()
+            val nextElement = testTree.keys[nextIndex]
+            assertTrue(includedElements.contains(nextElement))
+            i += 1
+        }
+        assertEquals(includedElements.size, i)
 
     }
 

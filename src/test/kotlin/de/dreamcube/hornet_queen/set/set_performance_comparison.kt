@@ -19,6 +19,7 @@ package de.dreamcube.hornet_queen.set
 
 import de.dreamcube.hornet_queen.list.PrimitiveIntArrayList
 import de.dreamcube.hornet_queen.list.PrimitiveLongArrayList
+import de.dreamcube.hornet_queen.tree.PrimitiveLongTreeSet
 import java.util.*
 import kotlin.random.Random
 
@@ -63,7 +64,7 @@ private fun longPerformanceTest(elementCount: Int) {
     }
     val elements: MutableList<Long> = PrimitiveLongArrayList(elementCount)
     elements.addAll(elementSet)
-    comparisonSetTest(elements, notElements, { HashSet() }, { PrimitiveLongSet() })
+    comparisonSetTest(elements, notElements, { HashSet() }, { PrimitiveLongSet() }, { TreeSet() }, { PrimitiveLongTreeSet() })
     println("-----")
     println()
 }

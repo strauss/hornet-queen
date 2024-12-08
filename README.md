@@ -331,6 +331,7 @@ Please note that `useIntValue()` and all other corresponding functions also have
 - The generic arrays are no classical arrays and all array convenience functions in Kotlin and convenience methods from the class `Arrays` are not
   applicable.
     - For now, this seems to be an unsolvable problem. Maybe I will provide some of these functions/methods in the future.
+- There is a bug in the Linked List if the first element is removed repeatedly and only one element is left. For now just use the Array List :-)
 
 ## (E)FAQs
 
