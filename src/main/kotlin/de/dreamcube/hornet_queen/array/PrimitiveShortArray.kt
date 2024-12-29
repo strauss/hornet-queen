@@ -37,6 +37,10 @@ class PrimitiveShortArray private constructor(size: Int, native: Boolean, intern
         internalSetShort(index, element)
     }
 
+    fun getP(index: Int): Short = internalGetShort(index)
+
+    fun setP(index: Int, element: Short) = internalSetShort(index, element)
+
     override fun getResizedCopy(difference: Int): PrimitiveShortArray {
         val newSize = getNewSize(difference)
         val newBuffer: ByteBuffer = getResizedCopyOfBuffer(newSize)

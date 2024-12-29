@@ -35,7 +35,9 @@ abstract class TreeBasedSet<T>(private val binaryTree: PrimitiveTypeBinaryTree<T
     @Suppress("kotlin:S6529") // we are literally implementing isEmpty() here ... following the rule would cause endless recursion
     override fun isEmpty(): Boolean = size == 0
 
-    override fun iterator(): MutableIterator<T> = TreeSetIterator(binaryTree)
+    override fun iterator(): MutableIterator<T> = OrderedTreeSetIterator(binaryTree)
+
+    fun fastIterator(): MutableIterator<T> = UnorderedTreeSetIterator(binaryTree)
 
     override fun remove(element: T): Boolean = binaryTree.removeKey(element) >= 0
 
@@ -46,7 +48,17 @@ abstract class TreeBasedSet<T>(private val binaryTree: PrimitiveTypeBinaryTree<T
      */
     fun trimToSize() = binaryTree.trimToSize()
 
-    internal class TreeSetIterator<T>(private val binaryTree: PrimitiveTypeBinaryTree<T>) : MutableIterator<T> {
+    internal class OrderedTreeSetIterator<T>(private val binaryTree: PrimitiveTypeBinaryTree<T>) : MutableIterator<T> {
+        private val internalIterator: MutableIterator<Int> = binaryTree.inorderIndexIterator()
+
+        override fun hasNext(): Boolean = internalIterator.hasNext()
+
+        override fun next(): T = binaryTree.keys[internalIterator.next()]
+
+        override fun remove() = internalIterator.remove()
+    }
+
+    internal class UnorderedTreeSetIterator<T>(private val binaryTree: PrimitiveTypeBinaryTree<T>) : MutableIterator<T> {
         private val internalIterator: MutableIterator<Int> = binaryTree.unorderedIndexIterator()
 
         override fun hasNext(): Boolean = internalIterator.hasNext()

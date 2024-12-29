@@ -23,10 +23,10 @@ import java.util.*
 import kotlin.random.Random
 
 fun main() {
-    val elementCount = 10_000_000
-    uuidPerformanceTest(elementCount)
+    val elementCount = 5_000_000
+//    uuidPerformanceTest(elementCount)
     longPerformanceTest(elementCount)
-    intPerformanceTest(elementCount)
+//    intPerformanceTest(elementCount)
 }
 
 fun uuidPerformanceTest(elementCount: Int) {

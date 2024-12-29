@@ -37,6 +37,10 @@ class PrimitiveFloatArray private constructor(size: Int, native: Boolean, intern
         internalSetFloat(index, element)
     }
 
+    fun getP(index: Int): Float = internalGetFloat(index)
+
+    fun setP(index: Int, element: Float) = internalSetFloat(index, element)
+
     override fun getResizedCopy(difference: Int): PrimitiveFloatArray {
         val newSize = getNewSize(difference)
         val newBuffer: ByteBuffer = getResizedCopyOfBuffer(newSize)

@@ -37,6 +37,10 @@ class PrimitiveByteArray private constructor(size: Int, native: Boolean, interna
         internalSetByte(index, element)
     }
 
+    fun getP(index: Int): Byte = internalGetByte(index)
+
+    fun setP(index: Int, element: Byte) = internalSetByte(index, element)
+
     override fun getResizedCopy(difference: Int): PrimitiveByteArray {
         val newSize = getNewSize(difference)
         val newBuffer: ByteBuffer = getResizedCopyOfBuffer(newSize)
