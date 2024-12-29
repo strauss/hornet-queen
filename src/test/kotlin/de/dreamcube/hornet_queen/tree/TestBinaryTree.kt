@@ -147,9 +147,12 @@ class TestBinaryTree {
             val nextIndex = unorderedTestIterator.next()
             val nextElement = testTree.keys[nextIndex]
             assertTrue(includedElements.contains(nextElement))
+            // test if the heights are kept track of correctly
+            assertEquals(testTree.heightR(nextIndex), testTree.height[nextIndex].toInt())
             i += 1
         }
         assertEquals(includedElements.size, i)
+
 
     }
 
