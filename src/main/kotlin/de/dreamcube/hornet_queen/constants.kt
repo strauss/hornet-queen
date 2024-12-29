@@ -17,6 +17,8 @@
 
 package de.dreamcube.hornet_queen
 
+import java.util.*
+
 const val BYTE_BITS = 8
 const val BYTE_SIZE = 1
 const val SHORT_SIZE = 2
@@ -34,6 +36,15 @@ const val FLOAT_SHIFT = 2
 const val DOUBLE_SHIFT = 3
 const val UUID_SHIFT = 4
 const val NO_INDEX: Int = -1
+
+val DEFAULT_BYTE_COMPARATOR = Comparator { a: Byte, b: Byte -> a.compareTo(b) }
+val DEFAULT_SHORT_COMPARATOR = Comparator { a: Short, b: Short -> a.compareTo(b) }
+val DEFAULT_CHAR_COMPARATOR = Comparator { a: Char, b: Char -> a.compareTo(b) }
+val DEFAULT_INT_COMPARATOR = Comparator { a: Int, b: Int -> a.compareTo(b) }
+val DEFAULT_LONG_COMPARATOR = Comparator { a: Long, b: Long -> a.compareTo(b) }
+val DEFAULT_FLOAT_COMPARATOR = Comparator { a: Float, b: Float -> a.compareTo(b) }
+val DEFAULT_DOUBLE_COMPARATOR = Comparator { a: Double, b: Double -> a.compareTo(b) }
+val DEFAULT_UUID_COMPARATOR = Comparator { a: UUID, b: UUID -> a.compareTo(b) }
 
 /**
  * These constants are not configurable yet, but certainly will be in the future.

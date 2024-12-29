@@ -40,11 +40,7 @@ abstract class PrimitiveArrayList<T> protected constructor(
 
     private fun grow() {
         val oldCapacity: Int = array.size
-        val newCapacity: Int = if (oldCapacity == 0) {
-            ConfigurableConstants.DEFAULT_INITIAL_SIZE
-        } else {
-            calculateNewCapacity(oldCapacity)
-        }
+        val newCapacity: Int = array.calculateSizeForGrow()
         array = array.getResizedCopy(newCapacity - oldCapacity)
     }
 
