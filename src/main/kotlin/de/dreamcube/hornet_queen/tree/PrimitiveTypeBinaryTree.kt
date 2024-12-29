@@ -26,7 +26,8 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
     initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     private val allowDuplicateKeys: Boolean,
     keyArraySupplier: (Int) -> PrimitiveArray<K>,
-    private val comparator: Comparator<K>
+    private val comparator: Comparator<K>,
+    val maxHeightDifference: Byte
 ) {
     /**
      * Contains the actual keys.
@@ -90,9 +91,9 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
         return searchKey(key, rootIndex)
     }
 
-    private tailrec fun searchKey(key: K, index: Int): Int {
+    private tailrec fun searchKey(key: K, index: Int, containsCheck: Boolean = true): Int {
         if (index == NO_INDEX) {
-            return -1
+            return if (containsCheck) -1 else index
         }
         val currentKey = keys[index]
         val compareResult = comparator.compare(key, currentKey)
@@ -271,7 +272,7 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
     private fun locallyBalanced(index: Int): Boolean {
         val leftHeight = height(left.getP(index))
         val rightHeight = height(right.getP(index))
-        return abs(leftHeight - rightHeight) <= 1
+        return maxHeightDifference <= 0 || abs(leftHeight - rightHeight) <= maxHeightDifference
     }
 
     fun height(): Int = if (rootIndex == NO_INDEX) NO_INDEX else height.getP(rootIndex).toInt()
@@ -330,7 +331,7 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
         }
         val fixIndex = size - 1
         balanceUp(fixIndex)
-        return size - 1
+        return fixIndex
     }
 
     private fun internalAdd(key: K, parentIndex: Int) {
@@ -504,61 +505,75 @@ class PrimitiveByteBinaryTree
     initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     allowDuplicates: Boolean = false,
     comparator: Comparator<Byte> = DEFAULT_BYTE_COMPARATOR,
-    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
-) : PrimitiveTypeBinaryTree<Byte>(initialSize, allowDuplicates, { size: Int -> PrimitiveByteArray(size, native) }, comparator)
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
+    maxHeightDifference: Byte = 1
+) : PrimitiveTypeBinaryTree<Byte>(initialSize, allowDuplicates, { size: Int -> PrimitiveByteArray(size, native) }, comparator, maxHeightDifference)
 
 class PrimitiveShortBinaryTree
 @JvmOverloads constructor(
     initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     allowDuplicates: Boolean = false,
     comparator: Comparator<Short> = DEFAULT_SHORT_COMPARATOR,
-    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
-) : PrimitiveTypeBinaryTree<Short>(initialSize, allowDuplicates, { size: Int -> PrimitiveShortArray(size, native) }, comparator)
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
+    maxHeightDifference: Byte = 1
+) : PrimitiveTypeBinaryTree<Short>(initialSize, allowDuplicates, { size: Int -> PrimitiveShortArray(size, native) }, comparator, maxHeightDifference)
 
 class PrimitiveCharBinaryTree
 @JvmOverloads constructor(
     initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     allowDuplicates: Boolean = false,
     comparator: Comparator<Char> = DEFAULT_CHAR_COMPARATOR,
-    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
-) : PrimitiveTypeBinaryTree<Char>(initialSize, allowDuplicates, { size: Int -> PrimitiveCharArray(size, native) }, comparator)
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
+    maxHeightDifference: Byte = 1
+) : PrimitiveTypeBinaryTree<Char>(initialSize, allowDuplicates, { size: Int -> PrimitiveCharArray(size, native) }, comparator, maxHeightDifference)
 
 class PrimitiveIntBinaryTree
 @JvmOverloads constructor(
     initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     allowDuplicates: Boolean = false,
     comparator: Comparator<Int> = DEFAULT_INT_COMPARATOR,
-    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
-) : PrimitiveTypeBinaryTree<Int>(initialSize, allowDuplicates, { size: Int -> PrimitiveIntArray(size, native) }, comparator)
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
+    maxHeightDifference: Byte = 1
+) : PrimitiveTypeBinaryTree<Int>(initialSize, allowDuplicates, { size: Int -> PrimitiveIntArray(size, native) }, comparator, maxHeightDifference)
 
 class PrimitiveLongBinaryTree
 @JvmOverloads constructor(
     initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     allowDuplicates: Boolean = false,
     comparator: Comparator<Long> = DEFAULT_LONG_COMPARATOR,
-    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
-) : PrimitiveTypeBinaryTree<Long>(initialSize, allowDuplicates, { size: Int -> PrimitiveLongArray(size, native) }, comparator)
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
+    maxHeightDifference: Byte = 1
+) : PrimitiveTypeBinaryTree<Long>(initialSize, allowDuplicates, { size: Int -> PrimitiveLongArray(size, native) }, comparator, maxHeightDifference)
 
 class PrimitiveFloatBinaryTree
 @JvmOverloads constructor(
     initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     allowDuplicates: Boolean = false,
     comparator: Comparator<Float> = DEFAULT_FLOAT_COMPARATOR,
-    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
-) : PrimitiveTypeBinaryTree<Float>(initialSize, allowDuplicates, { size: Int -> PrimitiveFloatArray(size, native) }, comparator)
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
+    maxHeightDifference: Byte = 1
+) : PrimitiveTypeBinaryTree<Float>(initialSize, allowDuplicates, { size: Int -> PrimitiveFloatArray(size, native) }, comparator, maxHeightDifference)
 
 class PrimitiveDoubleBinaryTree
 @JvmOverloads constructor(
     initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     allowDuplicates: Boolean = false,
     comparator: Comparator<Double> = DEFAULT_DOUBLE_COMPARATOR,
-    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
-) : PrimitiveTypeBinaryTree<Double>(initialSize, allowDuplicates, { size: Int -> PrimitiveDoubleArray(size, native) }, comparator)
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
+    maxHeightDifference: Byte = 1
+) : PrimitiveTypeBinaryTree<Double>(
+    initialSize,
+    allowDuplicates,
+    { size: Int -> PrimitiveDoubleArray(size, native) },
+    comparator,
+    maxHeightDifference
+)
 
 class UUIDBinaryTree
 @JvmOverloads constructor(
     initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     allowDuplicates: Boolean = false,
     comparator: Comparator<UUID> = DEFAULT_UUID_COMPARATOR,
-    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
-) : PrimitiveTypeBinaryTree<UUID>(initialSize, allowDuplicates, { size: Int -> UUIDArray(size, native) }, comparator)
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
+    maxHeightDifference: Byte = 1
+) : PrimitiveTypeBinaryTree<UUID>(initialSize, allowDuplicates, { size: Int -> UUIDArray(size, native) }, comparator, maxHeightDifference)
