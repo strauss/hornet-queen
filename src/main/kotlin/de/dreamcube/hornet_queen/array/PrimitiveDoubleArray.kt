@@ -37,6 +37,10 @@ class PrimitiveDoubleArray private constructor(size: Int, native: Boolean, inter
         internalSetDouble(index, element)
     }
 
+    fun getP(index: Int): Double = internalGetDouble(index)
+
+    fun setP(index: Int, element: Double) = internalSetDouble(index, element)
+
     override fun getResizedCopy(difference: Int): PrimitiveDoubleArray {
         val newSize = getNewSize(difference)
         val newBuffer: ByteBuffer = getResizedCopyOfBuffer(newSize)
