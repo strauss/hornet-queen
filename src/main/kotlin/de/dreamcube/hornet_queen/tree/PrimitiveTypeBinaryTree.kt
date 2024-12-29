@@ -20,6 +20,7 @@ package de.dreamcube.hornet_queen.tree
 import de.dreamcube.hornet_queen.*
 import de.dreamcube.hornet_queen.array.*
 import java.util.*
+import kotlin.math.abs
 
 abstract class PrimitiveTypeBinaryTree<K> protected constructor(
     initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
@@ -148,8 +149,7 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
             return
         }
         if (index == size) {
-            fixHeightsBottomUp(index)
-            balance()
+            balanceUp(parentOfIndex)
             return
         }
         // Fill the gap
@@ -183,8 +183,7 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
         height[size] = 0
         // if the last index happens to be the parent of the removed index, we can be sure that "index" itself is its former parent
         val fixIndex = if (parentOfIndex == size) index else parentOfIndex
-        fixHeightsBottomUp(fixIndex)
-        balance()
+        balanceUp(fixIndex)
     }
 
     private fun isLeaf(index: Int): Boolean = index != NO_INDEX && left[index] == NO_INDEX && right[index] == NO_INDEX
@@ -238,9 +237,41 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
         else -> max(height[left[index]], height[right[index]]).inc()
     }
 
-    internal fun balance() {
-        // TODO: this is highly inefficient in this implementation
-        //balance(rootIndex)
+    private fun balanceUp(index: Int) {
+        var currentIndex: Int = index
+        while (currentIndex != NO_INDEX) {
+            if (locallyBalanced(currentIndex)) {
+                height[currentIndex] = determineNewHeight(currentIndex)
+                currentIndex = parent[currentIndex]
+                continue
+            }
+            val rightIndex = right[currentIndex]
+            val leftIndex = left[currentIndex]
+            if (height(leftIndex) < height(rightIndex)) {
+                val leftOfRightIndex = left[rightIndex]
+                val rightOfRightIndex = right[rightIndex]
+                if (height(leftOfRightIndex) > height(rightOfRightIndex)) {
+                    // keep bigger subtree outside -> double rotation
+                    rotateRight(rightIndex)
+                }
+                rotateLeft(currentIndex)
+            } else {
+                // right < left
+                val rightOfLeftIndex = right[leftIndex]
+                val leftOfLeftIndex = left[leftIndex]
+                if (height(rightOfLeftIndex) > height(leftOfLeftIndex)) {
+                    // keep bigger subtree outside -> double rotation
+                    rotateRight(leftIndex)
+                }
+                rotateRight(currentIndex)
+            }
+        }
+    }
+
+    private fun locallyBalanced(index: Int): Boolean {
+        val leftHeight = height(left[index])
+        val rightHeight = height(right[index])
+        return abs(leftHeight - rightHeight) <= 1
     }
 
     fun height(): Int = if (rootIndex == NO_INDEX) NO_INDEX else height[rootIndex].toInt()
@@ -297,23 +328,9 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
                 }
             }
         }
-        // update height
         val fixIndex = size - 1
-        fixHeightsBottomUp(fixIndex)
-        // TODO: balance up, starting at size - 1
+        balanceUp(fixIndex)
         return size - 1
-    }
-
-    private fun fixHeightsBottomUp(fixIndex: Int) {
-        var previousIndex = fixIndex
-        if (isLeaf(fixIndex)) {
-            height[fixIndex] = 0
-        }
-        while (previousIndex != rootIndex) {
-            val index = parent[previousIndex]
-            height[index] = determineNewHeight(index)
-            previousIndex = index
-        }
     }
 
     private fun internalAdd(key: K, parentIndex: Int) {
@@ -386,11 +403,11 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
             changeCount += 1
             return rootIndex
         }
-        val insertKey = insertKeyR(key, rootIndex, NO_INDEX)
-        if (insertKey != NO_INDEX) {
-            balance()
+        val index = insertKeyR(key, rootIndex, NO_INDEX)
+        if (index != NO_INDEX) {
+            balanceUp(index)
         }
-        return insertKey
+        return index
     }
 
     private fun grow() {

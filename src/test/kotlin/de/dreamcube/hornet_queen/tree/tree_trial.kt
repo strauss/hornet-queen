@@ -20,29 +20,49 @@ package de.dreamcube.hornet_queen.tree
 fun main() {
     val tree: PrimitiveTypeBinaryTree<Int> = PrimitiveIntBinaryTree()
 //    originalTrial(tree)
-
-//    val testdata = listOf(-1000, 100, 70, 50, 74, 4711, 1, 75, 42, 1337, 25, 2, 32, -16, 16, -1, 150, -32)
-    val testdata = listOf(100, 50, 150, 25, 1, -1, 2, 75, 1337, 42, 16, 70, 4711, 74, -1000, 32, -32, -16)
-    for (t in testdata) {
-        tree.insertAndPrint(t)
-    }
-    tree.removeKey(-1000)
-    println(tree)
-    tree.removeKey(100)
-    println(tree)
-    tree.printAllHeights()
+    removalTrial(tree)
+//    smallTrial(tree)
 
     println("Fini.")
 }
 
+private fun smallTrial(tree: PrimitiveTypeBinaryTree<Int>) {
+    tree.insertAndPrint(0)
+    tree.insertAndPrint(1)
+    tree.insertAndPrint(2)
+    tree.insertAndPrint(5)
+    tree.insertAndPrint(100)
+    tree.insertAndPrint(-100)
+    tree.insertAndPrint(-1)
+    tree.insertAndPrint(1337)
+    tree.insertAndPrint(-16)
+}
+
+private fun removalTrial(tree: PrimitiveTypeBinaryTree<Int>) {
+    val testdata = listOf(100, 50, 150, 25, 1, -1, 2, 75, 1337, 42, 16, 70, 4711, 74, -1000, 32, -32, -16)
+    val removeOrder = listOf(100, 42, 2, 32, 70, 75, -1000, 25, -1, 1, 4711, 150, 50, 1337, -32, 74, 16, -16)
+    for (t in testdata) {
+        tree.insertAndPrint(t)
+    }
+    for (t in removeOrder) {
+        tree.removeAndPrint(t)
+    }
+//    tree.printAllHeights()
+}
+
 private fun <K> PrimitiveTypeBinaryTree<K>.printAllHeights() {
     for (i in inorderIndexIterator()) {
-        printHeight(i)
+        printIncorrectHeight(i)
     }
 }
 
-private fun <K> PrimitiveTypeBinaryTree<K>.printHeight(index: Int) {
-    println("Index: $index - Key: ${keys[index]} - HeightR: ${this.heightR(index)} - HeightI: ${this.heightI(index)} - Height: ${height[index]}")
+private fun <K> PrimitiveTypeBinaryTree<K>.printIncorrectHeight(index: Int) {
+
+    val referenceHeight = heightR(index)
+    val height = height(index)
+    if (referenceHeight != height.toInt()) {
+        println("Index: $index - Key: ${keys[index]} - Reference: $referenceHeight - Height: $height")
+    }
 }
 
 private fun originalTrial(tree: PrimitiveTypeBinaryTree<Int>) {
@@ -108,5 +128,14 @@ private fun printTree(tree: PrimitiveTypeBinaryTree<Int>) {
 
 private fun <K> PrimitiveTypeBinaryTree<K>.insertAndPrint(element: K) {
     insertKey(element)
-    println(this)
+    println("${this.isBalanced()}: $this")
+    printAllHeights()
+    println()
+}
+
+private fun <K> PrimitiveTypeBinaryTree<K>.removeAndPrint(element: K) {
+    removeKey(element)
+    println("${this.isBalanced()}: $this")
+    printAllHeights()
+    println()
 }
