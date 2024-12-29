@@ -73,54 +73,62 @@ class PrimitiveByteTreeSet
 @JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     comparator: Comparator<Byte> = DEFAULT_BYTE_COMPARATOR,
-    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
-) : TreeBasedSet<Byte>(PrimitiveByteBinaryTree(initialCapacity, false, comparator, native))
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
+    maxHeightDifference: Byte = 1
+) : TreeBasedSet<Byte>(PrimitiveByteBinaryTree(initialCapacity, false, comparator, native, maxHeightDifference))
 
 class PrimitiveShortTreeSet
 @JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     comparator: Comparator<Short> = DEFAULT_SHORT_COMPARATOR,
-    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
-) : TreeBasedSet<Short>(PrimitiveShortBinaryTree(initialCapacity, false, comparator, native))
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
+    maxHeightDifference: Byte = 1
+) : TreeBasedSet<Short>(PrimitiveShortBinaryTree(initialCapacity, false, comparator, native, maxHeightDifference))
 
 class PrimitiveCharTreeSet
 @JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     comparator: Comparator<Char> = DEFAULT_CHAR_COMPARATOR,
-    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
-) : TreeBasedSet<Char>(PrimitiveCharBinaryTree(initialCapacity, false, comparator, native))
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
+    maxHeightDifference: Byte = 1
+) : TreeBasedSet<Char>(PrimitiveCharBinaryTree(initialCapacity, false, comparator, native, maxHeightDifference))
 
 class PrimitiveIntTreeSet
 @JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     comparator: Comparator<Int> = DEFAULT_INT_COMPARATOR,
-    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
-) : TreeBasedSet<Int>(PrimitiveIntBinaryTree(initialCapacity, false, comparator, native))
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
+    maxHeightDifference: Byte = 1
+) : TreeBasedSet<Int>(PrimitiveIntBinaryTree(initialCapacity, false, comparator, native, maxHeightDifference))
 
 class PrimitiveLongTreeSet
 @JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     comparator: Comparator<Long> = DEFAULT_LONG_COMPARATOR,
-    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
-) : TreeBasedSet<Long>(PrimitiveLongBinaryTree(initialCapacity, false, comparator, native))
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
+    maxHeightDifference: Byte = 1
+) : TreeBasedSet<Long>(PrimitiveLongBinaryTree(initialCapacity, false, comparator, native, maxHeightDifference))
 
 class PrimitiveFloatTreeSet
 @JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     comparator: Comparator<Float> = DEFAULT_FLOAT_COMPARATOR,
-    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
-) : TreeBasedSet<Float>(PrimitiveFloatBinaryTree(initialCapacity, false, comparator, native))
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
+    maxHeightDifference: Byte = 1
+) : TreeBasedSet<Float>(PrimitiveFloatBinaryTree(initialCapacity, false, comparator, native, maxHeightDifference))
 
 class PrimitiveDoubleTreeSet
 @JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     comparator: Comparator<Double> = DEFAULT_DOUBLE_COMPARATOR,
-    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
-) : TreeBasedSet<Double>(PrimitiveDoubleBinaryTree(initialCapacity, false, comparator, native))
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
+    maxHeightDifference: Byte = 1
+) : TreeBasedSet<Double>(PrimitiveDoubleBinaryTree(initialCapacity, false, comparator, native, maxHeightDifference))
 
 class UUIDTreeSet
 @JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     comparator: Comparator<UUID> = DEFAULT_UUID_COMPARATOR,
-    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE
-) : TreeBasedSet<UUID>(UUIDBinaryTree(initialCapacity, false, comparator, native))
+    native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
+    maxHeightDifference: Byte = 1
+) : TreeBasedSet<UUID>(UUIDBinaryTree(initialCapacity, false, comparator, native, maxHeightDifference))

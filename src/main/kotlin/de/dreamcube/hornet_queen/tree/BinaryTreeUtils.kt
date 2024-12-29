@@ -44,8 +44,8 @@ fun <K> PrimitiveTypeBinaryTree<K>.traverseTree(index: Int, visitor: TreeVisitor
 
         if (!visitedLeft.contains(currentIndex)) {
             visitedLeft.add(currentIndex)
-            if (left[currentIndex] != NO_INDEX) {
-                stack.add(left[currentIndex])
+            if (left.getP(currentIndex) != NO_INDEX) {
+                stack.add(left.getP(currentIndex))
                 continue
             }
         }
@@ -57,8 +57,8 @@ fun <K> PrimitiveTypeBinaryTree<K>.traverseTree(index: Int, visitor: TreeVisitor
 
         if (!visitedRight.contains(currentIndex)) {
             visitedRight.add(currentIndex)
-            if (right[currentIndex] != NO_INDEX) {
-                stack.add(right[currentIndex])
+            if (right.getP(currentIndex) != NO_INDEX) {
+                stack.add(right.getP(currentIndex))
                 continue
             }
         }
@@ -127,7 +127,6 @@ internal fun <K> PrimitiveTypeBinaryTree<K>.toStringI(): String {
     return toStringVisitor.result
 }
 
-// TODO: actually implement it correctly, this is just for dev purposes
 fun <K> PrimitiveTypeBinaryTree<K>.isBalanced() = isBalanced(rootIndex)
 
 internal fun <K> PrimitiveTypeBinaryTree<K>.isBalanced(index: Int): Boolean {
@@ -135,11 +134,11 @@ internal fun <K> PrimitiveTypeBinaryTree<K>.isBalanced(index: Int): Boolean {
         return true
     }
 
-    if (abs(height(left[index]) - height(right[index])) > 1) {
+    if (maxHeightDifference > 0 && abs(height(left.getP(index)) - height(right.getP(index))) > maxHeightDifference) {
         return false
     }
 
-    return isBalanced(left[index]) && isBalanced(right[index])
+    return isBalanced(left.getP(index)) && isBalanced(right.getP(index))
 }
 
 internal fun <K> PrimitiveTypeBinaryTree<K>.balanceR(index: Int) {
@@ -184,7 +183,7 @@ internal fun <K> PrimitiveTypeBinaryTree<K>.balanceR(index: Int) {
  */
 internal fun <N, K> PrimitiveTypeBinaryTree<K>.fold(neutralElement: N, index: Int, f: (N, Int, N) -> N): N =
     if (index == NO_INDEX) neutralElement else
-        f(fold(neutralElement, left[index], f), index, fold(neutralElement, right[index], f))
+        f(fold(neutralElement, left.getP(index), f), index, fold(neutralElement, right.getP(index), f))
 
 internal fun <K> PrimitiveTypeBinaryTree<K>.heightR(index: Int) = fold(-1, index) { leftHeight: Int, _, rightHeight: Int ->
     1 + max(leftHeight, rightHeight)
@@ -192,7 +191,7 @@ internal fun <K> PrimitiveTypeBinaryTree<K>.heightR(index: Int) = fold(-1, index
 
 fun <K> PrimitiveTypeBinaryTree<K>.toStringR(): String = fold("", rootIndex) { leftString: String, index: Int, rightString: String ->
     if (index == rootIndex)
-        "($leftString [${keys[index]}:${height[index]}] $rightString)"
+        "($leftString [${keys[index]}:${height.getP(index)}] $rightString)"
     else
-        "($leftString ${keys[index]}:${height[index]} $rightString)"
+        "($leftString ${keys[index]}:${height.getP(index)} $rightString)"
 }

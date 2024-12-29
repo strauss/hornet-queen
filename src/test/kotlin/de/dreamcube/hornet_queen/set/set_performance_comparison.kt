@@ -24,9 +24,9 @@ import kotlin.random.Random
 
 fun main() {
     val elementCount = 5_000_000
-//    uuidPerformanceTest(elementCount)
+    uuidPerformanceTest(elementCount)
     longPerformanceTest(elementCount)
-//    intPerformanceTest(elementCount)
+    intPerformanceTest(elementCount)
 }
 
 fun uuidPerformanceTest(elementCount: Int) {
@@ -63,7 +63,7 @@ private fun longPerformanceTest(elementCount: Int) {
     }
     val elements: MutableList<Long> = PrimitiveLongArrayList(elementCount)
     elements.addAll(elementSet)
-    comparisonSetTest(elements, notElements, { HashSet() }, { PrimitiveLongSet() }, { TreeSet() }, { PrimitiveLongTreeSet() })
+    comparisonSetTest(elements, notElements, { HashSet() }, { PrimitiveLongSet() }, { TreeSet() }, { PrimitiveLongTreeSet(maxHeightDifference = 1) })
     println("-----")
     println()
 }
