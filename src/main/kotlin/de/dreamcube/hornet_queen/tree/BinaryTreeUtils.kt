@@ -128,7 +128,7 @@ internal fun <K> PrimitiveTypeBinaryTree<K>.toStringI(): String {
 }
 
 // TODO: actually implement it correctly, this is just for dev purposes
-fun <K> PrimitiveTypeBinaryTree<K>.isBalanced() = true //isBalanced(rootIndex)
+fun <K> PrimitiveTypeBinaryTree<K>.isBalanced() = isBalanced(rootIndex)
 
 internal fun <K> PrimitiveTypeBinaryTree<K>.isBalanced(index: Int): Boolean {
     if (index == NO_INDEX) {
