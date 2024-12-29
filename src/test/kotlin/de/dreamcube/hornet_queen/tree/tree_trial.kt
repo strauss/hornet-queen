@@ -19,9 +19,34 @@ package de.dreamcube.hornet_queen.tree
 
 fun main() {
     val tree: PrimitiveTypeBinaryTree<Int> = PrimitiveIntBinaryTree()
-    tree.insertAndPrint(100)
+//    originalTrial(tree)
 
-    tree.inorderElements()
+//    val testdata = listOf(-1000, 100, 70, 50, 74, 4711, 1, 75, 42, 1337, 25, 2, 32, -16, 16, -1, 150, -32)
+    val testdata = listOf(100, 50, 150, 25, 1, -1, 2, 75, 1337, 42, 16, 70, 4711, 74, -1000, 32, -32, -16)
+    for (t in testdata) {
+        tree.insertAndPrint(t)
+    }
+    tree.removeKey(-1000)
+    println(tree)
+    tree.removeKey(100)
+    println(tree)
+    tree.printAllHeights()
+
+    println("Fini.")
+}
+
+private fun <K> PrimitiveTypeBinaryTree<K>.printAllHeights() {
+    for (i in inorderIndexIterator()) {
+        printHeight(i)
+    }
+}
+
+private fun <K> PrimitiveTypeBinaryTree<K>.printHeight(index: Int) {
+    println("Index: $index - Key: ${keys[index]} - HeightR: ${this.heightR(index)} - HeightI: ${this.heightI(index)} - Height: ${height[index]}")
+}
+
+private fun originalTrial(tree: PrimitiveTypeBinaryTree<Int>) {
+    tree.insertAndPrint(100)
 
     tree.insertAndPrint(50)
     tree.insertAndPrint(150)
@@ -71,13 +96,11 @@ fun main() {
     }
     println("Sustained: $sustained")
     printTree(tree)
-
-    println("Fini.")
 }
 
 private fun printTree(tree: PrimitiveTypeBinaryTree<Int>) {
     println(tree)
-    println(tree.toStringR())
+//    println(tree.toStringR())
     println("Height: ${tree.height()}")
     println("Balanced: ${tree.isBalanced()}")
     println("Size: ${tree.size}")
