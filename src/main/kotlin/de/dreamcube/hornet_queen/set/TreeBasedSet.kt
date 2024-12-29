@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package de.dreamcube.hornet_queen.tree
+package de.dreamcube.hornet_queen.set
 
 import de.dreamcube.hornet_queen.*
-import de.dreamcube.hornet_queen.set.PrimitiveMutableSet
+import de.dreamcube.hornet_queen.tree.*
 import java.util.*
 
 abstract class TreeBasedSet<T>(private val binaryTree: PrimitiveTypeBinaryTree<T>) : PrimitiveMutableSet<T> {

@@ -17,7 +17,6 @@
 
 package de.dreamcube.hornet_queen.set
 
-import de.dreamcube.hornet_queen.tree.*
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

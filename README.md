@@ -25,6 +25,7 @@ The library is not complete yet. It currently includes the following:
 - Sets
     - [`HashTableBasedSet`](src/main/kotlin/de/dreamcube/hornet_queen/set/HashTableBasedSet.kt)
     - [`BitSetBasedSet`](src/main/kotlin/de/dreamcube/hornet_queen/set/BitSetBasedSet.kt) (for `Byte`, `Short`, `Char`, and `Int`)
+    - [`TreeBasedSet`](src/main/kotlin/de/dreamcube/hornet_queen/set/TreeBasedSet.kt)
 - Map
     - [`HashTableBasedMap`](src/main/kotlin/de/dreamcube/hornet_queen/map/HashTableBasedMap.kt)
 
@@ -115,17 +116,16 @@ dependencies {
 Unlike Java, Kotlin does not distinguish between primitive types (e.g., `int`) and wrapper types (e.g., `Integer`).
 Instead, a common type name is used (e.g., `Int`).
 In some cases they are identical to the wrapper class' name (e.g., `Long`).
-This allows for implicitly using primitive types in a generic way, such as in interfaces.
+~~This allows for implicitly using primitive types in a generic way, such as in interfaces.~~
 Kotlin automatically chooses the best underlying type for the situation.
 Hornet Queen explicitly enforces the usage of primitive types in all its implementing classes due to the nature of the underlying array
 implementation (see next section).
 
-The worst thing, that can happen, is autoboxing the values when querying for them.
-When using the library from within Kotlin, this usually doesn't happen.
-When using it from within Java it might happen.
-However, this process is unnoticeably fast.
-The exception is the `UUID` type.
-This one is always explicitly (un-)boxed.
+When storing/accessing the values using the interface functions, autoboxing and auto-unboxing occurs.
+This will be addressed in the future for some of the classes with special non-interface methods.
+However, this process is unnoticeably fast but it can cost performance if calls happen too often (currently this is an issue with the internally used
+arrays).
+The `UUID` type is always explicitly (un-)boxed.
 When comparing Hornet Queen's `UUIDSet` with a Java `HashSet<UUID>` the former can compete in most scenarios while saving memory.
 For performance comparison have a look at the
 [`SetPerformanceComparison.kt`](src/test/kotlin/de/dreamcube/hornet_queen/set/set_performance_comparison.kt) file among the test cases.
@@ -169,7 +169,6 @@ The native `ByteBuffer` is the main reason why Hornet Queen performs very well i
     - `Long` and `Double`: 268,435,455
     - `UUID`: 134,217,727
 
-I got rid of the first disadvantage.
 Both implementations now use the mechanics the `ByteBuffer` is actually meant to be used for copying the content.
 
 I have plans to overcome the size limitation, this is currently not at the top of the priority list (see last section).
@@ -267,6 +266,17 @@ Trove4J has an automatic shrinking mechanism if the hash table is below a certai
 I decided that I don't want to adapt this aspect.
 I wanted to give the users of Hornet Queen the freedom (but also the responsibility) to decide when to shrink/rehash the hash table.
 
+#### Tree based
+
+The tree in my tree set implementation is a classical AVL tree with an automatic balancing feature.
+It should take less space than Java's `TreeSet` implementation.
+Java uses red black trees instead of classical AVL trees.
+This allows for a height difference of 2 and results in less rotation operations.
+Therefore, they might be a bit faster.
+
+My tree based set implementation currently suffers from the auto-boxing issue for internal arrays.
+This will be addressed in the near future.
+
 ### Map implementation(s)
 
 Currently, there is only the hash table based map implemented.
@@ -279,6 +289,8 @@ The keys are always primitive types (including `UUID`).
 All structures, covered so far, have their dedicated classes that can be used: e.g., `PrimitiveIntSet` or `UUIDArrayList`.
 For maps this would require a lot of different classes (81 ... 90 if you want to allow for object value types).
 This approach did not seem reasonable for me so came up with a different solution.
+
+The tree based map implementation will follow after some of the performance issues have been addressed.
 
 #### Instantiating primitive maps
 
@@ -332,6 +344,8 @@ Please note that `useIntValue()` and all other corresponding functions also have
   applicable.
     - For now, this seems to be an unsolvable problem. Maybe I will provide some of these functions/methods in the future.
 - There is a bug in the Linked List if the first element is removed repeatedly and only one element is left. For now just use the Array List :-)
+- There is a performance issue with all collections that use `PrimitiveIntArray` as index structure (mainly `PrimitiveTypeBinaryTree`
+  and `PrimitiveLinkedList`).
 
 ## (E)FAQs
 
@@ -358,7 +372,9 @@ Since this is the first release, there have not been any questions yet ... there
 
 ## Planned features for the future
 
-- Tree based sets and maps
+- Make the arrays faster using non-interface methods (mainly for internal usage).
+- Fix the bug in linked lists.
+- Tree based maps
     - Trading more time for less space ... if done correctly
 - Heap based priority queues
     - Because ... why not?
