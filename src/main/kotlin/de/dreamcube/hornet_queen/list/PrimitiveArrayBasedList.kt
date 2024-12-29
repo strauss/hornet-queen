@@ -25,13 +25,6 @@ abstract class PrimitiveArrayBasedList<T> : MutableList<T> {
 
     override fun containsAll(elements: Collection<T>): Boolean = elements.all { contains(it) }
 
-    protected fun calculateNewCapacity(oldCapacity: Int): Int {
-        val oldCapacityAsLong = oldCapacity.toLong()
-        val maxCapacityAsLong = getInternalArrayMaxSize().toLong()
-        val newCapacityAsLong = oldCapacityAsLong + (oldCapacityAsLong shr 1)
-        return if (newCapacityAsLong <= maxCapacityAsLong) newCapacityAsLong.toInt() else maxCapacityAsLong.toInt()
-    }
-
     /**
      * Shrinks the internal array to the size of the list. This operation should only be called if no more elements are
      * added to the list.

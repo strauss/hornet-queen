@@ -124,6 +124,19 @@ abstract class PrimitiveArray<T>(
         return newBuffer
     }
 
+    /**
+     * Calculates a good size for growing this array. It is about +50% and caps at [maxSize]. "Growing" means creating a copy with new size using the
+     * function [getResizedCopy].
+     */
+    internal fun calculateSizeForGrow(): Int {
+        if (size == 0) {
+            return ConfigurableConstants.DEFAULT_INITIAL_SIZE
+        }
+        val oldSizeAsLong = size.toLong()
+        val newSizeAsLong = oldSizeAsLong + (oldSizeAsLong shr 1)
+        return if (newSizeAsLong <= maxSize.toLong()) newSizeAsLong.toInt() else maxSize
+    }
+
     protected fun internalGetByte(index: Int): Byte {
         return buffer[index]
     }
