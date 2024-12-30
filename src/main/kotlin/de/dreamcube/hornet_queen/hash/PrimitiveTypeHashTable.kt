@@ -19,7 +19,6 @@ package de.dreamcube.hornet_queen.hash
 
 import de.dreamcube.hornet_queen.ConfigurableConstants
 import de.dreamcube.hornet_queen.array.*
-import de.dreamcube.hornet_queen.shared.FillState
 import de.dreamcube.hornet_queen.shared.MutableIndexedValueCollection
 import java.util.*
 import kotlin.math.ceil
@@ -33,7 +32,7 @@ abstract class PrimitiveTypeHashTable<K, V> protected constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     private val loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
     private val keyArraySupplier: (Int) -> PrimitiveArray<K>,
-    private val valuesSupplier: ((Int, FillState) -> MutableIndexedValueCollection<V>)? = null
+    private val valuesSupplier: ((Int) -> MutableIndexedValueCollection<V>)? = null
 ) {
     private var keys: PrimitiveArray<K>
     private var values: MutableIndexedValueCollection<V>?
@@ -51,7 +50,7 @@ abstract class PrimitiveTypeHashTable<K, V> protected constructor(
         val actualInitialCapacity = PrimeProvider.getNextRelevantPrime(desiredCapacityWithLoadFactor)
         keys = keyArraySupplier(actualInitialCapacity)
         fillState = FillState(actualInitialCapacity)
-        values = valuesSupplier?.invoke(actualInitialCapacity, fillState)
+        values = valuesSupplier?.invoke(actualInitialCapacity)
         free = capacity
     }
 
@@ -270,7 +269,7 @@ abstract class PrimitiveTypeHashTable<K, V> protected constructor(
         return values?.contains(value) ?: false
     }
 
-    internal fun valuesAsCollection(): MutableCollection<V>? = values?.asCollection()
+    internal fun valuesAsCollection(): MutableCollection<V>? = values?.asCollection(fillState::isFull)
 
     /**
      * Resizes this hash table to the [newCapacity] and rehashes all values. The default value for capacity is the current capacity. This results
@@ -286,7 +285,7 @@ abstract class PrimitiveTypeHashTable<K, V> protected constructor(
 
         keys = keyArraySupplier(newCapacity)
         fillState = FillState(newCapacity)
-        values = valuesSupplier?.invoke(newCapacity, fillState)
+        values = valuesSupplier?.invoke(newCapacity)
         for (i in 0..<oldCapacity) {
             if (oldFillState.isFull(i)) {
                 val key: K = oldHashTable[i]
@@ -408,5 +407,5 @@ internal class InternalPrimitiveTypeHashTable<K, V>(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
     keyArraySupplier: (Int) -> PrimitiveArray<K>,
-    valuesSupplier: ((Int, FillState) -> MutableIndexedValueCollection<V>)
+    valuesSupplier: ((Int) -> MutableIndexedValueCollection<V>)
 ) : PrimitiveTypeHashTable<K, V>(initialCapacity, loadFactor, keyArraySupplier, valuesSupplier)

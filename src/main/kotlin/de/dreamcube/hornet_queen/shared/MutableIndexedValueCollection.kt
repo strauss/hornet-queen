@@ -28,14 +28,13 @@ import de.dreamcube.hornet_queen.hash.PrimitiveTypeHashTable
  */
 interface MutableIndexedValueCollection<V> {
     val size: Int
-    val fillState: FillState
     operator fun get(index: Int): V?
     operator fun set(index: Int, value: V)
     fun contains(value: V): Boolean
 
     /**
      * Copies all values into a [MutableCollection]. Changes to this collection will not affect this
-     * [PrimitiveTypeHashTable].
+     * [MutableIndexedValueCollection].
      */
-    fun asCollection(): MutableCollection<V>
+    fun asCollection(contained: (Int) -> Boolean): MutableCollection<V>
 }
