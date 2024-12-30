@@ -18,8 +18,7 @@
 package de.dreamcube.hornet_queen.shared
 
 internal class ObjectTypeValueCollection<T>(
-    override val size: Int,
-    override val fillState: FillState
+    override val size: Int
 ) : MutableIndexedValueCollection<T> {
     val array: Array<Any?> = Array(size) { null }
 
@@ -28,11 +27,11 @@ internal class ObjectTypeValueCollection<T>(
         return array[index] as T
     }
 
-    override fun asCollection(): MutableCollection<T> {
+    override fun asCollection(contained: (Int) -> Boolean): MutableCollection<T> {
         val result: MutableList<T> = mutableListOf()
         for (i: Int in array.indices) {
-            // we only add elements that are filled
-            if (fillState.isFull(i)) {
+            // we only add elements that are contained
+            if (contained(i)) {
                 @Suppress("UNCHECKED_CAST")
                 result.add(array[i] as T)
             }
