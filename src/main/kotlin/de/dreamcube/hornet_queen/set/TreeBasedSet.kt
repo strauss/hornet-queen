@@ -21,7 +21,7 @@ import de.dreamcube.hornet_queen.*
 import de.dreamcube.hornet_queen.tree.*
 import java.util.*
 
-abstract class TreeBasedSet<T>(private val binaryTree: PrimitiveTypeBinaryTree<T>) : PrimitiveMutableSet<T> {
+abstract class TreeBasedSet<T>(private val binaryTree: PrimitiveTypeBinaryTree<T>, private val fastIterator: Boolean) : PrimitiveMutableSet<T> {
 
     override fun add(element: T): Boolean = binaryTree.insertKey(element) >= 0
 
@@ -35,9 +35,21 @@ abstract class TreeBasedSet<T>(private val binaryTree: PrimitiveTypeBinaryTree<T
     @Suppress("kotlin:S6529") // we are literally implementing isEmpty() here ... following the rule would cause endless recursion
     override fun isEmpty(): Boolean = size == 0
 
-    override fun iterator(): MutableIterator<T> = OrderedTreeSetIterator(binaryTree)
+    override fun iterator(): MutableIterator<T> = if (fastIterator) unorderedIterator() else orderedIterator()
 
-    fun fastIterator(): MutableIterator<T> = UnorderedTreeSetIterator(binaryTree)
+    /**
+     * Provides an iterator that iterates the elements of this set in order of the comparator that was used to create this set. This is the default
+     * iterator, if [fastIterator] is set to false (which is also the default if it is not specified). This iterator is comparable with the one
+     * provided by [java.util.TreeSet], but slower.
+     */
+    fun orderedIterator(): MutableIterator<T> = OrderedTreeSetIterator(binaryTree)
+
+    /**
+     * Provides an iterator that iterates the elements of this set in no defined order. It is the default iterator, if [fastIterator] is set to true.
+     * This iterator is way faster than the [orderedIterator] and also faster than the iterator of [java.util.TreeSet]. It simply iterates over the
+     * internal array representation of this set.
+     */
+    fun unorderedIterator(): MutableIterator<T> = UnorderedTreeSetIterator(binaryTree)
 
     override fun remove(element: T): Boolean = binaryTree.removeKey(element) >= 0
 
@@ -72,63 +84,71 @@ abstract class TreeBasedSet<T>(private val binaryTree: PrimitiveTypeBinaryTree<T
 class PrimitiveByteTreeSet
 @JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    fastIterator: Boolean = false,
     comparator: Comparator<Byte> = DEFAULT_BYTE_COMPARATOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
     maxHeightDifference: Byte = 1
-) : TreeBasedSet<Byte>(PrimitiveByteBinaryTree(initialCapacity, false, comparator, native, maxHeightDifference))
+) : TreeBasedSet<Byte>(PrimitiveByteBinaryTree(initialCapacity, false, comparator, native, maxHeightDifference), fastIterator)
 
 class PrimitiveShortTreeSet
 @JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    fastIterator: Boolean = false,
     comparator: Comparator<Short> = DEFAULT_SHORT_COMPARATOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
     maxHeightDifference: Byte = 1
-) : TreeBasedSet<Short>(PrimitiveShortBinaryTree(initialCapacity, false, comparator, native, maxHeightDifference))
+) : TreeBasedSet<Short>(PrimitiveShortBinaryTree(initialCapacity, false, comparator, native, maxHeightDifference), fastIterator)
 
 class PrimitiveCharTreeSet
 @JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    fastIterator: Boolean = false,
     comparator: Comparator<Char> = DEFAULT_CHAR_COMPARATOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
     maxHeightDifference: Byte = 1
-) : TreeBasedSet<Char>(PrimitiveCharBinaryTree(initialCapacity, false, comparator, native, maxHeightDifference))
+) : TreeBasedSet<Char>(PrimitiveCharBinaryTree(initialCapacity, false, comparator, native, maxHeightDifference), fastIterator)
 
 class PrimitiveIntTreeSet
 @JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    fastIterator: Boolean = false,
     comparator: Comparator<Int> = DEFAULT_INT_COMPARATOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
     maxHeightDifference: Byte = 1
-) : TreeBasedSet<Int>(PrimitiveIntBinaryTree(initialCapacity, false, comparator, native, maxHeightDifference))
+) : TreeBasedSet<Int>(PrimitiveIntBinaryTree(initialCapacity, false, comparator, native, maxHeightDifference), fastIterator)
 
 class PrimitiveLongTreeSet
 @JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    fastIterator: Boolean = false,
     comparator: Comparator<Long> = DEFAULT_LONG_COMPARATOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
     maxHeightDifference: Byte = 1
-) : TreeBasedSet<Long>(PrimitiveLongBinaryTree(initialCapacity, false, comparator, native, maxHeightDifference))
+) : TreeBasedSet<Long>(PrimitiveLongBinaryTree(initialCapacity, false, comparator, native, maxHeightDifference), fastIterator)
 
 class PrimitiveFloatTreeSet
 @JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    fastIterator: Boolean = false,
     comparator: Comparator<Float> = DEFAULT_FLOAT_COMPARATOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
     maxHeightDifference: Byte = 1
-) : TreeBasedSet<Float>(PrimitiveFloatBinaryTree(initialCapacity, false, comparator, native, maxHeightDifference))
+) : TreeBasedSet<Float>(PrimitiveFloatBinaryTree(initialCapacity, false, comparator, native, maxHeightDifference), fastIterator)
 
 class PrimitiveDoubleTreeSet
 @JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    fastIterator: Boolean = false,
     comparator: Comparator<Double> = DEFAULT_DOUBLE_COMPARATOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
     maxHeightDifference: Byte = 1
-) : TreeBasedSet<Double>(PrimitiveDoubleBinaryTree(initialCapacity, false, comparator, native, maxHeightDifference))
+) : TreeBasedSet<Double>(PrimitiveDoubleBinaryTree(initialCapacity, false, comparator, native, maxHeightDifference), fastIterator)
 
 class UUIDTreeSet
 @JvmOverloads constructor(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    fastIterator: Boolean = false,
     comparator: Comparator<UUID> = DEFAULT_UUID_COMPARATOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
     maxHeightDifference: Byte = 1
-) : TreeBasedSet<UUID>(UUIDBinaryTree(initialCapacity, false, comparator, native, maxHeightDifference))
+) : TreeBasedSet<UUID>(UUIDBinaryTree(initialCapacity, false, comparator, native, maxHeightDifference), fastIterator)

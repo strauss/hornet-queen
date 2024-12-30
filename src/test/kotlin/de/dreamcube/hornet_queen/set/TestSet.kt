@@ -65,6 +65,8 @@ class TestSet<T>(
             arrayOf("BinaryTree based 'Char'", { PrimitiveCharTreeSet() }, { HashSet<Char>() }, { Random.nextInt().toChar() }),
             arrayOf("BinaryTree based 'Int'", { PrimitiveIntTreeSet() }, { HashSet<Int>() }, { Random.nextInt() }),
             arrayOf("BinaryTree based 'Long'", { PrimitiveLongTreeSet() }, { HashSet<Long>() }, { Random.nextLong() }),
+            arrayOf("BinaryTree based 'Long' (fast iterator)", { PrimitiveLongTreeSet(fastIterator = true) }, { HashSet<Long>() },
+                { Random.nextLong() }),
 //            arrayOf("BinaryTree based 'Float'", { PrimitiveFloatTreeSet() }, { HashSet<Float>() }, { Random.nextFloat() }),
             arrayOf("BinaryTree based 'Double'", { PrimitiveDoubleTreeSet() }, { HashSet<Double>() }, { Random.nextDouble() }),
             arrayOf("BinaryTree based 'UUID'", { UUIDTreeSet() }, { HashSet<UUID>() }, { UUID.randomUUID() })
