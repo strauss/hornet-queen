@@ -23,7 +23,7 @@ import de.dreamcube.hornet_queen.set.PrimitiveIntSetB
 import kotlin.math.abs
 import kotlin.math.max
 
-fun <K> PrimitiveTypeBinaryTree<K>.traverseTree(index: Int, visitor: TreeVisitor<K>) {
+fun <K, V> PrimitiveTypeBinaryTree<K, V>.traverseTree(index: Int, visitor: TreeVisitor<K>) {
     if (index == NO_INDEX) {
         return
     }
@@ -115,21 +115,21 @@ internal class ToStringVisitor<K> : TreeVisitor<K> {
     }
 }
 
-internal fun <K> PrimitiveTypeBinaryTree<K>.heightI(index: Int): Int {
+internal fun <K, V> PrimitiveTypeBinaryTree<K, V>.heightI(index: Int): Int {
     val visitor = HeightVisitor<K>()
     traverseTree(index, visitor)
     return visitor.height - 1
 }
 
-internal fun <K> PrimitiveTypeBinaryTree<K>.toStringI(): String {
+internal fun <K, V> PrimitiveTypeBinaryTree<K, V>.toStringI(): String {
     val toStringVisitor = ToStringVisitor<K>()
     traverseTree(rootIndex, toStringVisitor)
     return toStringVisitor.result
 }
 
-fun <K> PrimitiveTypeBinaryTree<K>.isBalanced() = isBalanced(rootIndex)
+fun <K, V> PrimitiveTypeBinaryTree<K, V>.isBalanced() = isBalanced(rootIndex)
 
-internal fun <K> PrimitiveTypeBinaryTree<K>.isBalanced(index: Int): Boolean {
+internal fun <K, V> PrimitiveTypeBinaryTree<K, V>.isBalanced(index: Int): Boolean {
     if (index == NO_INDEX) {
         return true
     }
@@ -141,7 +141,7 @@ internal fun <K> PrimitiveTypeBinaryTree<K>.isBalanced(index: Int): Boolean {
     return isBalanced(left.getP(index)) && isBalanced(right.getP(index))
 }
 
-internal fun <K> PrimitiveTypeBinaryTree<K>.balanceR(index: Int) {
+internal fun <K, V> PrimitiveTypeBinaryTree<K, V>.balanceR(index: Int) {
     if (isBalanced(index)) {
         return
     }
@@ -181,15 +181,15 @@ internal fun <K> PrimitiveTypeBinaryTree<K>.balanceR(index: Int) {
  * Folding trees has always been a pleasure :-). The given function [f] is applied to the recursive result of the left and the right subtree.
  * The [neutralElement] is the result of an empty subtree.
  */
-internal fun <N, K> PrimitiveTypeBinaryTree<K>.fold(neutralElement: N, index: Int, f: (N, Int, N) -> N): N =
+internal fun <N, K, V> PrimitiveTypeBinaryTree<K, V>.fold(neutralElement: N, index: Int, f: (N, Int, N) -> N): N =
     if (index == NO_INDEX) neutralElement else
         f(fold(neutralElement, left.getP(index), f), index, fold(neutralElement, right.getP(index), f))
 
-internal fun <K> PrimitiveTypeBinaryTree<K>.heightR(index: Int) = fold(-1, index) { leftHeight: Int, _, rightHeight: Int ->
+internal fun <K, V> PrimitiveTypeBinaryTree<K, V>.heightR(index: Int) = fold(-1, index) { leftHeight: Int, _, rightHeight: Int ->
     1 + max(leftHeight, rightHeight)
 }
 
-fun <K> PrimitiveTypeBinaryTree<K>.toStringR(): String = fold("", rootIndex) { leftString: String, index: Int, rightString: String ->
+fun <K, V> PrimitiveTypeBinaryTree<K, V>.toStringR(): String = fold("", rootIndex) { leftString: String, index: Int, rightString: String ->
     if (index == rootIndex)
         "($leftString [${keys[index]}:${height.getP(index)}] $rightString)"
     else

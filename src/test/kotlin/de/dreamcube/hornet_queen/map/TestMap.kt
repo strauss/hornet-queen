@@ -127,6 +127,11 @@ class TestMap<K, V>(
                 "HashTable based 'UUID' key and 'Int' value.",
                 { HashTableBasedMapBuilder.useUUIDKey().useIntValue().create() }, { UUIDSet() },
                 { UUID.randomUUID() }, { PrimitiveIntArrayList() }, { Random.nextInt() }
+            ),
+            arrayOf(
+                "Tree based 'Long' key and 'Int' value.",
+                { TreeBasedMapBuilder.useLongKey().useIntValue().create() }, { PrimitiveLongSet() },
+                { Random.nextLong() }, { PrimitiveIntArrayList() }, { Random.nextInt() }
             )
         )
     }

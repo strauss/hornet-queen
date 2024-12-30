@@ -19,20 +19,34 @@ package de.dreamcube.hornet_queen.tree
 
 import de.dreamcube.hornet_queen.*
 import de.dreamcube.hornet_queen.array.*
+import de.dreamcube.hornet_queen.shared.MutableIndexedValueCollection
 import java.util.*
 import kotlin.math.abs
 
-abstract class PrimitiveTypeBinaryTree<K> protected constructor(
+abstract class PrimitiveTypeBinaryTree<K, V> protected constructor(
     initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     private val allowDuplicateKeys: Boolean,
     keyArraySupplier: (Int) -> PrimitiveArray<K>,
     private val comparator: Comparator<K>,
-    val maxHeightDifference: Byte
+    maxHeightDifference: Byte,
+    private val valuesSupplier: ((Int) -> MutableIndexedValueCollection<V>)? = null
 ) {
+    internal val maxHeightDifference = when {
+        maxHeightDifference > 5 -> 5
+        maxHeightDifference >= 1 -> maxHeightDifference
+        maxHeightDifference < 0 -> -1
+        else -> 1 // this happens at 0
+    }
+
     /**
      * Contains the actual keys.
      */
     internal var keys: PrimitiveArray<K> = keyArraySupplier(initialSize)
+
+    /**
+     * Contains the values associated with the keys ... if this tree is used as a map.
+     */
+    internal var values: MutableIndexedValueCollection<V>? = valuesSupplier?.invoke(initialSize)
 
     /**
      * Contains the index of the left child of every node.
@@ -94,7 +108,7 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
      * returned. If the tree is empty, [NO_INDEX] is returned. If [containsCheck] is set, [NO_INDEX] is also returned if the [key] is not contained in
      * this tree.
      */
-    private tailrec fun searchKey(key: K, index: Int = rootIndex, parentIndex: Int = NO_INDEX, containsCheck: Boolean = false): Int {
+    internal tailrec fun searchKey(key: K, index: Int = rootIndex, parentIndex: Int = NO_INDEX, containsCheck: Boolean = false): Int {
         if (index == NO_INDEX) {
             return if (containsCheck) NO_INDEX else parentIndex
         }
@@ -125,7 +139,7 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
         return index
     }
 
-    private fun removeKeyAt(index: Int) {
+    internal fun removeKeyAt(index: Int) {
         // for removal, we rotate until the element is a leaf
         while (!isLeaf(index)) {
             if (height(left.getP(index)) < height(right.getP(index))) {
@@ -280,11 +294,48 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
 
     internal fun height(index: Int): Byte = if (index == NO_INDEX) -1 else height.getP(index)
 
+    /**
+     * Internal function for setting the given [value] at the given [internalIndex], if this [PrimitiveTypeBinaryTree] is
+     * used as a map. The index returned by [insertKey] should be passed. The function tolerates negative values for
+     * [internalIndex] by ignoring the call (no Exception). Therefore, callers don't have to perform this check
+     * themselves.
+     */
+    internal fun insertValue(internalIndex: Int, value: V?) {
+        if (internalIndex >= size) {
+            throw IndexOutOfBoundsException(internalIndex)
+        }
+        if (internalIndex >= 0) {
+            if (value == null) {
+                // If you try to add null, this is considered a deletion.
+                removeKeyAt(internalIndex)
+            } else {
+                values?.set(internalIndex, value)
+            }
+        }
+    }
+
+    /**
+     * Retrieves the value at the given [internalIndex]. Unlike [insertValue] this function performs a boundary check
+     * and throws an [IndexOutOfBoundsException].
+     */
+    internal fun getValueAt(internalIndex: Int): V? {
+        if (internalIndex !in 0..<size) {
+            throw IndexOutOfBoundsException(internalIndex)
+        }
+        return values?.get(internalIndex)
+    }
+
+    internal fun containsValue(value: V): Boolean {
+        return values?.contains(value) ?: false
+    }
+
+    internal fun valuesAsCollection(): MutableCollection<V>? = values?.asCollection { it in 0..<size }
+
     override fun toString() = toStringR()
 
-    internal fun inorderIndexIterator(): MutableIterator<Int> = BinaryTreeInorderIndexIterator()
+    internal fun inorderIndexIterator(): BinaryTreeInorderIndexIterator = BinaryTreeInorderIndexIterator()
 
-    internal fun unorderedIndexIterator(): MutableIterator<Int> = BinaryTreeUnorderedIndexIterator()
+    internal fun unorderedIndexIterator(): BinaryTreeUnorderedIndexIterator = BinaryTreeUnorderedIndexIterator()
 
     /**
      * Inserts the given [key] to this binary tree. Returns [NO_INDEX] if duplicates are forbidden and it is already contained.
@@ -299,6 +350,10 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
         // search for the insert position
         val parentIndex = searchKey(key)
         assert(parentIndex != NO_INDEX) // that case should be covered by the first insert above
+        return insertAtParent(parentIndex, key)
+    }
+
+    internal fun insertAtParent(parentIndex: Int, key: K): Int {
         val parentKey = keys[parentIndex]
         if (!allowDuplicateKeys && parentKey == key) {
             // no duplicates ... we do not use "contains" for avoiding a second search
@@ -345,16 +400,21 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
     private fun grow() {
         val oldCapacity: Int = keys.size
         val newCapacity: Int = keys.calculateSizeForGrow()
+        val oldValues = values
         val delta: Int = newCapacity - oldCapacity
         keys = keys.getResizedCopy(delta)
         left = left.getResizedCopy(delta)
         right = right.getResizedCopy(delta)
         parent = parent.getResizedCopy(delta)
         height = height.getResizedCopy(delta)
+        values = valuesSupplier?.invoke(newCapacity)
         for (i in oldCapacity..<newCapacity) {
             left.setP(i, NO_INDEX)
             right.setP(i, NO_INDEX)
             parent.setP(i, NO_INDEX)
+            if (oldValues != null) {
+                insertValue(i, oldValues[i])
+            }
         }
     }
 
@@ -369,7 +429,7 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
     internal inner class BinaryTreeInorderIndexIterator : MutableIterator<Int> {
         private var currentPosition: Int
         private var iteratorChangeCount: Int
-        private var lastDeliveredIndex: Int
+        internal var lastDeliveredIndex: Int
         private var returnedElements: Int
 
         init {
@@ -458,7 +518,7 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
     internal inner class BinaryTreeUnorderedIndexIterator : MutableIterator<Int> {
         private var iteratorChangeCount: Int = changeCount
         private var currentPosition = 0
-        private var lastDeliveredIndex: Int = NO_INDEX
+        internal var lastDeliveredIndex: Int = NO_INDEX
 
         override fun hasNext(): Boolean = currentPosition < size
         override fun next(): Int {
@@ -501,7 +561,13 @@ class PrimitiveByteBinaryTree
     comparator: Comparator<Byte> = DEFAULT_BYTE_COMPARATOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
     maxHeightDifference: Byte = 1
-) : PrimitiveTypeBinaryTree<Byte>(initialSize, allowDuplicates, { size: Int -> PrimitiveByteArray(size, native) }, comparator, maxHeightDifference)
+) : PrimitiveTypeBinaryTree<Byte, Any>(
+    initialSize,
+    allowDuplicates,
+    { size: Int -> PrimitiveByteArray(size, native) },
+    comparator,
+    maxHeightDifference
+)
 
 class PrimitiveShortBinaryTree
 @JvmOverloads constructor(
@@ -510,7 +576,13 @@ class PrimitiveShortBinaryTree
     comparator: Comparator<Short> = DEFAULT_SHORT_COMPARATOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
     maxHeightDifference: Byte = 1
-) : PrimitiveTypeBinaryTree<Short>(initialSize, allowDuplicates, { size: Int -> PrimitiveShortArray(size, native) }, comparator, maxHeightDifference)
+) : PrimitiveTypeBinaryTree<Short, Any>(
+    initialSize,
+    allowDuplicates,
+    { size: Int -> PrimitiveShortArray(size, native) },
+    comparator,
+    maxHeightDifference
+)
 
 class PrimitiveCharBinaryTree
 @JvmOverloads constructor(
@@ -519,7 +591,13 @@ class PrimitiveCharBinaryTree
     comparator: Comparator<Char> = DEFAULT_CHAR_COMPARATOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
     maxHeightDifference: Byte = 1
-) : PrimitiveTypeBinaryTree<Char>(initialSize, allowDuplicates, { size: Int -> PrimitiveCharArray(size, native) }, comparator, maxHeightDifference)
+) : PrimitiveTypeBinaryTree<Char, Any>(
+    initialSize,
+    allowDuplicates,
+    { size: Int -> PrimitiveCharArray(size, native) },
+    comparator,
+    maxHeightDifference
+)
 
 class PrimitiveIntBinaryTree
 @JvmOverloads constructor(
@@ -528,7 +606,7 @@ class PrimitiveIntBinaryTree
     comparator: Comparator<Int> = DEFAULT_INT_COMPARATOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
     maxHeightDifference: Byte = 1
-) : PrimitiveTypeBinaryTree<Int>(initialSize, allowDuplicates, { size: Int -> PrimitiveIntArray(size, native) }, comparator, maxHeightDifference)
+) : PrimitiveTypeBinaryTree<Int, Any>(initialSize, allowDuplicates, { size: Int -> PrimitiveIntArray(size, native) }, comparator, maxHeightDifference)
 
 class PrimitiveLongBinaryTree
 @JvmOverloads constructor(
@@ -537,7 +615,13 @@ class PrimitiveLongBinaryTree
     comparator: Comparator<Long> = DEFAULT_LONG_COMPARATOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
     maxHeightDifference: Byte = 1
-) : PrimitiveTypeBinaryTree<Long>(initialSize, allowDuplicates, { size: Int -> PrimitiveLongArray(size, native) }, comparator, maxHeightDifference)
+) : PrimitiveTypeBinaryTree<Long, Any>(
+    initialSize,
+    allowDuplicates,
+    { size: Int -> PrimitiveLongArray(size, native) },
+    comparator,
+    maxHeightDifference
+)
 
 class PrimitiveFloatBinaryTree
 @JvmOverloads constructor(
@@ -546,7 +630,13 @@ class PrimitiveFloatBinaryTree
     comparator: Comparator<Float> = DEFAULT_FLOAT_COMPARATOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
     maxHeightDifference: Byte = 1
-) : PrimitiveTypeBinaryTree<Float>(initialSize, allowDuplicates, { size: Int -> PrimitiveFloatArray(size, native) }, comparator, maxHeightDifference)
+) : PrimitiveTypeBinaryTree<Float, Any>(
+    initialSize,
+    allowDuplicates,
+    { size: Int -> PrimitiveFloatArray(size, native) },
+    comparator,
+    maxHeightDifference
+)
 
 class PrimitiveDoubleBinaryTree
 @JvmOverloads constructor(
@@ -555,7 +645,7 @@ class PrimitiveDoubleBinaryTree
     comparator: Comparator<Double> = DEFAULT_DOUBLE_COMPARATOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
     maxHeightDifference: Byte = 1
-) : PrimitiveTypeBinaryTree<Double>(
+) : PrimitiveTypeBinaryTree<Double, Any>(
     initialSize,
     allowDuplicates,
     { size: Int -> PrimitiveDoubleArray(size, native) },
@@ -570,4 +660,12 @@ class UUIDBinaryTree
     comparator: Comparator<UUID> = DEFAULT_UUID_COMPARATOR,
     native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
     maxHeightDifference: Byte = 1
-) : PrimitiveTypeBinaryTree<UUID>(initialSize, allowDuplicates, { size: Int -> UUIDArray(size, native) }, comparator, maxHeightDifference)
+) : PrimitiveTypeBinaryTree<UUID, Any>(initialSize, allowDuplicates, { size: Int -> UUIDArray(size, native) }, comparator, maxHeightDifference)
+
+internal class InternalPrimitiveTypeBinaryTree<K, V>(
+    initialSize: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
+    comparator: Comparator<K>,
+    maxHeightDifference: Byte = 1,
+    keyArraySupplier: (Int) -> PrimitiveArray<K>,
+    valuesSupplier: (Int) -> MutableIndexedValueCollection<V>
+) : PrimitiveTypeBinaryTree<K, V>(initialSize, allowDuplicateKeys = false, keyArraySupplier, comparator, maxHeightDifference, valuesSupplier)
