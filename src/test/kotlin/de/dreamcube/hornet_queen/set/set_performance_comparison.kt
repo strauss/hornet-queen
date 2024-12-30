@@ -63,7 +63,13 @@ private fun longPerformanceTest(elementCount: Int) {
     }
     val elements: MutableList<Long> = PrimitiveLongArrayList(elementCount)
     elements.addAll(elementSet)
-    comparisonSetTest(elements, notElements, { HashSet() }, { PrimitiveLongSet() }, { TreeSet() }, { PrimitiveLongTreeSet(maxHeightDifference = 1) })
+    comparisonSetTest(
+        elements,
+        notElements,
+        { HashSet() },
+        { PrimitiveLongSet() },
+        { TreeSet() },
+        { PrimitiveLongTreeSet(fastIterator = true) })
     println("-----")
     println()
 }

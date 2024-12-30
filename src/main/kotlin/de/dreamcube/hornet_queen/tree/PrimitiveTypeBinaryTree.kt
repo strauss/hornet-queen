@@ -82,35 +82,36 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
     internal fun markAsEmpty() {
         size = 0
         rootIndex = NO_INDEX
+        for (i in left.indices) {
+            left.setP(i, NO_INDEX)
+            right.setP(i, NO_INDEX)
+            parent.setP(i, NO_INDEX)
+        }
     }
 
     /**
-     * Searches for the given [key] and returns its index. If the given [key] is not found, [NO_INDEX] is returned.
+     * Searches for the given [key] and returns its index. If the given [key] is not found, the index of the insert position for the given [key] is
+     * returned. If the tree is empty, [NO_INDEX] is returned. If [containsCheck] is set, [NO_INDEX] is also returned if the [key] is not contained in
+     * this tree.
      */
-    internal fun searchKey(key: K): Int {
-        return searchKey(key, rootIndex)
-    }
-
-    private tailrec fun searchKey(key: K, index: Int, containsCheck: Boolean = true): Int {
+    private tailrec fun searchKey(key: K, index: Int = rootIndex, parentIndex: Int = NO_INDEX, containsCheck: Boolean = false): Int {
         if (index == NO_INDEX) {
-            return if (containsCheck) -1 else index
+            return if (containsCheck) NO_INDEX else parentIndex
         }
         val currentKey = keys[index]
         val compareResult = comparator.compare(key, currentKey)
-        if (compareResult == 0) {
-            return index
-        }
-        return if (compareResult < 0) {
-            searchKey(key, left.getP(index))
-        } else {
-            searchKey(key, right.getP(index))
+
+        return when {
+            compareResult < 0 -> searchKey(key, left.getP(index), index, containsCheck)
+            compareResult > 0 -> searchKey(key, right.getP(index), index, containsCheck)
+            else -> index
         }
     }
 
     /**
      * Checks if the given [key] is contained in the tree.
      */
-    fun containsKey(key: K): Boolean = searchKey(key) >= 0
+    fun containsKey(key: K): Boolean = searchKey(key, containsCheck = true) >= 0
 
     /**
      * Removes the given [key] from the tree and returns the index it was removed from. If it was not found, nothing is removed and [NO_INDEX] is
@@ -295,43 +296,31 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
             internalAdd(key, NO_INDEX)
             return rootIndex
         }
-
-        var currentIndex = rootIndex
-
-        // this loop searches the tree without using recursion
-        while (true) {
-            val currentKey = keys[currentIndex]
-            val compareResult = comparator.compare(key, currentKey)
-            if (!allowDuplicateKeys && compareResult == 0) {
-                // No duplicates allowed
-                return NO_INDEX
-            }
-            if (compareResult < 0) {
-                val leftIndex = left.getP(currentIndex)
-                if (leftIndex == NO_INDEX) {
-                    left.setP(currentIndex, size)
-                    internalAdd(key, currentIndex)
-                    break
-                } else {
-                    currentIndex = leftIndex
-                    continue
-                }
-            }
-            if (compareResult > 0) {
-                val rightIndex = right.getP(currentIndex)
-                if (rightIndex == NO_INDEX) {
-                    right.setP(currentIndex, size)
-                    internalAdd(key, currentIndex)
-                    break
-                } else {
-                    currentIndex = rightIndex
-                    continue
-                }
-            }
+        // search for the insert position
+        val parentIndex = searchKey(key)
+        assert(parentIndex != NO_INDEX) // that case should be covered by the first insert above
+        val parentKey = keys[parentIndex]
+        if (!allowDuplicateKeys && parentKey == key) {
+            // no duplicates ... we do not use "contains" for avoiding a second search
+            return NO_INDEX
         }
-        val fixIndex = size - 1
-        balanceUp(fixIndex)
-        return fixIndex
+        // compare key for determining left or right
+        val compareResult = comparator.compare(key, parentKey)
+        if (compareResult < 0) {
+            val leftIndex = left.getP(parentIndex)
+            assert(leftIndex == NO_INDEX) // this should be the case if the search was correct
+            left.setP(parentIndex, size)
+        } else {
+            // this covers > 0
+            // If the tree allows for duplicates, those are added to the right to sustain relative order when performing an inorder iteration
+            val rightIndex = right.getP(parentIndex)
+            assert(rightIndex == NO_INDEX) // this should be the case if the search was correct
+            right.setP(parentIndex, size)
+        }
+        internalAdd(key, parentIndex) // this call increases the size
+        val insertIndex = size - 1
+        balanceUp(insertIndex)
+        return insertIndex
     }
 
     private fun internalAdd(key: K, parentIndex: Int) {
@@ -362,6 +351,11 @@ abstract class PrimitiveTypeBinaryTree<K> protected constructor(
         right = right.getResizedCopy(delta)
         parent = parent.getResizedCopy(delta)
         height = height.getResizedCopy(delta)
+        for (i in oldCapacity..<newCapacity) {
+            left.setP(i, NO_INDEX)
+            right.setP(i, NO_INDEX)
+            parent.setP(i, NO_INDEX)
+        }
     }
 
     fun trimToSize() {
