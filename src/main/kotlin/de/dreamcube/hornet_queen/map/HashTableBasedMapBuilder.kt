@@ -28,7 +28,7 @@ import java.util.*
  * This builder object assists in creating a new [HashTableBasedMap]. Unfortunately it is not feasible to create classes
  * for every combination of types. It is also not possible to simply create an object like a regular [HashMap] solely by
  * the given types, because the underlying data structures all have dedicated types (derived from [PrimitiveArray]).
- * The builder object is stateless and provides methods for configuring the key type. The result of a configuring
+ * The builder object is stateless and provides functions for configuring the key type. The result of a configuring
  * function is an object of [HashTableBasedMapBuilderWithKey] for configuring the value type.
  */
 object HashTableBasedMapBuilder {

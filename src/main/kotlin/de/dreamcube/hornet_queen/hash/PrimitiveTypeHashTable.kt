@@ -236,8 +236,8 @@ abstract class PrimitiveTypeHashTable<K, V> protected constructor(
 
     /**
      * Internal function for setting the given [value] at the given [internalIndex], if this [PrimitiveTypeHashTable] is
-     * used as a set. The index returned by [insertKey] should be passed. The function tolerates negative values for
-     * [internalIndex] by ignoring the call (no Exception). Therefore callers don't have to perform this check
+     * used as a map. The index returned by [insertKey] should be passed. The function tolerates negative values for
+     * [internalIndex] by ignoring the call (no Exception). Therefore, callers don't have to perform this check
      * themselves.
      */
     internal fun insertValue(internalIndex: Int, value: V?) {
@@ -259,7 +259,7 @@ abstract class PrimitiveTypeHashTable<K, V> protected constructor(
      * and throws an [IndexOutOfBoundsException].
      */
     internal fun getValueAt(internalIndex: Int): V? {
-        if (internalIndex < 0 || internalIndex >= capacity) {
+        if (internalIndex !in 0..<capacity) {
             throw IndexOutOfBoundsException(internalIndex)
         }
         return values?.get(internalIndex)
@@ -407,5 +407,5 @@ internal class InternalPrimitiveTypeHashTable<K, V>(
     initialCapacity: Int = ConfigurableConstants.DEFAULT_INITIAL_SIZE,
     loadFactor: Double = ConfigurableConstants.DEFAULT_LOAD_FACTOR,
     keyArraySupplier: (Int) -> PrimitiveArray<K>,
-    valuesSupplier: ((Int) -> MutableIndexedValueCollection<V>)
+    valuesSupplier: (Int) -> MutableIndexedValueCollection<V>
 ) : PrimitiveTypeHashTable<K, V>(initialCapacity, loadFactor, keyArraySupplier, valuesSupplier)

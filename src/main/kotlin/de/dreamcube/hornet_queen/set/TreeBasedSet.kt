@@ -21,7 +21,7 @@ import de.dreamcube.hornet_queen.*
 import de.dreamcube.hornet_queen.tree.*
 import java.util.*
 
-abstract class TreeBasedSet<T>(private val binaryTree: PrimitiveTypeBinaryTree<T>, private val fastIterator: Boolean) : PrimitiveMutableSet<T> {
+abstract class TreeBasedSet<T>(private val binaryTree: PrimitiveTypeBinaryTree<T, *>, private val fastIterator: Boolean) : PrimitiveMutableSet<T> {
 
     override fun add(element: T): Boolean = binaryTree.insertKey(element) >= 0
 
@@ -60,25 +60,6 @@ abstract class TreeBasedSet<T>(private val binaryTree: PrimitiveTypeBinaryTree<T
      */
     fun trimToSize() = binaryTree.trimToSize()
 
-    internal class OrderedTreeSetIterator<T>(private val binaryTree: PrimitiveTypeBinaryTree<T>) : MutableIterator<T> {
-        private val internalIterator: MutableIterator<Int> = binaryTree.inorderIndexIterator()
-
-        override fun hasNext(): Boolean = internalIterator.hasNext()
-
-        override fun next(): T = binaryTree.keys[internalIterator.next()]
-
-        override fun remove() = internalIterator.remove()
-    }
-
-    internal class UnorderedTreeSetIterator<T>(private val binaryTree: PrimitiveTypeBinaryTree<T>) : MutableIterator<T> {
-        private val internalIterator: MutableIterator<Int> = binaryTree.unorderedIndexIterator()
-
-        override fun hasNext(): Boolean = internalIterator.hasNext()
-
-        override fun next(): T = binaryTree.keys[internalIterator.next()]
-
-        override fun remove() = internalIterator.remove()
-    }
 }
 
 class PrimitiveByteTreeSet
