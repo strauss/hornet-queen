@@ -35,11 +35,14 @@ abstract class TreeBasedMap<K, V>(val binaryTree: PrimitiveTypeBinaryTree<K, V>,
     override val size: Int
         get() = binaryTree.size
 
+    /**
+     * Creates a copy of all contained values in this [TreeBasedMap]. Changes to this collection are NOT reflected to this map.
+     */
     override val values: MutableCollection<V>
         get() = binaryTree.valuesAsCollection() ?: mutableListOf()
 
     override fun clear() {
-        binaryTree.markAsEmpty()
+        binaryTree.clear()
     }
 
     @Suppress("kotlin:S6529") // we are literally implementing isEmpty() here ... following the rule would cause endless recursion
@@ -62,16 +65,21 @@ abstract class TreeBasedMap<K, V>(val binaryTree: PrimitiveTypeBinaryTree<K, V>,
     }
 
     override fun put(key: K, value: V): V? {
-        var index = binaryTree.searchKey(key, containsCheck = false)
+        if (isEmpty()) {
+            // first put
+            val rootIndex = binaryTree.insertKey(key)
+            binaryTree.insertValue(rootIndex, value)
+            return null // no old value
+        }
         var oldValue: V? = null
-        // TODO: the check does not work yet on empty trees
+        var index = binaryTree.searchKey(key, containsCheck = false)
         if (binaryTree.keys[index] == key) {
             // if we set containsCheck to false, the returned index returns either the found position (in which case the key at the index equals the
             // key we want to insert) or the index of the parent where we want to insert the new key. So the if statement is technically a contains
             // check without the liability to search again
-            index = binaryTree.insertAtParent(index, key)
-        } else {
             oldValue = binaryTree.getValueAt(index)
+        } else {
+            index = binaryTree.insertAtParent(index, key)
         }
         binaryTree.insertValue(index, value)
         return oldValue
@@ -89,10 +97,17 @@ abstract class TreeBasedMap<K, V>(val binaryTree: PrimitiveTypeBinaryTree<K, V>,
 
     override fun containsKey(key: K): Boolean = binaryTree.containsKey(key)
 
+    /**
+     * Reduces the physical size of this [TreeBasedMap] to its logical [size]. This function should only be called after the creation of this map
+     * is done and no more elements are expected to be added.
+     */
     fun trimToSize() = binaryTree.trimToSize()
 
     override fun toString() = entries.toString()
 
+    /**
+     * Key set view on a [TreeBasedMap]. Removing elements is allowed. However, adding elements will yield an [UnsupportedOperationException].
+     */
     class KeySet<K>(private val binaryTree: PrimitiveTypeBinaryTree<K, *>, private val fastIterator: Boolean) : PrimitiveMutableSet<K> {
         override fun add(element: K): Boolean =
             throw UnsupportedOperationException("This call does not make any sense. Use the put function of the map.")
@@ -100,7 +115,7 @@ abstract class TreeBasedMap<K, V>(val binaryTree: PrimitiveTypeBinaryTree<K, V>,
         override val size: Int
             get() = binaryTree.size
 
-        override fun clear() = binaryTree.markAsEmpty()
+        override fun clear() = binaryTree.clear()
 
         override fun isEmpty(): Boolean = binaryTree.size == 0
 
@@ -113,6 +128,9 @@ abstract class TreeBasedMap<K, V>(val binaryTree: PrimitiveTypeBinaryTree<K, V>,
         override fun toString() = asString()
     }
 
+    /**
+     * Inner class representing the entry set of this [TreeBasedMap]. All set operations are allowed and reflected to the map.
+     */
     inner class EntrySet : PrimitiveMutableSet<MutableMap.MutableEntry<K, V>> {
 
         override fun add(element: MutableMap.MutableEntry<K, V>): Boolean {
@@ -158,6 +176,9 @@ abstract class TreeBasedMap<K, V>(val binaryTree: PrimitiveTypeBinaryTree<K, V>,
         }
     }
 
+    /**
+     * Inner class representing an entry of this [TreeBasedMap].
+     */
     private inner class Entry(val internalIndex: Int) : MutableMap.MutableEntry<K, V> {
         override val key: K
             get() = binaryTree.keys[internalIndex]

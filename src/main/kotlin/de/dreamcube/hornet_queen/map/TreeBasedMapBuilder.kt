@@ -48,7 +48,7 @@ object TreeBasedMapBuilder {
      */
     @JvmOverloads
     @JvmStatic
-    fun useShortKeyy(
+    fun useShortKey(
         native: Boolean = ConfigurableConstants.DEFAULT_NATIVE,
         comparator: Comparator<Short> = DEFAULT_SHORT_COMPARATOR
     ): TreeBasedMapBuilderWithKeyAndComparator<Short> =

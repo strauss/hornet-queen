@@ -19,32 +19,41 @@ package de.dreamcube.hornet_queen.set
 
 import de.dreamcube.hornet_queen.tree.PrimitiveTypeBinaryTree
 
+/**
+ * Convenience interface for allowing accessing the last delivered index. This is required for the entry set iterator.
+ */
 interface TreeSetIterator<T> : MutableIterator<T> {
     val lastDeliveredIndex: Int
 }
 
-class OrderedTreeSetIterator<T>(private val binaryTree: PrimitiveTypeBinaryTree<T, *>) : TreeSetIterator<T> {
-    private val internalIterator: PrimitiveTypeBinaryTree<T, *>.BinaryTreeInorderIndexIterator = binaryTree.inorderIndexIterator()
+/**
+ * Adapts the inorder index iterator provided by the [PrimitiveTypeBinaryTree] to an iterator on the keys of the tree.
+ */
+class OrderedTreeSetIterator<K>(private val binaryTree: PrimitiveTypeBinaryTree<K, *>) : TreeSetIterator<K> {
+    private val internalIterator: PrimitiveTypeBinaryTree<K, *>.BinaryTreeInorderIndexIterator = binaryTree.inorderIndexIterator()
 
     override val lastDeliveredIndex
         get() = internalIterator.lastDeliveredIndex
 
     override fun hasNext(): Boolean = internalIterator.hasNext()
 
-    override fun next(): T = binaryTree.keys[internalIterator.next()]
+    override fun next(): K = binaryTree.keys[internalIterator.next()]
 
     override fun remove() = internalIterator.remove()
 }
 
-class UnorderedTreeSetIterator<T>(private val binaryTree: PrimitiveTypeBinaryTree<T, *>) : TreeSetIterator<T> {
-    private val internalIterator: PrimitiveTypeBinaryTree<T, *>.BinaryTreeUnorderedIndexIterator = binaryTree.unorderedIndexIterator()
+/**
+ * Adapts the unordered index iterator provided by the [PrimitiveTypeBinaryTree] to an iterator on the keys of the tree.
+ */
+class UnorderedTreeSetIterator<K>(private val binaryTree: PrimitiveTypeBinaryTree<K, *>) : TreeSetIterator<K> {
+    private val internalIterator: PrimitiveTypeBinaryTree<K, *>.BinaryTreeUnorderedIndexIterator = binaryTree.unorderedIndexIterator()
 
     override val lastDeliveredIndex
         get() = internalIterator.lastDeliveredIndex
 
     override fun hasNext(): Boolean = internalIterator.hasNext()
 
-    override fun next(): T = binaryTree.keys[internalIterator.next()]
+    override fun next(): K = binaryTree.keys[internalIterator.next()]
 
     override fun remove() = internalIterator.remove()
 }

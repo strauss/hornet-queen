@@ -121,7 +121,7 @@ class TestMap<K, V>(
             arrayOf(
                 "HashTable based 'Double' key and 'Int' value.",
                 { HashTableBasedMapBuilder.useDoubleKey().useIntValue().create() }, { PrimitiveDoubleSet() },
-                { Random.nextInt().toDouble() }, { PrimitiveIntArrayList() }, { Random.nextInt() }
+                { Random.nextDouble() }, { PrimitiveIntArrayList() }, { Random.nextInt() }
             ),
             arrayOf(
                 "HashTable based 'UUID' key and 'Int' value.",
@@ -129,9 +129,78 @@ class TestMap<K, V>(
                 { UUID.randomUUID() }, { PrimitiveIntArrayList() }, { Random.nextInt() }
             ),
             arrayOf(
+                "Tree based 'Long' key and 'Byte' value",
+                { TreeBasedMapBuilder.useLongKey().useByteValue().create() }, { PrimitiveLongSet() },
+                { Random.nextLong() }, { PrimitiveByteArrayList() }, { Random.nextInt().toByte() }
+            ),
+            arrayOf(
+                "Tree based 'Long' key and 'Short' value",
+                { TreeBasedMapBuilder.useLongKey().useShortValue().create() }, { PrimitiveLongSet() },
+                { Random.nextLong() }, { PrimitiveShortArrayList() }, { Random.nextInt().toShort() }
+            ),
+            arrayOf(
+                "Tree based 'Long' key and 'Char' value",
+                { TreeBasedMapBuilder.useLongKey().useCharValue().create() }, { PrimitiveLongSet() },
+                { Random.nextLong() }, { PrimitiveCharArrayList() }, { Random.nextInt().toChar() }
+            ),
+            arrayOf(
                 "Tree based 'Long' key and 'Int' value.",
                 { TreeBasedMapBuilder.useLongKey().useIntValue().create() }, { PrimitiveLongSet() },
                 { Random.nextLong() }, { PrimitiveIntArrayList() }, { Random.nextInt() }
+            ), arrayOf(
+                "Tree based 'Long' key and 'Long' value",
+                { TreeBasedMapBuilder.useLongKey().useLongValue().create() }, { PrimitiveLongSet() },
+                { Random.nextLong() }, { PrimitiveLongArrayList() }, { Random.nextLong() }
+            ),
+            arrayOf(
+                "Tree based 'Long' key and 'Float' value.",
+                { TreeBasedMapBuilder.useLongKey().useFloatValue().create() }, { PrimitiveLongSet() },
+                { Random.nextLong() }, { PrimitiveFloatArrayList() }, { Random.nextFloat() }
+            ),
+            arrayOf(
+                "Tree based 'Long' key and 'Double' value.",
+                { TreeBasedMapBuilder.useLongKey().useDoubleValue().create() }, { PrimitiveLongSet() },
+                { Random.nextLong() }, { PrimitiveDoubleArrayList() }, { Random.nextDouble() }
+            ),
+            arrayOf(
+                "Tree based 'Long' key and 'UUID' value.",
+                { TreeBasedMapBuilder.useLongKey().useUUIDValue().create() }, { PrimitiveLongSet() },
+                { Random.nextLong() }, { UUIDArrayList() }, { UUID.randomUUID() }
+            ),
+            arrayOf(
+                "Tree based 'Long' key and 'Any' value.",
+                { TreeBasedMapBuilder.useLongKey().useArbitraryTypeValue<Any>().create() }, { PrimitiveLongSet() },
+                { Random.nextLong() }, { ArrayList<Any>() }, { Any() }
+            ),
+            arrayOf(
+                "Tree based 'Byte' key and 'Int' value.",
+                { TreeBasedMapBuilder.useByteKey().useIntValue().create() }, { PrimitiveByteSet() },
+                { Random.nextInt().toByte() }, { PrimitiveIntArrayList() }, { Random.nextInt() }
+            ),
+            arrayOf(
+                "Tree based 'Short' key and 'Int' value.",
+                { TreeBasedMapBuilder.useShortKey().useIntValue().create() }, { PrimitiveShortSet() },
+                { Random.nextInt().toShort() }, { PrimitiveIntArrayList() }, { Random.nextInt() }
+            ),
+            arrayOf(
+                "Tree based 'Int' key and 'Int' value.",
+                { TreeBasedMapBuilder.useIntKey().useIntValue().create() }, { PrimitiveIntSet() },
+                { Random.nextInt() }, { PrimitiveIntArrayList() }, { Random.nextInt() }
+            ),
+            arrayOf(
+                "Tree based 'Float' key and 'Int' value.",
+                { TreeBasedMapBuilder.useFloatKey().useIntValue().create() }, { PrimitiveFloatSet() },
+                { Random.nextFloat() }, { PrimitiveIntArrayList() }, { Random.nextInt() }
+            ),
+            arrayOf(
+                "Tree based 'Double' key and 'Int' value.",
+                { TreeBasedMapBuilder.useDoubleKey().useIntValue().create() }, { PrimitiveDoubleSet() },
+                { Random.nextDouble() }, { PrimitiveIntArrayList() }, { Random.nextInt() }
+            ),
+            arrayOf(
+                "Tree based 'UUID' key and 'Int' value.",
+                { TreeBasedMapBuilder.useUUIDKey().useIntValue().create() }, { UUIDSet() },
+                { UUID.randomUUID() }, { PrimitiveIntArrayList() }, { Random.nextInt() }
             )
         )
     }

@@ -28,8 +28,10 @@ The library is not complete yet. It currently includes the following:
     - [`TreeBasedSet`](src/main/kotlin/de/dreamcube/hornet_queen/set/TreeBasedSet.kt)
 - Map
     - [`HashTableBasedMap`](src/main/kotlin/de/dreamcube/hornet_queen/map/HashTableBasedMap.kt)
+    - [`TreeBasedMap`](src/main/kotlin/de/dreamcube/hornet_queen/map/TreeBasedMap.kt)
 
 The hash set and the hash map implementation are based on the same hash table implementation.
+The tree set and tree map implementation are based on the same binary tree implementation.
 The supported primitive types are (in Kotlin's notation) `Byte`, `Short`, `Char`, `Int`, `Float`, `Long`, `Double` and finally `UUID`, although it is
 technically not a primitive type at all.
 
@@ -116,19 +118,26 @@ dependencies {
 Unlike Java, Kotlin does not distinguish between primitive types (e.g., `int`) and wrapper types (e.g., `Integer`).
 Instead, a common type name is used (e.g., `Int`).
 In some cases they are identical to the wrapper class' name (e.g., `Long`).
-~~This allows for implicitly using primitive types in a generic way, such as in interfaces.~~
 Kotlin automatically chooses the best underlying type for the situation.
 Hornet Queen explicitly enforces the usage of primitive types in all its implementing classes due to the nature of the underlying array
 implementation (see next section).
 
 When storing/accessing the values using the interface functions, autoboxing and auto-unboxing occurs.
-This will be addressed in the future for some of the classes with special non-interface methods.
-However, this process is unnoticeably fast but it can cost performance if calls happen too often (currently this is an issue with the internally used
-arrays).
+For index structures, in the tree implementation and linked list implementation, special getter and setter functions have been implemented, that use
+the primitive types instead.
+This avoids auto(un-)boxing for all index based operations.
+When accessing any collection object with an interface method, that includes a generic type, this type is auto(un-)boxed while doing so.
+However, this process is unnoticeably fast, but it can cost performance if calls happen too often.
+
 The `UUID` type is always explicitly (un-)boxed.
 When comparing Hornet Queen's `UUIDSet` with a Java `HashSet<UUID>` the former can compete in most scenarios while saving memory.
 For performance comparison have a look at the
 [`SetPerformanceComparison.kt`](src/test/kotlin/de/dreamcube/hornet_queen/set/set_performance_comparison.kt) file among the test cases.
+
+In a nutshell: Hornet Queen is designed to save space while sustaining runtime efficiency, compared to the regular collection classes.
+In most cases, it can compete time-wise.
+In some cases it is slower (e.g., filling up a tree based structure).
+In other cases it even outperforms the regular collections (e.g., a contains check on a tree structure).
 
 ### The Array implementation
 
@@ -148,7 +157,7 @@ The more successful attempt was adapting the Java class `java.nio.ByteBuffer`.
 As the name suggests, the `ByteBuffer` is usually used as buffer structure for file operations in the Java native input output classes.
 It also allows for directly accessing data within the structure by index.
 The best part are its convenience methods for reading primitive types from the given index.
-This aspect, in combination with Kotlins ability to define the operator functions `get` and `set`, enable my implementation to be used exactly as a
+This aspect, in combination with Kotlin's ability to define the operator functions `get` and `set`, enable my implementation to be used exactly as a
 normal array, at least from within Kotlin.
 
 The bonus feature of `ByteBuffer` is the ability to use a native byte array as underlying structure.
@@ -169,8 +178,6 @@ The native `ByteBuffer` is the main reason why Hornet Queen performs very well i
     - `Long` and `Double`: 268,435,455
     - `UUID`: 134,217,727
 
-Both implementations now use the mechanics the `ByteBuffer` is actually meant to be used for copying the content.
-
 I have plans to overcome the size limitation, this is currently not at the top of the priority list (see last section).
 
 ### List implementations
@@ -187,7 +194,7 @@ However, instead of node objects, my linked list implementation uses two
 Node objects are fully blown objects with an overhead of 8 to 16 bytes each (depending on the JVM implementation).
 Each node objects uses two references to the successor and predecessor respectively.
 A reference takes 4 to 8 bytes of space, also depending on the JVM implementation.
-And I didn't consider the usage of wrapper classes in this discussion.
+And I didn't even consider the usage of wrapper classes in this discussion.
 
 That means, even if there is a bit of "dead memory" in form of unused array space, it is very likely that a java `LinkedList` of a primitive type
 would still take up more space than the array based linked list.
@@ -235,7 +242,7 @@ The iterator performs slower because it is required to also iterate over the num
 This is actually the only disadvantage of `BitSet`s.
 Execute [`SetPerformanceComparison.kt`](src/test/kotlin/de/dreamcube/hornet_queen/set/set_performance_comparison.kt) to see for yourself.
 
-#### Hash table based
+#### Hash table based sets
 
 Hornet Queen's hash table implementation is in principle identical to the hash table implementation of GNU Trove4J.
 It trades space for speed and vice versa.
@@ -255,8 +262,8 @@ If you have to remove elements frequently, it is possible that the structure gro
 The reason is the nature of collision handling.
 If you remove a value, it is only marked as being deleted and the space cannot be freed right away (that would be a costly operation).
 
-The [`HashTableBasedSet`](src/main/kotlin/de/dreamcube/hornet_queen/set/HashTableBasedSet.kt) provides the functions `manualRehash()`
-and `shrinkToLoadFactor()`.
+The [`HashTableBasedSet`](src/main/kotlin/de/dreamcube/hornet_queen/set/HashTableBasedSet.kt) provides the functions `manualRehash()` and
+`shrinkToLoadFactor()`.
 The function `manualRehash()` effectively frees all the deleted cells without changing the size of the underlying structure.
 It is useful if you plan on adding more elements to the set.
 The function `shrinkToLoadFactor()` does the same, but also shrinks the structure to match the load factor.
@@ -266,7 +273,7 @@ Trove4J has an automatic shrinking mechanism if the hash table is below a certai
 I decided that I don't want to adapt this aspect.
 I wanted to give the users of Hornet Queen the freedom (but also the responsibility) to decide when to shrink/rehash the hash table.
 
-#### Tree based
+#### Tree based sets
 
 The tree in my tree set implementation is a classical AVL tree with an automatic balancing feature.
 It should take less space than Java's `TreeSet` implementation.
@@ -274,33 +281,63 @@ Java uses red black trees instead of classical AVL trees.
 This allows for a height difference of 2 and results in less rotation operations.
 Therefore, they might be a bit faster.
 
-My tree based set implementation currently suffers from the auto-boxing issue for internal arrays.
-This will be addressed in the near future.
+The maximum height difference can be adjusted.
+The default value is `1`, which corresponds to a standard AVL tree.
+If you pick `2`, you get a similar result as in a regular `TreeSet`.
+You can choose a value up to `5`.
+It is also possible to set a value of `-1`.
+This results in a tree that is not automatically balanced.
+Feel free to play around with this parameter.
+However, the default value of `1` should be adequate for most scenarios.
+
+Tree based sets can utilize two different iterators.
+This can be controlled with the parameter `fastIterator`, which is false by default.
+The slower iterator behaves like the iterator of a regular `TreeSet`.
+It is an inorder iterator that traverses the tree in order defined by the `Comparator` that is used for insertion.
+
+Because the inorder iterator is slower than the one used in the regular `TreeSet`, I decided to include a second faster iterator.
+That one iterates over the internal array and performs way faster.
+If the ordering of the elements is not of your concern, use the fast iterator instead.
+
+In order to save memory, all tree based sets provide the function `trimToSize()`.
+This can and should be called in your application, if you know that you are not planning on adding more elements to the set.
 
 ### Map implementation(s)
 
-Currently, there is only the hash table based map implemented.
+Currently, there are two map implementations.
+
+#### Hash table based map
+
 The underlying data structure is the very same hash table as for the sets.
 Everything that applies to hash table based sets also applies to hash table based maps.
 This is especially noticeable for the functions `manualRehash()` and `shrinkToLoadFactor()`.
 
 The hash table based maps in Hornet Queen are special in that they support both primitive and non-primitive value types.
 The keys are always primitive types (including `UUID`).
+
+#### Tree based map
+
+The underlying data structure is the very same binary tree as for the sets.
+Also the height difference, and the faster iterator can be used for tree based maps.
+In analogy to the hash table based maps, it is also possible to use arbitrary types as value types.
+
+#### Instantiating primitive maps
+
 All structures, covered so far, have their dedicated classes that can be used: e.g., `PrimitiveIntSet` or `UUIDArrayList`.
 For maps this would require a lot of different classes (81 ... 90 if you want to allow for object value types).
 This approach did not seem reasonable for me so came up with a different solution.
-
-The tree based map implementation will follow after some of the performance issues have been addressed.
-
-#### Instantiating primitive maps
 
 Usually I don't like the builder pattern.
 In most cases it lacks benefits and adds unnecessary complexity.
 Here, however, I saw potential in utilizing the builder pattern for creating arbitrary primitive maps.
 
 The class [`HashTableBasedMapBuilder`](src/main/kotlin/de/dreamcube/hornet_queen/map/HashTableBasedMapBuilder.kt) contains everything that is required
-for creating a map with primitive key types and arbitrary value types.
+for creating a hashtable based map with primitive key types and arbitrary value types.
+For creating tree based maps the class [`TreeBasedMapBuilder`](src/main/kotlin/de/dreamcube/hornet_queen/map/TreeBasedMapBuilder.kt) can be used in a
+similar way.
+
 I will explain its usage with examples.
+The tree based maps are created analogously.
 
 ##### Kotlin
 
@@ -335,6 +372,8 @@ final Map<UUID, String> uuidStringMap = HashTableBasedMapBuilder
 ```
 
 Please note that `useIntValue()` and all other corresponding functions also have the native flag as optional parameter.
+In case of tree based maps, the functions for defining the key type also provide the option to define the comparator that is used for searching and
+sorting the key values.
 
 ## Known issues
 
@@ -343,13 +382,11 @@ Please note that `useIntValue()` and all other corresponding functions also have
 - The generic arrays are no classical arrays and all array convenience functions in Kotlin and convenience methods from the class `Arrays` are not
   applicable.
     - For now, this seems to be an unsolvable problem. Maybe I will provide some of these functions/methods in the future.
-- There is a bug in the Linked List if the first element is removed repeatedly and only one element is left. For now just use the Array List :-)
-- There is a performance issue with all collections that use `PrimitiveIntArray` as index structure (mainly `PrimitiveTypeBinaryTree`
-  and `PrimitiveLinkedList`).
+- There is a bug in the Linked List if the first element is removed repeatedly and only one element is left. For now, just use the Array List :-)
 
 ## (E)FAQs
 
-Since this is the first release, there have not been any questions yet ... therefore the "E" stands for "expected".
+There have not been any real questions yet ... therefore the "E" stands for "expected".
 
 - Why did you pick this name?
     - First of all, I am very bad at naming things.
@@ -357,8 +394,8 @@ Since this is the first release, there have not been any questions yet ... there
     - People have named better things in a worse way.
 - Why did you write the library in Kotlin?
     - Kotlin currently is the best language for the JVM.
-    - Kotlin offers features that wouldn't be (easily) possible in Java benefiting Hornet Queen.
-    - Kotlin is the language of my personal choice when it comes to developing something besides my actual job.
+    - Kotlin offers features that wouldn't be (easily) possible in Java, benefiting Hornet Queen.
+    - Kotlin is the language of my personal choice when it comes to developing anything besides my actual job.
 - Why do you treat UUID as primitive type?
     - UUIDs are a great choice as primary key in database tables for several reasons that are beyond the scope of this documentation.
     - When creating a data cache, the most obvious data structure is a Map with the primary key as map key.
@@ -372,10 +409,7 @@ Since this is the first release, there have not been any questions yet ... there
 
 ## Planned features for the future
 
-- Make the arrays faster using non-interface methods (mainly for internal usage).
 - Fix the bug in linked lists.
-- Tree based maps
-    - Trading more time for less space ... if done correctly
 - Heap based priority queues
     - Because ... why not?
 - Overcome the size limitation of generic arrays and raise it to `Int.MAX_VALUE` for all types or even beyond (index space `Long` would be fun). The
@@ -387,3 +421,4 @@ Since this is the first release, there have not been any questions yet ... there
     - Those are especially useful for functional programming
 - Bit set based boolean lists ... if anyone needs them.
 - Whatever else comes into my mind and fits into Hornet Queen :-)
+    - Maybe graphs? Who knows?

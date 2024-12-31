@@ -29,7 +29,7 @@ abstract class TreeBasedSet<T>(private val binaryTree: PrimitiveTypeBinaryTree<T
         get() = binaryTree.size
 
     override fun clear() {
-        binaryTree.markAsEmpty()
+        binaryTree.clear()
     }
 
     @Suppress("kotlin:S6529") // we are literally implementing isEmpty() here ... following the rule would cause endless recursion
@@ -42,21 +42,22 @@ abstract class TreeBasedSet<T>(private val binaryTree: PrimitiveTypeBinaryTree<T
      * iterator, if [fastIterator] is set to false (which is also the default if it is not specified). This iterator is comparable with the one
      * provided by [java.util.TreeSet], but slower.
      */
-    fun orderedIterator(): MutableIterator<T> = OrderedTreeSetIterator(binaryTree)
+    private fun orderedIterator(): MutableIterator<T> = OrderedTreeSetIterator(binaryTree)
 
     /**
      * Provides an iterator that iterates the elements of this set in no defined order. It is the default iterator, if [fastIterator] is set to true.
      * This iterator is way faster than the [orderedIterator] and also faster than the iterator of [java.util.TreeSet]. It simply iterates over the
      * internal array representation of this set.
      */
-    fun unorderedIterator(): MutableIterator<T> = UnorderedTreeSetIterator(binaryTree)
+    private fun unorderedIterator(): MutableIterator<T> = UnorderedTreeSetIterator(binaryTree)
 
     override fun remove(element: T): Boolean = binaryTree.removeKey(element) >= 0
 
     override fun contains(element: T): Boolean = binaryTree.containsKey(element)
 
     /**
-     * Shrinks the internal array to the size of the set. This operation should only be called if no more elements are added to the list.
+     * Reduces the physical size of this [TreeBasedSet] to its logical [size]. This function should only be called after the creation of this set
+     * is done and no more elements are expected to be added.
      */
     fun trimToSize() = binaryTree.trimToSize()
 
