@@ -24,11 +24,15 @@ import de.dreamcube.hornet_queen.list.PrimitiveArrayList
 import java.util.*
 
 abstract class PrimitiveTypeValueCollection<T>(
-    final override val size: Int,
-    private val arraySupplier: (Int) -> PrimitiveArray<T>
+    size: Int,
+    private val arraySupplier: (Int) -> PrimitiveArray<T>,
 ) :
     MutableIndexedValueCollection<T> {
-    val array: PrimitiveArray<T> = arraySupplier(size)
+    var array: PrimitiveArray<T> = arraySupplier(size)
+        private set
+
+    final override val size: Int
+        get() = array.size
 
     override fun get(index: Int): T = array[index]
 
@@ -54,6 +58,10 @@ abstract class PrimitiveTypeValueCollection<T>(
 
     @Suppress("kotlin:S6518") // using array[index] = value won't work here because the assignment does not return Unit
     override fun set(index: Int, value: T) = array.set(index, value)
+
+    override fun resize(delta: Int) {
+        array = array.getResizedCopy(delta)
+    }
 }
 
 class ByteValueCollection

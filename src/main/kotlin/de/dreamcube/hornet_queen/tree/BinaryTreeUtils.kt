@@ -23,6 +23,9 @@ import de.dreamcube.hornet_queen.set.PrimitiveIntSetB
 import kotlin.math.abs
 import kotlin.math.max
 
+/**
+ * Tree traversal with visitor pattern.
+ */
 fun <K, V> PrimitiveTypeBinaryTree<K, V>.traverseTree(index: Int, visitor: TreeVisitor<K>) {
     if (index == NO_INDEX) {
         return
@@ -68,6 +71,9 @@ fun <K, V> PrimitiveTypeBinaryTree<K, V>.traverseTree(index: Int, visitor: TreeV
     }
 }
 
+/**
+ * Visitor interface for tree traversal.
+ */
 interface TreeVisitor<K> {
 
     fun enterNode(node: K, depth: Int, root: Boolean) {
@@ -84,6 +90,9 @@ interface TreeVisitor<K> {
 
 }
 
+/**
+ * Visitor for determining the height of the whole tree.
+ */
 private class HeightVisitor<K> : TreeVisitor<K> {
     var height: Int = 0
         private set
@@ -93,6 +102,9 @@ private class HeightVisitor<K> : TreeVisitor<K> {
     }
 }
 
+/**
+ * Visitor for the iterative toString implementation.
+ */
 internal class ToStringVisitor<K> : TreeVisitor<K> {
     private val builder = StringBuilder()
     val result
@@ -115,18 +127,27 @@ internal class ToStringVisitor<K> : TreeVisitor<K> {
     }
 }
 
+/**
+ * Iterative height determination using the tree traversal with visitor.
+ */
 internal fun <K, V> PrimitiveTypeBinaryTree<K, V>.heightI(index: Int): Int {
     val visitor = HeightVisitor<K>()
     traverseTree(index, visitor)
     return visitor.height - 1
 }
 
+/**
+ * Iterative toString implementation using the tree traversal with visitor.
+ */
 internal fun <K, V> PrimitiveTypeBinaryTree<K, V>.toStringI(): String {
     val toStringVisitor = ToStringVisitor<K>()
     traverseTree(rootIndex, toStringVisitor)
     return toStringVisitor.result
 }
 
+/**
+ * Recursive balance check.
+ */
 fun <K, V> PrimitiveTypeBinaryTree<K, V>.isBalanced() = isBalanced(rootIndex)
 
 internal fun <K, V> PrimitiveTypeBinaryTree<K, V>.isBalanced(index: Int): Boolean {
@@ -141,6 +162,9 @@ internal fun <K, V> PrimitiveTypeBinaryTree<K, V>.isBalanced(index: Int): Boolea
     return isBalanced(left.getP(index)) && isBalanced(right.getP(index))
 }
 
+/**
+ * Very inefficient recursive function to balance an arbitrary binary tree. It is an adaptation of a Haskell function that I once implemented :-)
+ */
 internal fun <K, V> PrimitiveTypeBinaryTree<K, V>.balanceR(index: Int) {
     if (isBalanced(index)) {
         return
@@ -185,10 +209,16 @@ internal fun <N, K, V> PrimitiveTypeBinaryTree<K, V>.fold(neutralElement: N, ind
     if (index == NO_INDEX) neutralElement else
         f(fold(neutralElement, left.getP(index), f), index, fold(neutralElement, right.getP(index), f))
 
+/**
+ * Height determination using the [fold].
+ */
 internal fun <K, V> PrimitiveTypeBinaryTree<K, V>.heightR(index: Int) = fold(-1, index) { leftHeight: Int, _, rightHeight: Int ->
     1 + max(leftHeight, rightHeight)
 }
 
+/**
+ * [toString] implementation using [fold].
+ */
 fun <K, V> PrimitiveTypeBinaryTree<K, V>.toStringR(): String = fold("", rootIndex) { leftString: String, index: Int, rightString: String ->
     if (index == rootIndex)
         "($leftString [${keys[index]}:${height.getP(index)}] $rightString)"

@@ -90,10 +90,13 @@ abstract class PrimitiveTypeBinaryTree<K, V> protected constructor(
     private var changeCount: Int = 0
 
     init {
-        markAsEmpty()
+        clear()
     }
 
-    internal fun markAsEmpty() {
+    /**
+     * Clears this tree.
+     */
+    internal fun clear() {
         size = 0
         rootIndex = NO_INDEX
         for (i in left.indices) {
@@ -139,6 +142,9 @@ abstract class PrimitiveTypeBinaryTree<K, V> protected constructor(
         return index
     }
 
+    /**
+     * Internal function for removing the key at the given [index].
+     */
     internal fun removeKeyAt(index: Int) {
         // for removal, we rotate until the element is a leaf
         while (!isLeaf(index)) {
@@ -161,7 +167,7 @@ abstract class PrimitiveTypeBinaryTree<K, V> protected constructor(
             right.setP(parentOfIndex, NO_INDEX)
         }
         if (size == 0) {
-            markAsEmpty()
+            clear()
             return
         }
         if (index == size) {
@@ -202,12 +208,27 @@ abstract class PrimitiveTypeBinaryTree<K, V> protected constructor(
         balanceUp(fixIndex)
     }
 
+    /**
+     * Checks if the key at the given [index] is a leaf, meaning both subtrees are empty.
+     */
     private fun isLeaf(index: Int): Boolean = index != NO_INDEX && left.getP(index) == NO_INDEX && right.getP(index) == NO_INDEX
 
+    /**
+     * Rotates the given [index] to the left.
+     */
     internal fun rotateLeft(index: Int) = internalRotate(index, left, right)
 
+    /**
+     * Rotates the given [index] to the right.
+     */
     internal fun rotateRight(index: Int) = internalRotate(index, right, left)
 
+    /**
+     * Internal generic rotate function that can rotate the given [index] either to the left or the right. The direction is determined by the
+     * [directionArray]. If the [directionArray] is [left], the rotation will be a left rotation. If the [directionArray] is [right], the rotation
+     * will be a right rotation. The [otherArray] is required to be, as the name suggests, the other array. In case of a left rotation it has to be
+     * set to [right]. In case of a right rotation it has to be set to [left].
+     */
     private fun internalRotate(index: Int, directionArray: PrimitiveIntArray, otherArray: PrimitiveIntArray): Int {
         if (index == NO_INDEX || otherArray.getP(index) == NO_INDEX) {
             // If there is no subtree on the other side, a rotation is not possible
@@ -245,6 +266,9 @@ abstract class PrimitiveTypeBinaryTree<K, V> protected constructor(
         return indexOther
     }
 
+    /**
+     * Internal function for fixing the height in bottom-up direction. It is used by [balanceUp] and [internalRotate] to adjust the stored heights.
+     */
     private fun determineNewHeight(index: Int): Byte = when {
         index == NO_INDEX -> -1
         left.getP(index) == NO_INDEX && right.getP(index) == NO_INDEX -> 0
@@ -253,6 +277,9 @@ abstract class PrimitiveTypeBinaryTree<K, V> protected constructor(
         else -> max(height.getP(left.getP(index)), height.getP(right.getP(index))).inc()
     }
 
+    /**
+     * This function is called by the insert and remove operations in the end for re-balancing the tree.
+     */
     private fun balanceUp(index: Int) {
         var currentIndex: Int = index
         while (currentIndex != NO_INDEX) {
@@ -284,14 +311,23 @@ abstract class PrimitiveTypeBinaryTree<K, V> protected constructor(
         }
     }
 
+    /**
+     * Checks if a node is considered "locally balanced" based on the heights of the subtrees.
+     */
     private fun locallyBalanced(index: Int): Boolean {
         val leftHeight = height(left.getP(index))
         val rightHeight = height(right.getP(index))
         return maxHeightDifference <= 0 || abs(leftHeight - rightHeight) <= maxHeightDifference
     }
 
-    fun height(): Int = if (rootIndex == NO_INDEX) NO_INDEX else height.getP(rootIndex).toInt()
+    /**
+     * "Fast" height determination. It just returns the [height] value of the root node.
+     */
+    fun height(): Int = height(rootIndex).toInt()
 
+    /**
+     * Internal height function for a given [index]. It returns a [Byte], because the height is stored as unsigned [Byte].
+     */
     internal fun height(index: Int): Byte = if (index == NO_INDEX) -1 else height.getP(index)
 
     /**
@@ -325,20 +361,32 @@ abstract class PrimitiveTypeBinaryTree<K, V> protected constructor(
         return values?.get(internalIndex)
     }
 
+    /**
+     * Checks, if the internal [values] structure contains the given [value].
+     */
     internal fun containsValue(value: V): Boolean {
         return values?.contains(value) ?: false
     }
 
+    /**
+     * Creates a mutable collection of the stored [values].
+     */
     internal fun valuesAsCollection(): MutableCollection<V>? = values?.asCollection { it in 0..<size }
 
     override fun toString() = toStringR()
 
+    /**
+     * Creates a (slow) iterator that iterates the elements in order dictated by the [comparator].
+     */
     internal fun inorderIndexIterator(): BinaryTreeInorderIndexIterator = BinaryTreeInorderIndexIterator()
 
+    /**
+     * Creates a (fast) iterator that iterates the underlying [keys] array directly with no defined order.
+     */
     internal fun unorderedIndexIterator(): BinaryTreeUnorderedIndexIterator = BinaryTreeUnorderedIndexIterator()
 
     /**
-     * Inserts the given [key] to this binary tree. Returns [NO_INDEX] if duplicates are forbidden and it is already contained.
+     * Inserts the given [key] to this binary tree. Returns [NO_INDEX] if duplicates are forbidden, and it is already contained.
      */
     fun insertKey(key: K): Int {
         if (rootIndex == NO_INDEX) {
@@ -353,6 +401,10 @@ abstract class PrimitiveTypeBinaryTree<K, V> protected constructor(
         return insertAtParent(parentIndex, key)
     }
 
+    /**
+     * Internal function for inserting a given [key] as subtree (leaf) of the node defined by the given [parentIndex]. The node requires an empty
+     * subtree at the correct position. This requirement is not checked (only an assertion).
+     */
     internal fun insertAtParent(parentIndex: Int, key: K): Int {
         val parentKey = keys[parentIndex]
         if (!allowDuplicateKeys && parentKey == key) {
@@ -378,6 +430,10 @@ abstract class PrimitiveTypeBinaryTree<K, V> protected constructor(
         return insertIndex
     }
 
+    /**
+     * Adds a key at the next free spot in the internal [keys] array. It sets the [left] and [right] subtrees to be "empty" and also sets its parent
+     * reference correctly. The subtree reference of the actual [parentIndex] has to be set by the caller.
+     */
     private fun internalAdd(key: K, parentIndex: Int) {
         // we do the growth check here for avoiding unnecessary growing if a forbidden duplicate is tried to be inserted
         if (size == keys.size) {
@@ -397,35 +453,41 @@ abstract class PrimitiveTypeBinaryTree<K, V> protected constructor(
      */
     private fun max(a: Byte, b: Byte): Byte = if (a > b) a else b
 
+    /**
+     * Grows the size of the internal [keys] array and [values] structure (if used as a map).
+     */
     private fun grow() {
         val oldCapacity: Int = keys.size
         val newCapacity: Int = keys.calculateSizeForGrow()
-        val oldValues = values
         val delta: Int = newCapacity - oldCapacity
         keys = keys.getResizedCopy(delta)
         left = left.getResizedCopy(delta)
         right = right.getResizedCopy(delta)
         parent = parent.getResizedCopy(delta)
         height = height.getResizedCopy(delta)
-        values = valuesSupplier?.invoke(newCapacity)
+        values?.resize(delta)
         for (i in oldCapacity..<newCapacity) {
             left.setP(i, NO_INDEX)
             right.setP(i, NO_INDEX)
             parent.setP(i, NO_INDEX)
-            if (oldValues != null) {
-                insertValue(i, oldValues[i])
-            }
         }
     }
 
+    /**
+     * Reduces the size of the underlying structures to the logical [size] of this tree.
+     */
     fun trimToSize() {
         val difference = size - keys.size
         keys = keys.getResizedCopy(difference)
         left = left.getResizedCopy(difference)
         right = right.getResizedCopy(difference)
         parent = parent.getResizedCopy(difference)
+        values?.resize(difference)
     }
 
+    /**
+     * "Slow" inorder index iterator.
+     */
     internal inner class BinaryTreeInorderIndexIterator : MutableIterator<Int> {
         private var currentPosition: Int
         private var iteratorChangeCount: Int
@@ -515,6 +577,9 @@ abstract class PrimitiveTypeBinaryTree<K, V> protected constructor(
 
     }
 
+    /**
+     * "Fast" unordered index iterator.
+     */
     internal inner class BinaryTreeUnorderedIndexIterator : MutableIterator<Int> {
         private var iteratorChangeCount: Int = changeCount
         private var currentPosition = 0

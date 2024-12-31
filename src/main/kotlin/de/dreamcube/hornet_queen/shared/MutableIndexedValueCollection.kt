@@ -37,4 +37,9 @@ interface MutableIndexedValueCollection<V> {
      * [MutableIndexedValueCollection].
      */
     fun asCollection(contained: (Int) -> Boolean): MutableCollection<V>
+
+    /**
+     * Resizes this [MutableIndexedValueCollection].
+     */
+    fun resize(delta: Int)
 }
