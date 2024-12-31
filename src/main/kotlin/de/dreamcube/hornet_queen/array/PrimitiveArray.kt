@@ -20,6 +20,7 @@ package de.dreamcube.hornet_queen.array
 import de.dreamcube.hornet_queen.*
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import kotlin.math.max
 import kotlin.math.min
 
 /**
@@ -93,7 +94,7 @@ abstract class PrimitiveArray<T>(
      * Calculates the new size with the given [difference].
      * @throws IndexOutOfBoundsException if the new size exceeds the [maxSize] or the resulting new size is negative.
      */
-    protected fun getNewSize(difference: Int): Int {
+    internal fun getNewSize(difference: Int): Int {
         val newSize: Int = size + difference
         if (newSize > maxSize) {
             throw IndexOutOfBoundsException("New size '$newSize' exceeds maximum size '$maxSize'.")
@@ -129,11 +130,8 @@ abstract class PrimitiveArray<T>(
      * function [getResizedCopy].
      */
     internal fun calculateSizeForGrow(): Int {
-        if (size == 0) {
-            return ConfigurableConstants.DEFAULT_INITIAL_SIZE
-        }
         val oldSizeAsLong = size.toLong()
-        val newSizeAsLong = oldSizeAsLong + (oldSizeAsLong shr 1)
+        val newSizeAsLong = max(oldSizeAsLong + (oldSizeAsLong shr 1), 2)
         return if (newSizeAsLong <= maxSize.toLong()) newSizeAsLong.toInt() else maxSize
     }
 

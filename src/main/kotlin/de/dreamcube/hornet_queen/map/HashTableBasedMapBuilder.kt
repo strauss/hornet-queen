@@ -28,7 +28,7 @@ import java.util.*
  * This builder object assists in creating a new [HashTableBasedMap]. Unfortunately it is not feasible to create classes
  * for every combination of types. It is also not possible to simply create an object like a regular [HashMap] solely by
  * the given types, because the underlying data structures all have dedicated types (derived from [PrimitiveArray]).
- * The builder object is stateless and provides methods for configuring the key type. The result of a configuring
+ * The builder object is stateless and provides functions for configuring the key type. The result of a configuring
  * function is an object of [HashTableBasedMapBuilderWithKey] for configuring the value type.
  */
 object HashTableBasedMapBuilder {
@@ -109,81 +109,63 @@ object HashTableBasedMapBuilder {
          */
         @JvmOverloads
         fun useByteValue(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Byte> =
-            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: FillState ->
-                ByteValueCollection(size, fillState, native)
-            }
+            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int -> ByteValueCollection(size, native) }
 
         /**
          * Configures the resulting [HashTableBasedMap] to use [Short] as value type.
          */
         @JvmOverloads
         fun useShortValue(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Short> =
-            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: FillState ->
-                ShortValueCollection(size, fillState, native)
-            }
+            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int -> ShortValueCollection(size, native) }
 
         /**
          * Configures the resulting [HashTableBasedMap] to use [Char] as value type.
          */
         @JvmOverloads
         fun useCharValue(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Char> =
-            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: FillState ->
-                CharValueCollection(size, fillState, native)
-            }
+            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int -> CharValueCollection(size, native) }
 
         /**
          * Configures the resulting [HashTableBasedMap] to use [Int] as value type.
          */
         @JvmOverloads
         fun useIntValue(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Int> =
-            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: FillState ->
-                IntValueCollection(size, fillState, native)
-            }
+            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int -> IntValueCollection(size, native) }
 
         /**
          * Configures the resulting [HashTableBasedMap] to use [Long] as value type.
          */
         @JvmOverloads
         fun useLongValue(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Long> =
-            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: FillState ->
-                LongValueCollection(size, fillState, native)
-            }
+            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int -> LongValueCollection(size, native) }
 
         /**
          * Configures the resulting [HashTableBasedMap] to use [Float] as value type.
          */
         @JvmOverloads
         fun useFloatValue(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Float> =
-            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: FillState ->
-                FloatValueCollection(size, fillState, native)
-            }
+            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int -> FloatValueCollection(size, native) }
 
         /**
          * Configures the resulting [HashTableBasedMap] to use [Double] as value type.
          */
         @JvmOverloads
         fun useDoubleValue(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, Double> =
-            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: FillState ->
-                DoubleValueCollection(size, fillState, native)
-            }
+            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int -> DoubleValueCollection(size, native) }
 
         /**
          * Configures the resulting [HashTableBasedMap] to use [UUID] as value type.
          */
         @JvmOverloads
         fun useUUIDValue(native: Boolean = ConfigurableConstants.DEFAULT_NATIVE): HashTableBasedMapBuilderWithKeyAndValue<K, UUID> =
-            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: FillState ->
-                UUIDValueCollection(size, fillState, native)
-            }
+            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int -> UUIDValueCollection(size, native) }
 
         /**
          * Configures the resulting [HashTableBasedMap] to use [V] as value type. The internal value structure will be a
          * normal object array.
          */
         fun <V> useArbitraryTypeValue(): HashTableBasedMapBuilderWithKeyAndValue<K, V> =
-            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int, fillState: FillState ->
-                ObjectTypeValueCollection(size, fillState)
-            }
+            HashTableBasedMapBuilderWithKeyAndValue(keyArraySupplier) { size: Int -> ObjectTypeValueCollection(size) }
     }
 
     /**
@@ -192,7 +174,7 @@ object HashTableBasedMapBuilder {
     class HashTableBasedMapBuilderWithKeyAndValue<K, V>
     internal constructor(
         private val keyArraySupplier: (Int) -> PrimitiveArray<K>,
-        private val valuesSupplier: (Int, FillState) -> MutableIndexedValueCollection<V>
+        private val valuesSupplier: (Int) -> MutableIndexedValueCollection<V>
     ) {
 
         /**
@@ -215,7 +197,7 @@ object HashTableBasedMapBuilder {
         initialCapacity: Int,
         loadFactor: Double,
         keyArraySupplier: (Int) -> PrimitiveArray<K>,
-        valuesSupplier: (Int, FillState) -> MutableIndexedValueCollection<V>
+        valuesSupplier: (Int) -> MutableIndexedValueCollection<V>
     ) : HashTableBasedMap<K, V>(
         InternalPrimitiveTypeHashTable(initialCapacity, loadFactor, keyArraySupplier, valuesSupplier)
     )

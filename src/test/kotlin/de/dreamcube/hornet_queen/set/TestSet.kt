@@ -38,7 +38,7 @@ class TestSet<T>(
     private lateinit var toTest: MutableSet<T>
 
     companion object {
-        private const val TEST_SIZE = 50_000
+        private const val TEST_SIZE = 10_000
 
         @Parameterized.Parameters(name = "{0}")
         @JvmStatic
@@ -61,11 +61,13 @@ class TestSet<T>(
                 { Random.nextDouble() }),
             arrayOf("HashTable based 'UUID", { UUIDSet() }, { HashSet<UUID>() }, { UUID.randomUUID() }),
             arrayOf("BinaryTree based 'Byte'", { PrimitiveByteTreeSet() }, { HashSet<Byte>() }, { Random.nextInt().toByte() }),
-//            arrayOf("BinaryTree based 'Short'", { PrimitiveShortTreeSet() }, { HashSet<Short>() }, { Random.nextInt().toShort() }),
+            arrayOf("BinaryTree based 'Short'", { PrimitiveShortTreeSet() }, { HashSet<Short>() }, { Random.nextInt().toShort() }),
             arrayOf("BinaryTree based 'Char'", { PrimitiveCharTreeSet() }, { HashSet<Char>() }, { Random.nextInt().toChar() }),
             arrayOf("BinaryTree based 'Int'", { PrimitiveIntTreeSet() }, { HashSet<Int>() }, { Random.nextInt() }),
             arrayOf("BinaryTree based 'Long'", { PrimitiveLongTreeSet() }, { HashSet<Long>() }, { Random.nextLong() }),
-//            arrayOf("BinaryTree based 'Float'", { PrimitiveFloatTreeSet() }, { HashSet<Float>() }, { Random.nextFloat() }),
+            arrayOf("BinaryTree based 'Long' (fast iterator)", { PrimitiveLongTreeSet(fastIterator = true) }, { HashSet<Long>() },
+                { Random.nextLong() }),
+            arrayOf("BinaryTree based 'Float'", { PrimitiveFloatTreeSet() }, { HashSet<Float>() }, { Random.nextFloat() }),
             arrayOf("BinaryTree based 'Double'", { PrimitiveDoubleTreeSet() }, { HashSet<Double>() }, { Random.nextDouble() }),
             arrayOf("BinaryTree based 'UUID'", { UUIDTreeSet() }, { HashSet<UUID>() }, { UUID.randomUUID() })
         )
