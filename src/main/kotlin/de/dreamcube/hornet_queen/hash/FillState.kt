@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package de.dreamcube.hornet_queen.shared
+package de.dreamcube.hornet_queen.hash
 
 import java.util.*
 
 /**
  * Internal representation of fill states for indexes. Uses two [BitSet]s as internal data structure for saving memory space.
  */
-class FillState(capacity: Int) {
+internal class FillState(capacity: Int) {
     private var fullSet = BitSet(capacity)
     private var removedSet = BitSet(capacity)
 

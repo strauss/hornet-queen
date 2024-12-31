@@ -65,11 +65,11 @@ abstract class PrimitiveLinkedList<T> protected constructor(
             size = 0
         }
         val nextIndex = startIndex + 1
-        forwardLinks[startIndex] = nextIndex
-        backwardLinks[startIndex] = if (startIndex == 0) NO_INDEX else lastEmptyIndex
+        forwardLinks.setP(startIndex, nextIndex)
+        backwardLinks.setP(startIndex, if (startIndex == 0) NO_INDEX else lastEmptyIndex)
         for (i in nextIndex..<array.size) {
-            forwardLinks[i] = i + 1
-            backwardLinks[i] = i - 1
+            forwardLinks.setP(i, i + 1)
+            backwardLinks.setP(i, i - 1)
         }
     }
 
@@ -102,7 +102,7 @@ abstract class PrimitiveLinkedList<T> protected constructor(
         size = theSize
         firstElementIndex = 0
         lastElementIndex = size - 1
-        forwardLinks[lastElementIndex] = NO_INDEX
+        forwardLinks.setP(lastElementIndex, NO_INDEX)
         firstEmptyIndex = size
         lastEmptyIndex = NO_INDEX
     }
@@ -125,17 +125,17 @@ abstract class PrimitiveLinkedList<T> protected constructor(
             return
         }
         val currentIndex = firstEmptyIndex
-        firstEmptyIndex = forwardLinks[firstEmptyIndex]
+        firstEmptyIndex = forwardLinks.getP(firstEmptyIndex)
         val previousIndex = lastElementIndex
-        val nextIndex = forwardLinks[currentIndex] // points to next free index
+        val nextIndex = forwardLinks.getP(currentIndex) // points to next free index
         array[currentIndex] = element
-        backwardLinks[currentIndex] = previousIndex
+        backwardLinks.setP(currentIndex, previousIndex)
         if (previousIndex != NO_INDEX) {
-            forwardLinks[previousIndex] = currentIndex
+            forwardLinks.setP(previousIndex, currentIndex)
         }
-        forwardLinks[currentIndex] = NO_INDEX
+        forwardLinks.setP(currentIndex, NO_INDEX)
         if (nextIndex < array.size) {
-            backwardLinks[nextIndex] = NO_INDEX
+            backwardLinks.setP(nextIndex, NO_INDEX)
         } else {
             lastEmptyIndex = NO_INDEX
         }
@@ -146,20 +146,20 @@ abstract class PrimitiveLinkedList<T> protected constructor(
     private fun internalPrepend(element: T) {
         val initiallyEmpty: Boolean = isEmpty()
         val currentIndex = firstEmptyIndex
-        firstEmptyIndex = forwardLinks[firstEmptyIndex]
+        firstEmptyIndex = forwardLinks.getP(firstEmptyIndex)
         val nextIndex = firstElementIndex
         array[currentIndex] = element
         firstElementIndex = currentIndex
-        forwardLinks[currentIndex] = nextIndex
+        forwardLinks.setP(currentIndex, nextIndex)
         if (initiallyEmpty) {
             lastElementIndex = currentIndex
         } else {
-            backwardLinks[nextIndex] = currentIndex
+            backwardLinks.setP(nextIndex, currentIndex)
         }
         if (firstEmptyIndex < array.size) {
-            backwardLinks[firstEmptyIndex] = NO_INDEX
+            backwardLinks.setP(firstEmptyIndex, NO_INDEX)
         }
-        backwardLinks[currentIndex] = NO_INDEX
+        backwardLinks.setP(currentIndex, NO_INDEX)
         size += 1
     }
 
@@ -190,20 +190,20 @@ abstract class PrimitiveLinkedList<T> protected constructor(
         // We assume adding "in between", so we do not care about the list of empty space.
         // That one is handled in the internal append and internal prepend functions.
         assert(isNotEmpty())
-        assert(backwardLinks[internalIndex] != NO_INDEX)
+        assert(backwardLinks.getP(internalIndex) != NO_INDEX)
         assert(internalIndex >= 0)
         assert(internalIndex < array.size)
 
         val targetIndex = firstEmptyIndex
-        firstEmptyIndex = forwardLinks[firstEmptyIndex]
-        val previousIndex = backwardLinks[internalIndex]
+        firstEmptyIndex = forwardLinks.getP(firstEmptyIndex)
+        val previousIndex = backwardLinks.getP(internalIndex)
 
         array[targetIndex] = element
-        forwardLinks[targetIndex] = forwardLinks[previousIndex]
-        forwardLinks[previousIndex] = targetIndex
-        backwardLinks[targetIndex] = previousIndex
-        backwardLinks[internalIndex] = targetIndex
-        backwardLinks[firstEmptyIndex] = NO_INDEX
+        forwardLinks.setP(targetIndex, forwardLinks.getP(previousIndex))
+        forwardLinks.setP(previousIndex, targetIndex)
+        backwardLinks.setP(targetIndex, previousIndex)
+        backwardLinks.setP(internalIndex, targetIndex)
+        backwardLinks.setP(firstEmptyIndex, NO_INDEX)
         size += 1
     }
 
@@ -227,11 +227,11 @@ abstract class PrimitiveLinkedList<T> protected constructor(
         val result = array[firstElementIndex]
         val nextEmptyIndex = firstEmptyIndex
         firstEmptyIndex = firstElementIndex
-        firstElementIndex = forwardLinks[firstElementIndex]
-        forwardLinks[firstEmptyIndex] = nextEmptyIndex
-        backwardLinks[firstElementIndex] = NO_INDEX
-        backwardLinks[nextEmptyIndex] = firstEmptyIndex
-        backwardLinks[firstEmptyIndex] = NO_INDEX // should already be the case
+        firstElementIndex = forwardLinks.getP(firstElementIndex)
+        forwardLinks.setP(firstEmptyIndex, nextEmptyIndex)
+        backwardLinks.setP(firstElementIndex, NO_INDEX)
+        backwardLinks.setP(nextEmptyIndex, firstEmptyIndex)
+        backwardLinks.setP(firstEmptyIndex, NO_INDEX) // should already be the case
         size -= 1
         return result
     }
@@ -240,31 +240,31 @@ abstract class PrimitiveLinkedList<T> protected constructor(
         val result = array[lastElementIndex]
         val nextEmptyIndex = firstEmptyIndex
         firstEmptyIndex = lastElementIndex
-        lastElementIndex = backwardLinks[lastElementIndex]
-        forwardLinks[firstEmptyIndex] = nextEmptyIndex
-        forwardLinks[lastElementIndex] = NO_INDEX
-        backwardLinks[nextEmptyIndex] = firstEmptyIndex
-        backwardLinks[firstEmptyIndex] = NO_INDEX // should already be the case
+        lastElementIndex = backwardLinks.getP(lastElementIndex)
+        forwardLinks.setP(firstEmptyIndex, nextEmptyIndex)
+        forwardLinks.setP(lastElementIndex, NO_INDEX)
+        backwardLinks.setP(nextEmptyIndex, firstEmptyIndex)
+        backwardLinks.setP(firstEmptyIndex, NO_INDEX) // should already be the case
         size -= 1
         return result
     }
 
     private fun internalRemoveAt(internalIndex: Int): T {
         assert(isNotEmpty())
-        assert(backwardLinks[internalIndex] != NO_INDEX)
-        assert(forwardLinks[internalIndex] != NO_INDEX)
+        assert(backwardLinks.getP(internalIndex) != NO_INDEX)
+        assert(forwardLinks.getP(internalIndex) != NO_INDEX)
 
         val result = array[internalIndex]
-        val previousIndex = backwardLinks[internalIndex]
-        val nextIndex = forwardLinks[internalIndex]
-        forwardLinks[previousIndex] = nextIndex
-        backwardLinks[nextIndex] = previousIndex
+        val previousIndex = backwardLinks.getP(internalIndex)
+        val nextIndex = forwardLinks.getP(internalIndex)
+        forwardLinks.setP(previousIndex, nextIndex)
+        backwardLinks.setP(nextIndex, previousIndex)
 
         val nextEmptyIndex = firstEmptyIndex
         firstEmptyIndex = internalIndex
-        forwardLinks[firstEmptyIndex] = nextEmptyIndex
-        backwardLinks[nextEmptyIndex] = firstEmptyIndex
-        backwardLinks[firstEmptyIndex] = NO_INDEX
+        forwardLinks.setP(firstEmptyIndex, nextEmptyIndex)
+        backwardLinks.setP(nextEmptyIndex, firstEmptyIndex)
+        backwardLinks.setP(firstEmptyIndex, NO_INDEX)
 
         size -= 1
         return result
@@ -277,7 +277,7 @@ abstract class PrimitiveLinkedList<T> protected constructor(
         return if (index <= size / 2) {
             var currentIndex = firstElementIndex
             for (seekIndex in 0..<index) {
-                currentIndex = forwardLinks[currentIndex]
+                currentIndex = forwardLinks.getP(currentIndex)
                 check(currentIndex != NO_INDEX) { "Error while determining the internal index of $index" }
             }
             currentIndex
@@ -285,7 +285,7 @@ abstract class PrimitiveLinkedList<T> protected constructor(
             var currentIndex = lastElementIndex
             val limit = size - 1 - index
             for (seekIndex in 0..<limit) {
-                currentIndex = backwardLinks[currentIndex]
+                currentIndex = backwardLinks.getP(currentIndex)
                 check(currentIndex != NO_INDEX) { "Error while determining the internal index of $index" }
             }
             currentIndex
@@ -353,7 +353,7 @@ abstract class PrimitiveLinkedList<T> protected constructor(
                 return index
             }
             index -= 1
-            internalIndex = backwardLinks[internalIndex]
+            internalIndex = backwardLinks.getP(internalIndex)
         }
         return -1
     }
@@ -370,7 +370,7 @@ abstract class PrimitiveLinkedList<T> protected constructor(
                 return index
             }
             index += 1
-            internalIndex = forwardLinks[internalIndex]
+            internalIndex = forwardLinks.getP(internalIndex)
         }
         return -1
     }
@@ -440,7 +440,7 @@ abstract class PrimitiveLinkedList<T> protected constructor(
                 IteratorCallState.PREV -> {
                     // when previous was called, the next internal index is placed at the element previously returned
                     val removeAt = nextInternalIndex
-                    nextInternalIndex = forwardLinks[nextInternalIndex]
+                    nextInternalIndex = forwardLinks.getP(nextInternalIndex)
                     internalRemove(removeAt)
                 }
 
@@ -474,7 +474,7 @@ abstract class PrimitiveLinkedList<T> protected constructor(
         }
 
         private fun incIndex() {
-            nextInternalIndex = forwardLinks[nextInternalIndex]
+            nextInternalIndex = forwardLinks.getP(nextInternalIndex)
             nextIndex += 1
         }
 
@@ -484,7 +484,7 @@ abstract class PrimitiveLinkedList<T> protected constructor(
         }
 
         private fun previousInternalIndex(): Int =
-            if (nextInternalIndex == NO_INDEX) lastElementIndex else backwardLinks[nextInternalIndex]
+            if (nextInternalIndex == NO_INDEX) lastElementIndex else backwardLinks.getP(nextInternalIndex)
 
     }
 

@@ -37,6 +37,10 @@ class PrimitiveCharArray private constructor(size: Int, native: Boolean, interna
         internalSetChar(index, element)
     }
 
+    fun getP(index: Int): Char = internalGetChar(index)
+
+    fun setP(index: Int, element: Char) = internalSetChar(index, element)
+
     override fun getResizedCopy(difference: Int): PrimitiveArray<Char> {
         val newSize = getNewSize(difference)
         val newBuffer: ByteBuffer = getResizedCopyOfBuffer(newSize)

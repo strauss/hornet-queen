@@ -17,22 +17,28 @@
 
 package de.dreamcube.hornet_queen.shared
 
+import de.dreamcube.hornet_queen.array.PrimitiveByteArray
+import kotlin.math.min
+
 internal class ObjectTypeValueCollection<T>(
-    override val size: Int,
-    override val fillState: FillState
+    size: Int
 ) : MutableIndexedValueCollection<T> {
-    val array: Array<Any?> = Array(size) { null }
+    var array: Array<Any?> = Array(size) { null }
+        private set
+
+    override val size: Int
+        get() = array.size
 
     override fun get(index: Int): T? {
         @Suppress("UNCHECKED_CAST")
         return array[index] as T
     }
 
-    override fun asCollection(): MutableCollection<T> {
+    override fun asCollection(contained: (Int) -> Boolean): MutableCollection<T> {
         val result: MutableList<T> = mutableListOf()
         for (i: Int in array.indices) {
-            // we only add elements that are filled
-            if (fillState.isFull(i)) {
+            // we only add elements that are contained
+            if (contained(i)) {
                 @Suppress("UNCHECKED_CAST")
                 result.add(array[i] as T)
             }
@@ -51,5 +57,13 @@ internal class ObjectTypeValueCollection<T>(
 
     override fun set(index: Int, value: T) {
         array[index] = value
+    }
+
+    override fun resize(delta: Int) {
+        val newSize: Int = min(size.toLong() + delta.toLong(), PrimitiveByteArray.MAX_SIZE.toLong()).toInt()
+        val copyBound = min(newSize, size)
+        val newArray = Array<Any?>(newSize) { null }
+        System.arraycopy(array, 0, newArray, 0, copyBound)
+        array = newArray
     }
 }
