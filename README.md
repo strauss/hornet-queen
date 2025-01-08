@@ -10,6 +10,10 @@ The used Kotlin version is 2.0.10-RC (the latest and greatest).
 Hornet Queen was inspired by GNU Trove4J, which is unfortunately discontinued.
 I was impressed by its implementation of hash tables and I actually adapted this implementation for Hornet Queen.
 
+## Latest release
+
+[![Release](https://jitpack.io/v/de.dreamcube.hornet-queen/Repo.svg)](https://jitpack.io/#de.dreamcube/hornet-queen)
+
 ## Content (so far)
 
 The library is not complete yet. It currently includes the following:
