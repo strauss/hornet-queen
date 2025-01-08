@@ -64,7 +64,7 @@ You need to add Jitpack as repository and include the dependency on this project
         <dependency>
             <groupId>de.dreamcube</groupId>
             <artifactId>hornet-queen</artifactId>
-            <version>0.2.0</version>
+            <version>0.3.0</version>
         </dependency>
     </dependencies>
 </project>
@@ -80,7 +80,7 @@ repositories {
 }
 
 dependencies {
-    implementation("de.dreamcube:hornet-queen:0.2.0")
+    implementation("de.dreamcube:hornet-queen:0.3.0")
 }
 ```
 
@@ -94,7 +94,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'de.dreamcube:hornet-queen:0.2.0'
+    implementation 'de.dreamcube:hornet-queen:0.3.0'
 }
 ```
 
